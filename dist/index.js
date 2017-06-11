@@ -4,7 +4,9 @@
 
   env = require('node-env-file');
 
-  env('./.env');
+  env('./.env', {
+    raise: false
+  });
 
   fs = require('fs');
 
@@ -29,8 +31,6 @@
   d3n = new d3Node({
     canvasModule: canvasModule
   });
-
-  console.log('env consumer_key', process.env.BOT_CONSUMER_KEY);
 
   T = new Twit({
     consumer_key: process.env.BOT_CONSUMER_KEY,

@@ -1,5 +1,5 @@
 env = require 'node-env-file'
-env('./.env')
+env('./.env', {raise: false})
 fs = require 'fs'
 d3 = require 'd3'
 d3Node = require 'd3-node'
@@ -13,8 +13,6 @@ rand.seed(seed)
 artScripts = ['101']
 
 d3n = new d3Node { canvasModule }
-
-console.log 'env consumer_key', process.env.BOT_CONSUMER_KEY
 
 T = new Twit(
   {
