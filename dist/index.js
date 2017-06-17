@@ -26,7 +26,9 @@
 
   rand.seed(seed);
 
-  artScripts = ['101'];
+  artScripts = ['102', 'noise', 'wind2', 'wind3', 'wind5'];
+
+  artScriptChoice = artScripts[rand(artScripts.length)];
 
   d3n = new d3Node({
     canvasModule: canvasModule
@@ -76,12 +78,10 @@
     });
   };
 
-  artScriptChoice = artScripts[rand(artScripts.length)];
-
   console.log('Running ', artScriptChoice);
 
   canvas = require('./artscripts/' + artScriptChoice)(seed);
 
-  uploadTweet(seed, canvas.toDataURL().split(',')[1]);
+  uploadTweet(artScriptChoice + '-' + seed, canvas.toDataURL().split(',')[1]);
 
 }).call(this);

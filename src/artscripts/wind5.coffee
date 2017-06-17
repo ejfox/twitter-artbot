@@ -53,7 +53,6 @@ makeArt = (seed) ->
       i: i
       x: rand(width)
       y: rand(height)
-      b: _.clamp(rand(255) + j, 0, 255)
       color: colorCatScale(i)
       j: j * 2
     }
@@ -66,9 +65,9 @@ makeArt = (seed) ->
     cycle = i
     data.forEach((d,i) ->
       if d.x < width/2
-        d.x = d.x + rand 5
+        d.x = d.x + rand d.j
       if d.x > width/2
-        d.x = d.x - rand 5
+        d.x = d.x - rand d.j
 
       if rand(100) > 50 && d.y - (height/2)
         d.y = d.y + rand 2
