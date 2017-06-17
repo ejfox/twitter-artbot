@@ -10,7 +10,8 @@ rand = new randGen()
 seed = Date.now()
 rand.seed(seed)
 
-artScripts = ['101', '102', '103']
+artScripts = ['102', 'noise', 'wind2']
+artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
 
@@ -46,9 +47,8 @@ uploadTweet = (status, b64Content) ->
     else
       console.log 'Error uploading media: ', err
   )
-artScriptChoice = artScripts[rand(artScripts.length)]
 console.log 'Running ', artScriptChoice
 canvas = require('./artscripts/'+artScriptChoice)(seed)
 
 # Upload that image to Twitter
-uploadTweet(seed, canvas.toDataURL().split(',')[1])
+uploadTweet(artScriptChoice+'-'+seed, canvas.toDataURL().split(',')[1])

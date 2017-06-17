@@ -1,6 +1,7 @@
 fs = require 'fs'
 d3 = require 'd3'
 d3Node = require 'd3-node'
+_ = require 'lodash'
 canvasModule = require 'canvas-prebuilt'
 randGen = require 'random-seed'
 d3n = new d3Node { canvasModule }
@@ -26,39 +27,37 @@ makeArt = (seed) ->
   width = canvas.width
   height = canvas.height
   i = 0
-  count = 505
+
+  imgdata = ctx.getImageData 0, 0, width, height
+
+  count = imgdata.data.length
 
   colorScale = d3.scaleLinear()
     .range(0,count)
     .domain('#FFF', '#000')
 
   data = d3.range(count).map ->
+    j = Math.abs((i % 200) - 100);
     i++
-    if i % 3
-      color = 'rgba(209,244,255,' + 1 + ')'
-    else if i % 5
-      color = 'rgba(0,0,0,1)'
-    else
-      color = 'rgba(255,230,254,' + 1 + ')'
+
     {
       i: i
-      x1: rand(width)
-      y1: rand(height)
-      x2: rand(width)
-      y2: rand(height)
-      color: color
+      r: _.clamp(rand(255) - ( i * 0.0001 ), 0, 255)
+      g: j
+      b: _.clamp(rand(255) + ( i * 0.0001 ), 0, 255)
     }
 
-  data.forEach((d) ->
-    #ctx.globalAlpha = 0.2
-    ctx.strokeStyle = d.color
-    ctx.beginPath()
-    ctx.moveTo(d.x1, d.y1)
-    ctx.quadraticCurveTo((d.x2/4), (d.y2 / 5 ), ( d.x2 * d.i ), d.y2)
-    ctx.quadraticCurveTo((d.x2/1.5), (d.y2 / 2 ), d.x2, d.y2 + d.i)
-    ctx.stroke()
 
+
+  data.forEach((d,i) ->
+    imgdata.data[4*i] = d.r; # R
+    imgdata.data[4*i+1] = d.g; # G
+    imgdata.data[4*i+2] = d.b; # B
+    imgdata.data[4*i+3] = 255; # A
   )
+
+
+  ctx.putImageData imgdata, 0, 0
 
   fileOutput = './dist/' + seed + '.png'
   console.log('canvas output --> ' + fileOutput);
