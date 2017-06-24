@@ -31,7 +31,7 @@
   };
 
   makeArt = function(seed) {
-    var canvas, catColors, colorCatScale, colorScale, count, ctx, cycle, data, fileOutput, height, i, k, rand, width;
+    var canvas, catColors, colorCatScale, colorScale, count, ctx, cycle, cycles, data, fileOutput, height, i, k, rand, ref, width;
     rand = new randGen();
     rand.seed(seed);
     console.log('seed', seed);
@@ -84,7 +84,8 @@
     });
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
-    for (i = k = 1; k <= 2000; i = ++k) {
+    cycles = rand(4000);
+    for (i = k = 1, ref = cycles; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
       cycle = i;
       data.forEach(function(d, i) {
         var c, color;

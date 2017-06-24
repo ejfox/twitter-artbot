@@ -82,7 +82,8 @@ makeArt = (seed) ->
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, width, height);
 
-  for i in [1..2000]
+  cycles = rand(4000)
+  for i in [1..cycles]
     cycle = i
     data.forEach((d,i) ->
       if d.x < width/2
