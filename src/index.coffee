@@ -11,7 +11,8 @@ seed = Date.now()
 rand.seed(seed)
 
 artScripts = ['102', 'noise', 'wind2', 'wind3', 'wind5',
-'strangecircles', 'strangecircles2', 'strangecircles3', 'confetti']
+'strangecircles', 'strangecircles2', 'strangecircles3', 'confetti',
+'boxes', 'boxes2', 'boxes3']
 artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
