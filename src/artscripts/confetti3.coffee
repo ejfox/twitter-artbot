@@ -23,16 +23,20 @@ makeArt = (seed) ->
 
   canvas = d3n.createCanvas 850,625
   ctx = canvas.getContext '2d'
+  if rand(100) > 50
+    ctx.globalCompositeOperation = 'multiply'
+  # else
+  #   ctx.globalCompositeOperation = 'difference'
 
   width = canvas.width
   height = canvas.height
   i = 0
 
-  count = rand 1500
+  count = rand 420
 
-  colorScale = d3.scaleLinear()
+  opacityScale = d3.scaleLinear()
     .domain(0,count)
-    .range('#CCC ', '#000')
+    .range(0,1)
 
   colorCatScale = d3.scaleOrdinal()
 
@@ -64,6 +68,12 @@ makeArt = (seed) ->
 
   colorCatScale.range(catColors)
 
+  redPoints = d3.range(3).map ->
+    {
+      x: rand(width)
+      y: rand(height)
+    }
+
   data = d3.range(count).map ->
     z = 150
     j = Math.abs((i % z) - (z/2));
@@ -72,46 +82,62 @@ makeArt = (seed) ->
 
     {
       i: i
-      x: rand(width)
-      y: rand(height)
-      color: colorCatScale(j)
+      x: width / 2
+      y: height * 0.98
+      color: colorCatScale(i)
       j: j * 2
+      radius: rand(25)
+      opacity: opacityScale(i)
     }
 
   # make bg
   ctx.fillStyle = 'white';
   ctx.fillRect(0, 0, width, height);
-
-  for i in [1..2000]
+  cycles = rand 250
+  for i in [1..cycles]
     cycle = i
     data.forEach((d,i) ->
-      if d.x < width/2
-        d.x = d.x + rand 4
+      d.x = d.x + rand 12
+      d.x = d.x - rand 12
 
-      if d.y > height/2
-        d.y = d.y - rand 4
+      if rand(100) > 50
+        d.y = d.y - rand 22
+        d.radius = d.radius + rand 2
       else
-        d.y = d.y + rand 4
+        d.y = d.y + rand 22
+        d.radius = d.radius -  rand 2
 
-      if rand(100) > 50 && d.y - (height/2)
-        d.y = d.y + rand 2
+      if rand(100) > 95
+        d.opacity = 0.5
+      else
+        d.opacity = 0.025
 
-       if rand(100) > 98
-         d.dead = true
+      if rand(100) > 99
+        d.radius = width / 2
 
-
-      # r = rand(200)
-      # g = rand(90)
-      # b = rand(255)
-      #ctx.fillStyle = "rgba(#{r},#{g},#{b},0.25)";
       color = d.color
       c = d3.hsl color
-      #c.h += rand(2)
-      #c.opacity = 0.4
+      c.h += rand(8)
+      c.opacity = d.opacity
       d.color = c.toString()
       ctx.fillStyle = d.color
-      if !d.dead
-        ctx.fillRect(d.x, d.y, 1, 1);
+
+
+      ctx.beginPath();
+      x = d.x #+ i * 50; # x coordinate
+      y = d.y #+ i * 50; # y coordinate
+      radius = _.clamp(d.radius, 1, width / 2)
+      startAngle = rand(360); # Starting point on circle
+      endAngle = rand(360)
+      anticlockwise = d.i % 2 isnt 0 # clockwise or anticlockwise
+
+      ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+      if rand(100) > 50
+        ctx.fill d.color
+      else
+        ctx.fillStyle = 'none'
+        ctx.strokeStyle = d.color
+        ctx.stroke()
     )
 
   fileOutput = './dist/' + seed + '.png'

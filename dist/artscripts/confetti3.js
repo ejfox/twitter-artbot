@@ -31,17 +31,20 @@
   };
 
   makeArt = function(seed) {
-    var canvas, catColors, colorCatScale, colorScale, count, ctx, cycle, data, fileOutput, height, i, k, rand, width;
+    var canvas, catColors, colorCatScale, count, ctx, cycle, cycles, data, fileOutput, height, i, k, opacityScale, rand, redPoints, ref, width;
     rand = new randGen();
     rand.seed(seed);
     console.log('seed', seed);
     canvas = d3n.createCanvas(850, 625);
     ctx = canvas.getContext('2d');
+    if (rand(100) > 50) {
+      ctx.globalCompositeOperation = 'multiply';
+    }
     width = canvas.width;
     height = canvas.height;
     i = 0;
-    count = rand(1500);
-    colorScale = d3.scaleLinear().domain(0, count).range('#CCC ', '#000');
+    count = rand(420);
+    opacityScale = d3.scaleLinear().domain(0, count).range(0, 1);
     colorCatScale = d3.scaleOrdinal();
     catColors = ['#49AEC0', '#FEBF00'];
     if (rand(100) > 50) {
@@ -69,6 +72,12 @@
       catColors.push('#1f0426');
     }
     colorCatScale.range(catColors);
+    redPoints = d3.range(3).map(function() {
+      return {
+        x: rand(width),
+        y: rand(height)
+      };
+    });
     data = d3.range(count).map(function() {
       var j, z;
       z = 150;
@@ -76,38 +85,58 @@
       i++;
       return {
         i: i,
-        x: rand(width),
-        y: rand(height),
-        color: colorCatScale(j),
-        j: j * 2
+        x: width / 2,
+        y: height * 0.98,
+        color: colorCatScale(i),
+        j: j * 2,
+        radius: rand(25),
+        opacity: opacityScale(i)
       };
     });
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, width, height);
-    for (i = k = 1; k <= 2000; i = ++k) {
+    cycles = rand(250);
+    for (i = k = 1, ref = cycles; 1 <= ref ? k <= ref : k >= ref; i = 1 <= ref ? ++k : --k) {
       cycle = i;
       data.forEach(function(d, i) {
-        var c, color;
-        if (d.x < width / 2) {
-          d.x = d.x + rand(4);
-        }
-        if (d.y > height / 2) {
-          d.y = d.y - rand(4);
+        var anticlockwise, c, color, endAngle, radius, startAngle, x, y;
+        d.x = d.x + rand(12);
+        d.x = d.x - rand(12);
+        if (rand(100) > 50) {
+          d.y = d.y - rand(22);
+          d.radius = d.radius + rand(2);
         } else {
-          d.y = d.y + rand(4);
+          d.y = d.y + rand(22);
+          d.radius = d.radius - rand(2);
         }
-        if (rand(100) > 50 && d.y - (height / 2)) {
-          d.y = d.y + rand(2);
+        if (rand(100) > 95) {
+          d.opacity = 0.5;
+        } else {
+          d.opacity = 0.025;
         }
-        if (rand(100) > 98) {
-          d.dead = true;
+        if (rand(100) > 99) {
+          d.radius = width / 2;
         }
         color = d.color;
         c = d3.hsl(color);
+        c.h += rand(8);
+        c.opacity = d.opacity;
         d.color = c.toString();
         ctx.fillStyle = d.color;
-        if (!d.dead) {
-          return ctx.fillRect(d.x, d.y, 1, 1);
+        ctx.beginPath();
+        x = d.x;
+        y = d.y;
+        radius = _.clamp(d.radius, 1, width / 2);
+        startAngle = rand(360);
+        endAngle = rand(360);
+        anticlockwise = d.i % 2 !== 0;
+        ctx.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+        if (rand(100) > 50) {
+          return ctx.fill(d.color);
+        } else {
+          ctx.fillStyle = 'none';
+          ctx.strokeStyle = d.color;
+          return ctx.stroke();
         }
       });
     }
