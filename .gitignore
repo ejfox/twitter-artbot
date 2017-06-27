@@ -2,3 +2,5 @@
 node_modules/
 dist/*.png
 dist/index.js
+dist/.DS_Store
+*.png
