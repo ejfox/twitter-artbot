@@ -13,20 +13,22 @@ class GenArt
   constructor: (seed) ->
     console.log('Seed:', seed)
     d3n = new d3Node { canvasModule }
-    @seed = seed
+    @seed = seed # The seed for the art
 
-    @chance = new Chance(@seed)
-    @count = 2900
-    @numTicks = 2000
+    @chance = new Chance(@seed) # init chance.js - chancejs.com
+    @count = 2900 # Max number of particles to create
+    @numTicks = 2000 # Max number of times to tick over those particles
 
+    # Randomize count/ticks based on maxes we just set
     @count = @chance.integer({min: 1, max: @count})
     @numTicks = @chance.integer({min: 1, max: @numTicks})
 
+    # Canvas width and height
     @width = 1700
     @height = 1250
     console.log 'width', @width, 'height', @height
 
-
+    # Create the canvas with D3 Node
     @canvas = d3n.createCanvas @width, @height
     @ctx = @canvas.getContext '2d'
 
@@ -104,14 +106,23 @@ class GenArt
     @canvas.pngStream().pipe(fs.createWriteStream(fileOutput))
 
 run = =>
+  # If this is being called from the command line
+
+  # --seed foo
+  # would set the seed to "foo"
   if argv.seed
     seed = argv.seed
   else
     seed = Date.now()
   genart = new GenArt(seed)
 
+  # --count 100
+  # would make 100 particles
   if argv.count
     genart.count = argv.count
+
+  # --ticks 10
+  # would make it tick 10 times
   if argv.ticks
     genart.numTicks = argv.ticks
 
