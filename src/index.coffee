@@ -10,7 +10,7 @@ rand = new randGen()
 seed = Date.now()
 rand.seed(seed)
 
-artScripts = ['101', '102']
+artScripts = ['102', '103', '104']
 artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
@@ -40,7 +40,7 @@ uploadTweet = (status, b64Content) ->
             status: status
             media_ids: [mediaIdStr]
           }
-          T.post('statuses/update', params, (err, data, response) -> console.log(data))
+          T.post('statuses/update', params, (err, data, response) -> console.log('Uploaded',data.id))
         else
           console.log 'Error: ', err
       )
@@ -52,8 +52,8 @@ console.log 'Running ', artScriptChoice
 #genart = require('./artscripts/'+artScriptChoice)(seed)
 genArt = require('./artscripts/'+artScriptChoice)
 art = new genArt(seed);
-art.init()
-canvas = art.canvas
-
-# Upload that image to Twitter
-uploadTweet(artScriptChoice+'-'+seed, canvas.toDataURL().split(',')[1])
+art.init({}, ->
+  canvas = art.canvas
+  # Upload that image to Twitter
+  uploadTweet(artScriptChoice+'-'+seed, canvas.toDataURL().split(',')[1])
+)

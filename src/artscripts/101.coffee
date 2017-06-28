@@ -36,9 +36,12 @@ class GenArt
     @ctx.fillStyle = 'white';
     @ctx.fillRect(0, 0, @width, @height);
 
-  init: =>
+  init: (options, callback)=>
     @makeParticles()
     @tickTil(@numTicks)
+
+    if callback
+      callback()
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')

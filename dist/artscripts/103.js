@@ -33,8 +33,8 @@
       });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.count = 10;
-      this.numTicks = 100000;
+      this.count = 8;
+      this.numTicks = 25000;
       this.count = this.chance.integer({
         min: 1,
         max: this.count
@@ -80,6 +80,12 @@
             _this.ctx.fillRect(0, 0, _this.width, _this.height);
             colors.splice(1, 1);
           }
+          if (_this.chance.bool({
+            likelihood: 10
+          })) {
+            _this.ctx.fillStyle = '#000';
+            _this.ctx.fillRect(0, 0, _this.width, _this.height);
+          }
           console.log('colors ->', colors);
           if (!err) {
             _this.c10 = d3.scaleOrdinal().range(colors);
@@ -118,7 +124,8 @@
             y: y,
             color: prclColor,
             direction: direction,
-            positions: []
+            positions: [],
+            radius: 150
           };
         };
       })(this));
@@ -134,7 +141,7 @@
       return this.data.forEach((function(_this) {
         return function(d, i) {
           var c, hardOffset, randOffset;
-          randOffset = 5;
+          randOffset = 10;
           d.positions.push([d.x, d.y]);
           if (_.includes(d.positions, [d.x, d.y])) {
             console.log('prev position detected');
@@ -171,7 +178,7 @@
             d.color = _this.c10(d.direction);
           }
           if (_this.chance.bool({
-            likelihood: 15
+            likelihood: 5
           })) {
             c = d3.hsl(d.color);
             c.h += _this.chance.integer({
@@ -180,11 +187,25 @@
             });
             d.color = c.toString();
           }
+          d.radius = _.clamp(d.radius, 0, 250);
+          if (_this.chance.bool({
+            likelihood: _.clamp(_this.ticks / 10000),
+            5: 5,
+            95: 95
+          })) {
+            d.radius--;
+          } else {
+            if (_this.chance.bool({
+              likelihood: 10
+            })) {
+              d.radius--;
+            }
+          }
           _this.ctx.beginPath();
-          _this.ctx.rect(d.x, d.y, 2, 2);
+          _this.ctx.moveTo(d.x, d.y);
+          _this.ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2, true);
           _this.ctx.fillStyle = d.color;
-          _this.ctx.fill();
-          return _this.ctx.closePath();
+          return _this.ctx.fill();
         };
       })(this));
     };

@@ -36,12 +36,15 @@ class GenArt
     @ctx.fillStyle = 'white';
     @ctx.fillRect(0, 0, @width, @height);
 
-  init: (options = {}) =>
+  init: (options = {}, callback) =>
     @makeParticles()
     @tickTil(@numTicks)
 
     if options.save
       @saveFile()
+
+    if callback
+      callback()
 
 
   makeParticles: =>

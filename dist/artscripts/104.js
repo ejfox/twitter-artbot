@@ -33,8 +33,8 @@
       });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.count = 10;
-      this.numTicks = 100000;
+      this.count = 8;
+      this.numTicks = 25000;
       this.count = this.chance.integer({
         min: 1,
         max: this.count
@@ -59,7 +59,7 @@
       return colorLovers.get('/palettes', {
         keywords: this.chance.pickone(['love', 'blue', 'heartbreak', 'darkness'], {
           sortBy: 'DESC',
-          numResults: 3,
+          numResults: 1,
           orderCol: this.chance.pickone(['dateCreated', 'score', 'name', 'numVotes', 'numViews'])
         })
       }, (function(_this) {
@@ -79,6 +79,12 @@
             _this.ctx.fillStyle = colors[0];
             _this.ctx.fillRect(0, 0, _this.width, _this.height);
             colors.splice(1, 1);
+          }
+          if (_this.chance.bool({
+            likelihood: 10
+          })) {
+            _this.ctx.fillStyle = '#000';
+            _this.ctx.fillRect(0, 0, _this.width, _this.height);
           }
           console.log('colors ->', colors);
           if (!err) {
@@ -103,14 +109,8 @@
       this.data = d3.range(this.count).map((function(_this) {
         return function() {
           var direction, prclColor, x, y;
-          x = _this.chance.integer({
-            min: 0,
-            max: _this.width
-          });
-          y = _this.chance.integer({
-            min: 0,
-            max: _this.height
-          });
+          x = _this.width / 2;
+          y = _this.height / 2;
           direction = _this.chance.pickone(['up', 'down', 'left', 'right']);
           prclColor = _this.c10(direction);
           return {
@@ -118,7 +118,8 @@
             y: y,
             color: prclColor,
             direction: direction,
-            positions: []
+            positions: [],
+            radius: 150
           };
         };
       })(this));
@@ -133,8 +134,8 @@
       this.ticks++;
       return this.data.forEach((function(_this) {
         return function(d, i) {
-          var c, hardOffset, randOffset;
-          randOffset = 5;
+          var c, dLikelies, hardOffset, moveUnit, randOffset;
+          randOffset = 10;
           d.positions.push([d.x, d.y]);
           if (_.includes(d.positions, [d.x, d.y])) {
             console.log('prev position detected');
@@ -153,14 +154,77 @@
               });
             }
           }
+          dLikelies = d3.range(8).map(function() {
+            return _this.chance.integer({
+              min: 20,
+              max: 70
+            });
+          });
+          moveUnit = _this.width / 1200;
           if (d.direction === 'up') {
-            d.y++;
+            if (_this.chance.bool({
+              likelihood: _.clamp(dLikelies[0] + 50, 0, 100)
+            })) {
+              d.y += moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[0]
+            })) {
+              d.x -= d.radius / 4;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[1]
+            })) {
+              d.x += d.radius / 4;
+            }
           } else if (d.direction === 'down') {
-            d.y--;
+            if (_this.chance.bool({
+              likelihood: _.clamp(dLikelies[0] + 50, 0, 100)
+            })) {
+              d.y -= moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[2]
+            })) {
+              d.x -= d.radius / 4;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[3]
+            })) {
+              d.x += d.radius / 4;
+            }
           } else if (d.direction === 'left') {
-            d.x--;
+            if (_this.chance.bool({
+              likelihood: _.clamp(dLikelies[0] + 50, 0, 100)
+            })) {
+              d.x -= moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[4]
+            })) {
+              d.y -= moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[5]
+            })) {
+              d.y += moveUnit;
+            }
           } else if (d.direction === 'right') {
-            d.x++;
+            if (_this.chance.bool({
+              likelihood: _.clamp(dLikelies[0] + 50, 0, 100)
+            })) {
+              d.x += moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[6]
+            })) {
+              d.y -= moveUnit;
+            }
+            if (_this.chance.bool({
+              likelihood: dLikelies[7]
+            })) {
+              d.y += moveUnit;
+            }
           }
           if (_this.chance.bool({
             likelihood: 1
@@ -171,7 +235,7 @@
             d.color = _this.c10(d.direction);
           }
           if (_this.chance.bool({
-            likelihood: 15
+            likelihood: 5
           })) {
             c = d3.hsl(d.color);
             c.h += _this.chance.integer({
@@ -180,11 +244,25 @@
             });
             d.color = c.toString();
           }
+          d.radius = _.clamp(d.radius, 0, 250);
+          if (_this.chance.bool({
+            likelihood: _.clamp(_this.ticks / 10000),
+            5: 5,
+            95: 95
+          })) {
+            d.radius--;
+          } else {
+            if (_this.chance.bool({
+              likelihood: 10
+            })) {
+              d.radius--;
+            }
+          }
           _this.ctx.beginPath();
-          _this.ctx.rect(d.x, d.y, 2, 2);
+          _this.ctx.moveTo(d.x, d.y);
+          _this.ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2, true);
           _this.ctx.fillStyle = d.color;
-          _this.ctx.fill();
-          return _this.ctx.closePath();
+          return _this.ctx.fill();
         };
       })(this));
     };

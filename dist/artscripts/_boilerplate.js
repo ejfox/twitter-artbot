@@ -50,14 +50,17 @@
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    GenArt.prototype.init = function(options) {
+    GenArt.prototype.init = function(options, callback) {
       if (options == null) {
         options = {};
       }
       this.makeParticles();
       this.tickTil(this.numTicks);
       if (options.save) {
-        return this.saveFile();
+        this.saveFile();
+      }
+      if (callback) {
+        return callback();
       }
     };
 

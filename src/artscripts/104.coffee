@@ -17,8 +17,8 @@ class GenArt
     @seed = seed # The seed for the art
 
     @chance = new Chance(@seed) # init chance.js - chancejs.com
-    @count = 10 # Max number of particles to create
-    @numTicks = 100000 # Max number of times to tick over those particles
+    @count = 8 # Max number of particles to create
+    @numTicks = 25000 # Max number of times to tick over those particles
 
     # Randomize count/ticks based on maxes we just set
     @count = @chance.integer({min: 1, max: @count})
@@ -41,7 +41,7 @@ class GenArt
     colorLovers.get('/palettes', {
         keywords: @chance.pickone ['love', 'blue', 'heartbreak', 'darkness'],
         sortBy: 'DESC',
-        numResults: 3
+        numResults: 1
         orderCol: @chance.pickone(['dateCreated', 'score', 'name', 'numVotes', 'numViews'])
     },(err, data) =>
       # if(err) throw err
@@ -55,6 +55,10 @@ class GenArt
         @ctx.fillStyle = colors[0]
         @ctx.fillRect(0, 0, @width, @height)
         colors.splice(1,1)
+
+      if @chance.bool({likelihood: 10})
+        @ctx.fillStyle = '#000'
+        @ctx.fillRect(0, 0, @width, @height)
 
       console.log 'colors ->', colors
       if !err
@@ -77,8 +81,10 @@ class GenArt
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
     @data = d3.range(@count).map =>
-      x = @chance.integer({min: 0, max: @width})
-      y = @chance.integer({min: 0, max: @height})
+      # x = @chance.integer({min: 0, max: @width})
+      # y = @chance.integer({min: 0, max: @height})
+      x = @width / 2
+      y = @height / 2
 
       # c = d3.hsl('red')
       # c.h += @chance.natural({min: 0, max: 14})
@@ -96,6 +102,7 @@ class GenArt
         color: prclColor
         direction: direction
         positions: []
+        radius: 150
       }
     return @data
 
@@ -105,7 +112,7 @@ class GenArt
     @ticks++
     #console.log(@ticks, 'Ticking on ' + @data.length + ' particles')
     @data.forEach((d,i) =>
-      randOffset = 5
+      randOffset = 10
 
       d.positions.push [d.x,d.y]
 
@@ -123,55 +130,75 @@ class GenArt
         else
           d.y -= @chance.integer({min: -hardOffset, max: hardOffset})
 
+      dLikelies = d3.range(8).map =>
+        @chance.integer {min: 20, max: 70}
+
+      moveUnit = @width / 1200
 
       if d.direction is 'up'
-        d.y++
+        if @chance.bool({likelihood: _.clamp(dLikelies[0] + 50, 0, 100)})
+          d.y += moveUnit
+        if @chance.bool({likelihood: dLikelies[0]})
+          d.x -= (d.radius / 4)
+        if @chance.bool({likelihood: dLikelies[1]})
+          d.x += (d.radius / 4)
       else if d.direction is 'down'
-        d.y--
+        if @chance.bool({likelihood: _.clamp(dLikelies[0] + 50, 0, 100)})
+          d.y -= moveUnit
+        if @chance.bool({likelihood: dLikelies[2]})
+          d.x -= (d.radius / 4)
+        if @chance.bool({likelihood: dLikelies[3]})
+          d.x += (d.radius / 4)
       else if d.direction is 'left'
-        d.x--
+        if @chance.bool({likelihood: _.clamp(dLikelies[0] + 50, 0, 100)})
+          d.x -= moveUnit
+        if @chance.bool({likelihood: dLikelies[4]})
+          d.y -= moveUnit
+        if @chance.bool({likelihood: dLikelies[5]})
+          d.y += moveUnit
       else if d.direction is 'right'
-        d.x++
+        if @chance.bool({likelihood: _.clamp(dLikelies[0] + 50, 0, 100)})
+          d.x += moveUnit
+        if @chance.bool({likelihood: dLikelies[6]})
+          d.y -= moveUnit
+        if @chance.bool({likelihood: dLikelies[7]})
+          d.y += moveUnit
 
       if @chance.bool({likelihood: 1})
         d.direction = @chance.pickone ['up', 'down', 'left', 'right']
 
-      # if @chance.d100() > 50
-      #   d.x -= @chance.integer({min: -randOffset, max: randOffset})
-      # if @chance.d100() > 50
-      #   d.y -= @chance.integer({min: -randOffset, max: randOffset})
-
-      # if @chance.d100() > 95
-      #   if @chance.d100() > 50
-      #     d.x -= @chance.integer({min: -randOffset, max: (randOffset * 10)})
-      #   else
-      #     d.y -= @chance.integer({min: -randOffset, max: (randOffset * 10)})
-
-      # if d.x < @width / 2
-      #   d.x++
-      # else if d.x > @width / 2
-      #   d.x--
-      #
-      # if d.y < @height / 2
-      #   d.y++
-      # else if d.y > @height /2
-      #   d.y--
-
       if @chance.bool()
         d.color = @c10 d.direction
 
-      if @chance.bool({likelihood: 15})
+      if @chance.bool({likelihood: 5})
         c = d3.hsl d.color
         c.h += @chance.integer({min: -20, max: 20})
         d.color = c.toString()
 
       # console.log 'x', d.x, 'y', d.y
+      # @ctx.beginPath()
+      # @ctx.rect d.x, d.y, 2, 2
+      #
+      # @ctx.closePath()
+
+      d.radius = _.clamp(d.radius, 0, 250)
+
+      if @chance.bool({likelihood: _.clamp((@ticks / 10000)), 5, 95})
+        d.radius--
+      else
+        if @chance.bool {likelihood: 10}
+          d.radius--
+
+
       @ctx.beginPath()
-      @ctx.rect d.x, d.y, 2, 2
+      @ctx.moveTo(d.x, d.y)
+      @ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2, true)
 
       @ctx.fillStyle = d.color
       @ctx.fill()
-      @ctx.closePath()
+
+      #@ctx.strokeStyle = d.color
+      #@ctx.stroke()
     )
 
   tickTil: (count) ->

@@ -50,9 +50,12 @@
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    GenArt.prototype.init = function() {
+    GenArt.prototype.init = function(options, callback) {
       this.makeParticles();
-      return this.tickTil(this.numTicks);
+      this.tickTil(this.numTicks);
+      if (callback) {
+        return callback();
+      }
     };
 
     GenArt.prototype.makeParticles = function() {

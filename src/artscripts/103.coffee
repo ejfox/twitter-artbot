@@ -17,8 +17,8 @@ class GenArt
     @seed = seed # The seed for the art
 
     @chance = new Chance(@seed) # init chance.js - chancejs.com
-    @count = 10 # Max number of particles to create
-    @numTicks = 100000 # Max number of times to tick over those particles
+    @count = 8 # Max number of particles to create
+    @numTicks = 25000 # Max number of times to tick over those particles
 
     # Randomize count/ticks based on maxes we just set
     @count = @chance.integer({min: 1, max: @count})
@@ -55,6 +55,10 @@ class GenArt
         @ctx.fillStyle = colors[0]
         @ctx.fillRect(0, 0, @width, @height)
         colors.splice(1,1)
+
+      if @chance.bool({likelihood: 10})
+        @ctx.fillStyle = '#000'
+        @ctx.fillRect(0, 0, @width, @height)
 
       console.log 'colors ->', colors
       if !err
@@ -96,6 +100,7 @@ class GenArt
         color: prclColor
         direction: direction
         positions: []
+        radius: 150
       }
     return @data
 
@@ -105,7 +110,7 @@ class GenArt
     @ticks++
     #console.log(@ticks, 'Ticking on ' + @data.length + ' particles')
     @data.forEach((d,i) =>
-      randOffset = 5
+      randOffset = 10
 
       d.positions.push [d.x,d.y]
 
@@ -136,42 +141,38 @@ class GenArt
       if @chance.bool({likelihood: 1})
         d.direction = @chance.pickone ['up', 'down', 'left', 'right']
 
-      # if @chance.d100() > 50
-      #   d.x -= @chance.integer({min: -randOffset, max: randOffset})
-      # if @chance.d100() > 50
-      #   d.y -= @chance.integer({min: -randOffset, max: randOffset})
-
-      # if @chance.d100() > 95
-      #   if @chance.d100() > 50
-      #     d.x -= @chance.integer({min: -randOffset, max: (randOffset * 10)})
-      #   else
-      #     d.y -= @chance.integer({min: -randOffset, max: (randOffset * 10)})
-
-      # if d.x < @width / 2
-      #   d.x++
-      # else if d.x > @width / 2
-      #   d.x--
-      #
-      # if d.y < @height / 2
-      #   d.y++
-      # else if d.y > @height /2
-      #   d.y--
-
       if @chance.bool()
         d.color = @c10 d.direction
 
-      if @chance.bool({likelihood: 15})
+      if @chance.bool({likelihood: 5})
         c = d3.hsl d.color
         c.h += @chance.integer({min: -20, max: 20})
         d.color = c.toString()
 
       # console.log 'x', d.x, 'y', d.y
+      # @ctx.beginPath()
+      # @ctx.rect d.x, d.y, 2, 2
+      #
+      # @ctx.closePath()
+
+      d.radius = _.clamp(d.radius, 0, 250)
+
+      if @chance.bool({likelihood: _.clamp((@ticks / 10000)), 5, 95})
+        d.radius--
+      else
+        if @chance.bool {likelihood: 10}
+          d.radius--
+
+
       @ctx.beginPath()
-      @ctx.rect d.x, d.y, 2, 2
+      @ctx.moveTo(d.x, d.y)
+      @ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2, true)
 
       @ctx.fillStyle = d.color
       @ctx.fill()
-      @ctx.closePath()
+
+      #@ctx.strokeStyle = d.color
+      #@ctx.stroke()
     )
 
   tickTil: (count) ->
