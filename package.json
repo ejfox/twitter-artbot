@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "(coffee --compile --output dist --watch src &);node ./dist/index.js",
+    "dev": "(coffee --compile --output dist --watch src &)",
     "start": "node ./dist/index.js"
   },
   "author": "EJ Fox <ejfox@ejfox.com>",
