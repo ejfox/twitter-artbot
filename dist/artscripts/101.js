@@ -31,8 +31,8 @@
       });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.count = 2900;
-      this.numTicks = 2000;
+      this.count = 1000;
+      this.numTicks = 10000;
       this.count = this.chance.integer({
         min: 1,
         max: this.count
@@ -50,22 +50,16 @@
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
 
-    GenArt.prototype.init = function(options) {
-      if (options == null) {
-        options = {};
-      }
+    GenArt.prototype.init = function() {
       this.makeParticles();
-      this.tickTil(this.numTicks);
-      if (options.save) {
-        return this.saveFile();
-      }
+      return this.tickTil(this.numTicks);
     };
 
     GenArt.prototype.makeParticles = function() {
       console.log('Making ' + this.count + ' particles');
       this.data = d3.range(this.count).map((function(_this) {
         return function() {
-          var c, x, y;
+          var x, y;
           x = _this.chance.natural({
             min: 0,
             max: _this.width
@@ -74,15 +68,10 @@
             min: 0,
             max: _this.height
           });
-          c = d3.hsl('red');
-          c.h += _this.chance.natural({
-            min: 0,
-            max: 14
-          });
           return {
             x: x,
             y: y,
-            color: c.toString()
+            color: 'black'
           };
         };
       })(this));
@@ -90,29 +79,40 @@
     };
 
     GenArt.prototype.tick = function() {
+      var ticks;
+      if (!this.ticks) {
+        ticks = 0;
+      }
       this.ticks++;
       return this.data.forEach((function(_this) {
         return function(d, i) {
-          var c, randOffset;
-          randOffset = 14;
+          var randOffset;
+          randOffset = 2;
           if (_this.chance.d100() > 50) {
             d.x -= _this.chance.integer({
-              min: 0,
+              min: -randOffset,
               max: randOffset
             });
           }
           if (_this.chance.d100() > 50) {
             d.y -= _this.chance.integer({
-              min: 0,
+              min: -randOffset,
               max: randOffset
             });
           }
-          c = d3.hsl(d.color);
-          c.h += _this.chance.natural({
-            min: 0,
-            max: 90
-          });
-          d.color = c.toString();
+          if (_this.chance.d100() > 95) {
+            if (_this.chance.d100() > 50) {
+              d.x -= _this.chance.integer({
+                min: -randOffset,
+                max: randOffset * 100
+              });
+            } else {
+              d.y -= _this.chance.integer({
+                min: -randOffset,
+                max: randOffset * 100
+              });
+            }
+          }
           _this.ctx.beginPath();
           _this.ctx.rect(d.x, d.y, 2, 2);
           _this.ctx.fillStyle = d.color;
@@ -161,9 +161,8 @@
       if (argv.ticks) {
         genart.numTicks = argv.ticks;
       }
-      return genart.init({
-        save: true
-      });
+      genart.init();
+      return genart.saveFile();
     };
   })(this);
 

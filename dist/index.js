@@ -26,7 +26,7 @@
 
   rand.seed(seed);
 
-  artScripts = ['_boilerplate'];
+  artScripts = ['101', '102'];
 
   artScriptChoice = artScripts[rand(artScripts.length)];
 

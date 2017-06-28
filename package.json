@@ -18,6 +18,7 @@
     "canvas-base64": "^1.0.0",
     "canvas-prebuilt": "^1.6.5-prerelease.1",
     "chance": "^1.0.10",
+    "colourlovers": "^0.1.1",
     "d3": "^4.9.1",
     "d3-node": "^1.0.3",
     "envs": "^0.1.6",

@@ -16,8 +16,8 @@ class GenArt
     @seed = seed # The seed for the art
 
     @chance = new Chance(@seed) # init chance.js - chancejs.com
-    @count = 2900 # Max number of particles to create
-    @numTicks = 2000 # Max number of times to tick over those particles
+    @count = 1000 # Max number of particles to create
+    @numTicks = 10000 # Max number of times to tick over those particles
 
     # Randomize count/ticks based on maxes we just set
     @count = @chance.integer({min: 1, max: @count})
@@ -36,13 +36,9 @@ class GenArt
     @ctx.fillStyle = 'white';
     @ctx.fillRect(0, 0, @width, @height);
 
-  init: (options = {}) =>
+  init: =>
     @makeParticles()
     @tickTil(@numTicks)
-
-    if options.save
-      @saveFile()
-
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
@@ -50,39 +46,48 @@ class GenArt
       x = @chance.natural({min: 0, max: @width})
       y = @chance.natural({min: 0, max: @height})
 
-      c = d3.hsl('red')
-      c.h += @chance.natural({min: 0, max: 14})
+      # c = d3.hsl('red')
+      # c.h += @chance.natural({min: 0, max: 14})
 
       {
         x: x
         y: y
-        color: c.toString()
+        color: 'black'
       }
     return @data
 
   tick: =>
+    if !@ticks
+      ticks = 0
     @ticks++
     #console.log(@ticks, 'Ticking on ' + @data.length + ' particles')
     @data.forEach((d,i) =>
-      randOffset = 14
-      # if d.x < 0
-      #   d.x = @width / 2
-      # else if d.x > @width
-      #   d.x = @width /2
+      randOffset = 2
+
+      if @chance.d100() > 50
+        d.x -= @chance.integer({min: -randOffset, max: randOffset})
+      if @chance.d100() > 50
+        d.y -= @chance.integer({min: -randOffset, max: randOffset})
+
+      if @chance.d100() > 95
+        if @chance.d100() > 50
+          d.x -= @chance.integer({min: -randOffset, max: (randOffset * 100)})
+        else
+          d.y -= @chance.integer({min: -randOffset, max: (randOffset * 100)})
+
+      # if d.x < @width / 2
+      #   d.x++
+      # else if d.x > @width / 2
+      #   d.x--
       #
-      # if d.y < 0
-      #   d.y = @height / 2
-      # else if d.y > @height
-      #   d.y = @height / 2
+      # if d.y < @height / 2
+      #   d.y++
+      # else if d.y > @height /2
+      #   d.y--
 
-      if @chance.d100() > 50
-        d.x -= @chance.integer({min: 0, max: randOffset})
-      if @chance.d100() > 50
-        d.y -= @chance.integer({min: 0, max: randOffset})
-
-      c = d3.hsl d.color
-      c.h += @chance.natural({min: 0, max: 90})
-      d.color = c.toString()
+      # c = d3.hsl d.color
+      # c.h += @chance.natural({min: 0, max: 90})
+      # d.color = c.toString()
 
       # console.log 'x', d.x, 'y', d.y
       @ctx.beginPath()
@@ -130,7 +135,8 @@ run = =>
   if argv.ticks
     genart.numTicks = argv.ticks
 
-  genart.init({save: true})
+  genart.init()
+  genart.saveFile()
 
 module.exports = GenArt
 if(require.main == module)
