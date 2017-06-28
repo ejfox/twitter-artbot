@@ -10,7 +10,7 @@ rand = new randGen()
 seed = Date.now()
 rand.seed(seed)
 
-artScripts = ['102', '103', '104', '201']
+artScripts = ['102', '103', '104', '105', '106', '201', '202']
 artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
