@@ -26,7 +26,7 @@
 
   rand.seed(seed);
 
-  artScripts = ['102', '103', '104'];
+  artScripts = ['102', '103', '104', '201'];
 
   artScriptChoice = artScripts[rand(artScripts.length)];
 
