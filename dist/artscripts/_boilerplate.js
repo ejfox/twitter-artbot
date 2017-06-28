@@ -21,6 +21,7 @@
 
   GenArt = (function() {
     function GenArt(seed) {
+      this.tickTil = bind(this.tickTil, this);
       this.tick = bind(this.tick, this);
       this.makeParticles = bind(this.makeParticles, this);
       this.init = bind(this.init, this);
@@ -30,6 +31,7 @@
         canvasModule: canvasModule
       });
       this.seed = seed;
+      this.movie = false;
       this.chance = new Chance(this.seed);
       this.count = 2900;
       this.numTicks = 2000;
@@ -46,6 +48,7 @@
       console.log('width', this.width, 'height', this.height);
       this.canvas = d3n.createCanvas(this.width, this.height);
       this.ctx = this.canvas.getContext('2d');
+      this.ticks = 0;
       this.ctx.fillStyle = 'white';
       this.ctx.fillRect(0, 0, this.width, this.height);
     }
@@ -131,6 +134,9 @@
       console.time('ticked for');
       for (j = 0, ref = count; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--) {
         this.tick();
+        if (this.movie) {
+          this.saveFile(path.basename(__filename, '.js') + '-' + this.seed + '-' + this.ticks);
+        }
       }
       return console.timeEnd('ticked for');
     };
@@ -163,6 +169,9 @@
       }
       if (argv.ticks) {
         genart.numTicks = argv.ticks;
+      }
+      if (argv.movie) {
+        genart.movie = true;
       }
       return genart.init({
         save: true

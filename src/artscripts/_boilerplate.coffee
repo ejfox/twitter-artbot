@@ -14,6 +14,7 @@ class GenArt
     console.log('Seed:', seed)
     d3n = new d3Node { canvasModule }
     @seed = seed # The seed for the art
+    @movie = false
 
     @chance = new Chance(@seed) # init chance.js - chancejs.com
     @count = 2900 # Max number of particles to create
@@ -31,10 +32,11 @@ class GenArt
     # Create the canvas with D3 Node
     @canvas = d3n.createCanvas @width, @height
     @ctx = @canvas.getContext '2d'
+    @ticks = 0
 
     # make bg
-    @ctx.fillStyle = 'white';
-    @ctx.fillRect(0, 0, @width, @height);
+    @ctx.fillStyle = 'white'
+    @ctx.fillRect 0, 0, @width, @height
 
   init: (options = {}, callback) =>
     @makeParticles()
@@ -95,19 +97,21 @@ class GenArt
       @ctx.closePath()
     )
 
-  tickTil: (count) ->
+  tickTil: (count) =>
     console.log 'Ticking ' + @data.length + ' particles ' + count + ' times'
 
     console.time('ticked for')
     for [0..count]
       @tick()
+      if @movie
+        @saveFile(path.basename(__filename, '.js') + '-' + @seed + '-' + @ticks)
     console.timeEnd('ticked for')
 
   saveFile: (filename) ->
     if !filename
       filename = path.basename(__filename, '.js') + '-' + @seed
     fileOutput = './dist/' + filename + '.png'
-    console.log('canvas output --> ' + fileOutput);
+    console.log('canvas output --> ' + fileOutput)
 
     # Save image locally to /dist/
     @canvas.pngStream().pipe(fs.createWriteStream(fileOutput))
@@ -132,6 +136,11 @@ run = =>
   # would make it tick 10 times
   if argv.ticks
     genart.numTicks = argv.ticks
+
+  # --movie
+  # exports every frame as it's own .png
+  if argv.movie
+    genart.movie = true
 
   genart.init({save: true})
 
