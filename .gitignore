@@ -5,3 +5,7 @@ dist/index.js
 *.png
 */.DS_Store
 */*/.DS_Store
+.DS_Store
+*.log
+*.log
+npm-debug.log
