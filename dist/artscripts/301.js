@@ -42,8 +42,8 @@
         min: 1,
         max: this.count
       });
-      this.width = 850;
-      this.height = 625;
+      this.width = 700;
+      this.height = 700;
       console.log('width', this.width, 'height', this.height);
       this.canvas = d3n.createCanvas(this.width, this.height);
       this.ctx = this.canvas.getContext('2d');
@@ -89,20 +89,42 @@
     };
 
     GenArt.prototype.processImage = function() {
-      var imageData, pixelData, pixels;
+      var hueOffset, imageData, maxOffset, pixelData, pixels;
       imageData = this.ctx.getImageData(0, 0, this.width, this.height);
       pixels = imageData.data;
       pixelData = [];
       this.count = pixels.length;
-      return this.data = d3.range(this.count / 4).map((function(_this) {
+      hueOffset = 0;
+      maxOffset = this.chance.integer({
+        min: 0,
+        255: 255
+      });
+      return this.data = d3.range(this.count).map((function(_this) {
         return function(d, i) {
           var a, b, c, g, r, x, y;
+          if (_this.chance.bool({
+            likelihood: 5
+          })) {
+            i = i - _this.chance.integer({
+              min: -20,
+              500: 500
+            });
+          }
           x = (i / 4) % _this.width;
           y = Math.floor((i / 4) / _this.width);
           r = pixels[i];
-          g = pixels[i + 1];
-          b = pixels[i + 2];
-          a = pixels[i + 3];
+          g = pixels[i + _this.chance.integer({
+            min: 1,
+            max: 3
+          })];
+          b = pixels[i + _this.chance.integer({
+            min: -1,
+            max: 2
+          })];
+          a = pixels[i + _this.chance.integer({
+            min: 1,
+            max: 3
+          })];
           c = d3.hsl("rgba(" + r + "," + g + "," + b + "," + a + ")");
           return {
             x: x,
@@ -153,14 +175,18 @@
           var size;
           size = 1;
           if (_this.chance.bool({
-            likelihood: 15
+            likelihood: 25
           })) {
-            _this.ctx.beginPath();
-            _this.ctx.rect(d.x - (size / 2), d.y - -(size / 2), size, size);
-            _this.ctx.fillStyle = d.color;
-            _this.ctx.fill();
-            return _this.ctx.closePath();
+            size = _this.chance.natural({
+              min: 0,
+              max: 5
+            });
           }
+          _this.ctx.beginPath();
+          _this.ctx.rect(d.x - (size / 2), d.y - -(size / 2), size, size);
+          _this.ctx.fillStyle = d.color;
+          _this.ctx.fill();
+          return _this.ctx.closePath();
         };
       })(this));
     };

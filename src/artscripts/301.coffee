@@ -26,8 +26,8 @@ class GenArt
     #@numTicks = @chance.integer({min: 1, max: @numTicks})
 
     # Canvas width and height
-    @width = 850
-    @height = 625
+    @width = 700
+    @height = 700
     console.log 'width', @width, 'height', @height
 
     # Create the canvas with D3 Node
@@ -74,19 +74,32 @@ class GenArt
 
     @count = pixels.length
 
-    @data = d3.range(@count / 4).map (d,i) =>
+    hueOffset = 0
+    maxOffset = @chance.integer {min: 0, 255}
+
+    @data = d3.range(@count).map (d,i) =>
+
+      if @chance.bool {likelihood: 5}
+        i = i - @chance.integer {min: -20, 500}
 
       x = (i / 4) % @width
       y = Math.floor((i / 4) / @width)
 
       r = pixels[i]
-      g = pixels[i + 1]
-      b = pixels[i + 2]
-      a = pixels[ i + 3]
+      g = pixels[i + @chance.integer({min:1, max: 3})]
+      b = pixels[i + @chance.integer({min:-1, max: 2})]
+      a = pixels[ i + @chance.integer({min:1, max: 3})]
 
       c = d3.hsl("rgba(#{r},#{g},#{b},#{a})")
       #c.s = 0
-      # c.h += @chance.integer {min: -50, max: 50}
+
+      # hueOffset++
+      # if hueOffset >= maxOffset
+      #   hueOffset = -maxOffset
+      # c.h += hueOffset
+      # c.h += @chance.integer {min: -25, max: 25}
+
+      # console.log('pixel', x, y, c.toString())
 
       {
         x: x
@@ -140,18 +153,21 @@ class GenArt
       # d.color = c.toString()
 
       # console.log 'x', d.x, 'y', d.y
-      #size = @chance.natural {min: 1, max: 5}
+
       size = 1
+      if @chance.bool { likelihood: 25 }
+        size = @chance.natural {min: 0, max: 5}
+      #size = @chance.natural {min: 1, max: 5}
       # if @chance.bool {likelihood: 5}
       #   size = 10
       # else
       #   size = 1
-      if @chance.bool {likelihood: 15}
-        @ctx.beginPath()
-        @ctx.rect (d.x - (size / 2)), (d.y - - (size / 2)), size, size
-        @ctx.fillStyle = d.color
-        @ctx.fill()
-        @ctx.closePath()
+      # if @chance.bool {likelihood: 15}
+      @ctx.beginPath()
+      @ctx.rect (d.x - (size / 2)), (d.y - - (size / 2)), size, size
+      @ctx.fillStyle = d.color
+      @ctx.fill()
+      @ctx.closePath()
     )
 
   tickTil: (count) ->
