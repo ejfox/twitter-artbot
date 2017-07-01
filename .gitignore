@@ -9,3 +9,4 @@ dist/index.js
 *.log
 *.log
 npm-debug.log
+*.log
