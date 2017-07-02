@@ -47,6 +47,11 @@
       });
       this.canvas = d3n.createCanvas(this.width, this.height);
       this.ctx = this.canvas.getContext('2d');
+      this.clampNum = this.chance.floating({
+        min: 2,
+        max: 24,
+        fixed: 2
+      });
       this.ctx.fillStyle = '#DBE2CE';
       this.ctx.fillRect(0, 0, this.width, this.height);
       if (this.chance.bool({
@@ -71,10 +76,41 @@
     };
 
     GenArt.prototype.makeParticles = function() {
-      var color, colors;
+      var circleColor, circleCount, circleSize, color, colors;
       console.log('Making ' + this.count + ' particles');
-      colors = ['#FA9921', '#FF0D5D'];
+      colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645', '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)'];
       color = this.chance.pickone(colors);
+      circleSize = this.chance.integer({
+        min: 6,
+        max: this.width / 20
+      });
+      circleCount = this.chance.integer({
+        min: 1,
+        max: 6
+      });
+      circleColor = this.chance.pickone(colors);
+      this.centers = d3.range(circleCount).map((function(_this) {
+        return function(d, i) {
+          var x, y;
+          x = _this.chance.integer({
+            min: 0,
+            max: _this.width
+          });
+          y = _this.chance.integer({
+            min: 0,
+            max: _this.height
+          });
+          _this.ctx.beginPath();
+          _this.ctx.arc(x, y, circleSize, 0, 2 * Math.PI);
+          _this.ctx.closePath();
+          _this.ctx.fillStyle = circleColor;
+          _this.ctx.fill();
+          return {
+            x: x,
+            y: y
+          };
+        };
+      })(this));
       return this.data = d3.range(this.count).map((function(_this) {
         return function(d, i) {
           var c, halfWidth, x, y;
@@ -89,44 +125,64 @@
           });
           c = d3.hsl(color);
           return {
+            id: i,
             radius: 1,
             x: x,
             y: y,
             color: c.toString(),
             vx: 0,
             vy: 0,
-            dead: false
+            dead: false,
+            deadmarked: false
           };
         };
       })(this));
     };
 
     GenArt.prototype.tick = function() {
-      var gvx, gvy;
+      var clampNum, gvx, gvy;
       this.ticks++;
       gvy = this.chance.integer({
-        min: -2,
+        min: -3,
         max: 3
       });
       gvx = this.chance.integer({
         min: -3,
         max: 3
       });
+      clampNum = this.clampNum;
       return this.data.forEach((function(_this) {
         return function(d, i) {
           var c;
+          if (d.y === _this.height) {
+            d.vy = -24;
+          }
+          _.each(_this.data, function(cd, ci) {
+            if (cd.x === d.x) {
+              d.vx += _this.chance.integer({
+                min: -8,
+                max: 8
+              });
+            }
+            if (cd.y === d.y) {
+              return d.vy += _this.chance.integer({
+                min: -8,
+                max: 8
+              });
+            }
+          });
           d.vy = gvy + d.vy + _this.chance.floating({
             min: -4,
             max: 4.5,
             fixed: 2
           });
-          d.vy = _.clamp(d.vy, -4, 4);
+          d.vy = _.clamp(d.vy, -clampNum, clampNum);
           d.vx = gvx + d.vx + _this.chance.floating({
             min: -4,
             max: 4,
             fixed: 2
           });
-          d.vx = _.clamp(d.vx, -4, 4);
+          d.vx = _.clamp(d.vx, -clampNum, clampNum);
           if (_this.chance.bool({
             likelihood: i * 0.001
           })) {
@@ -139,15 +195,55 @@
               d.vy--;
             }
           }
+          if (_this.chance.bool({
+            likelihood: d.id * 0.01
+          })) {
+            d.dead = true;
+          }
+          if (_this.chance.bool({
+            likelihood: d.i * 0.001
+          })) {
+            d.radius = 0.11;
+          }
           d.y = d.y + (d.vy / 4);
           d.x = d.x + (d.vx / 4);
+          d.x = _.clamp(d.x, 0, _this.width);
+          d.y = _.clamp(d.y, 0, _this.height);
           c = d3.hsl(d.color);
+          if (_this.chance.bool()) {
+            c.h += _this.chance.floating({
+              min: 0,
+              max: 0.25
+            });
+            if (_this.chance.bool()) {
+              c.l += _this.chance.floating({
+                min: -0.25,
+                max: 0.25
+              });
+            }
+          }
           c.opacity = _this.opacity;
           d.color = c.toString();
           if (!d.dead) {
             _this.ctx.beginPath();
             _this.ctx.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
             _this.ctx.closePath();
+            _this.ctx.fillStyle = d.color;
+            return _this.ctx.fill();
+          } else if (!d.deadmarked) {
+            d.deadmarked = true;
+            _this.ctx.beginPath();
+            _this.ctx.arc(d.x, d.y, 2, 0, 2 * Math.PI);
+            _this.ctx.closePath();
+            _this.ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            return _this.ctx.fill();
+          } else {
+            _this.ctx.beginPath();
+            _this.ctx.arc(d.x, d.y, d.radius / 2, 0, 2 * Math.PI);
+            _this.ctx.closePath();
+            c.opacity = _this.opacity / 2;
+            c.s = 0;
+            d.color = c.toString();
             _this.ctx.fillStyle = d.color;
             return _this.ctx.fill();
           }

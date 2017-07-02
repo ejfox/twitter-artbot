@@ -40,7 +40,7 @@ class GenArt
 
   init: (options = {}, callback) =>
     colorLovers.get('/palettes', {
-        keywords: @chance.pickone ['vintage', 'neon', 'toy'],
+        keywords: @chance.pickone ['vintage', 'neon', 'toy', 'cartoon', 'bright'],
         sortBy: 'DESC',
         numResults: 1
         orderCol: @chance.pickone(['dateCreated', 'score', 'name', 'numVotes', 'numViews'])

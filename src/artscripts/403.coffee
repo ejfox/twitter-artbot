@@ -35,6 +35,8 @@ class GenArt
     @canvas = d3n.createCanvas @width, @height
     @ctx = @canvas.getContext '2d'
 
+    @clampNum = @chance.floating {min: 2, max: 24, fixed: 2}
+
     # make bg
     @ctx.fillStyle = '#DBE2CE'
     @ctx.fillRect(0, 0, @width, @height)
@@ -55,8 +57,26 @@ class GenArt
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
 
-    colors = ['#FA9921', '#FF0D5D']
+    colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645',
+    '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)']
     color = @chance.pickone colors
+
+    circleSize = @chance.integer {min: 6, max: @width / 20}
+    circleCount = @chance.integer {min: 1, max: 6}
+    circleColor = @chance.pickone colors
+
+    @centers = d3.range(circleCount).map (d,i) =>
+      x = @chance.integer {min: 0, max: @width}
+      y = @chance.integer {min: 0, max: @height}
+      @ctx.beginPath()
+      @ctx.arc(x, y, circleSize, 0, 2*Math.PI)
+      @ctx.closePath()
+      @ctx.fillStyle = circleColor
+      @ctx.fill()
+      return {
+        x: x
+        y: y
+      }
 
     @data = d3.range(@count).map (d,i) =>
 
@@ -67,6 +87,7 @@ class GenArt
       c = d3.hsl(color)
 
       {
+        id: i
         radius: 1
         x: x
         y: y
@@ -75,19 +96,38 @@ class GenArt
         vx: 0
         vy: 0
         dead: false
+        deadmarked: false
       }
 
   tick: =>
     @ticks++
 
-    gvy = @chance.integer {min: -2, max: 3}
+    gvy = @chance.integer {min: -3, max: 3}
     gvx = @chance.integer {min: -3, max: 3}
 
+    clampNum = @clampNum
+    # console.log 'Move clamp: ', clampNum
+
     @data.forEach((d,i) =>
+
+
+
+      if d.y is @height
+        d.vy = -24
+      # if @width - d.x < 50
+      #   d.vx = -
+
+      _.each(@data, (cd,ci) =>
+        if cd.x is d.x
+          d.vx += @chance.integer {min: -8, max: 8}
+        if cd.y is d.y
+          d.vy += @chance.integer {min: -8, max: 8}
+      )
+
       d.vy = gvy + d.vy + @chance.floating {min: -4, max: 4.5, fixed: 2}
-      d.vy = _.clamp(d.vy, -4, 4)
+      d.vy = _.clamp(d.vy, -clampNum, clampNum)
       d.vx = gvx + d.vx + @chance.floating {min: -4, max: 4, fixed: 2}
-      d.vx = _.clamp(d.vx, -4, 4)
+      d.vx = _.clamp(d.vx, -clampNum, clampNum)
 
       if @chance.bool { likelihood: (i * 0.001) }
         d.radius += 0.1
@@ -96,13 +136,26 @@ class GenArt
         if d.y > @height / 2
           d.vy--
 
+      if @chance.bool { likelihood: (d.id * 0.01) }
+        d.dead = true
+
+      if @chance.bool { likelihood: (d.i * 0.001) }
+        d.radius = 0.11
+
       d.y = d.y + (d.vy / 4)
       # d.y += @chance.integer {min: -1, max: 1}
       d.x = d.x + (d.vx / 4)
       # d.x += @chance.integer {min: -1, max: 1}
 
+      d.x = _.clamp(d.x, 0, @width)
+      d.y = _.clamp(d.y, 0, @height)
+
       c = d3.hsl d.color
-      # c.h += @chance.natural({min: 0, max: 90})
+      if @chance.bool()
+        c.h += @chance.floating({min: 0, max: 0.25})
+
+        if @chance.bool()
+          c.l += @chance.floating({min: -0.25, max: 0.25})
       c.opacity = @opacity
       d.color = c.toString()
 
@@ -113,6 +166,23 @@ class GenArt
         @ctx.closePath()
         @ctx.fillStyle = d.color
         @ctx.fill()
+      else if !d.deadmarked
+        d.deadmarked = true
+        @ctx.beginPath()
+        @ctx.arc(d.x, d.y, 2, 0, 2*Math.PI)
+        @ctx.closePath()
+        @ctx.fillStyle = 'rgba(0,0,0,0.1)'
+        @ctx.fill()
+      else
+        @ctx.beginPath()
+        @ctx.arc(d.x, d.y, d.radius / 2, 0, 2*Math.PI)
+        @ctx.closePath()
+        c.opacity = @opacity / 2
+        c.s = 0
+        d.color = c.toString()
+        @ctx.fillStyle = d.color
+        @ctx.fill()
+
     )
 
   tickTil: (count) ->

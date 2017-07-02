@@ -71,7 +71,7 @@
         options = {};
       }
       return colorLovers.get('/palettes', {
-        keywords: this.chance.pickone(['dark', 'minimal'], {
+        keywords: this.chance.pickone(['dark', 'minimal', 'subtle', 'pop', 'shiny'], {
           sortBy: 'DESC',
           numResults: 1,
           orderCol: this.chance.pickone(['dateCreated', 'score', 'numVotes', 'numViews'])
