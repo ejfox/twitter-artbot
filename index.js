@@ -22,9 +22,8 @@ app.get('/', function(request, response) {
   //   // command output is in stdout
   //   console.log(stderr)
   // });
-  
+
   art = require('./dist/index.js')
-  art()
 });
 
 app.listen(app.get('port'), function() {
