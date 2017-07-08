@@ -17,12 +17,14 @@ app.get('/', function(request, response) {
   response.set('Content-Type', 'text/html');
   response.send(new Buffer('<h1>Tweeting</h1>'));
 
-  var cmd = 'node dist/index.js';
-
-  exec(cmd, function(error, stdout, stderr) {
-    // command output is in stdout
-    console.log(stderr)
-  });
+  // var cmd = 'node ./dist/index.js';
+  // exec(cmd, function(error, stdout, stderr) {
+  //   // command output is in stdout
+  //   console.log(stderr)
+  // });
+  
+  art = require('./dist/index.js')
+  art()
 });
 
 app.listen(app.get('port'), function() {
