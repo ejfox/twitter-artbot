@@ -90,4 +90,6 @@
     return uploadTweet(artScriptChoice + '-' + seed, canvas.toDataURL().split(',')[1]);
   });
 
+  process.exit(0);
+
 }).call(this);

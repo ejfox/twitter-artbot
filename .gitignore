@@ -11,3 +11,4 @@ dist/index.js
 npm-debug.log
 *.log
 npm-debug.log
+*.log

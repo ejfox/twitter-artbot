@@ -24,6 +24,7 @@ app.get('/', function(request, response) {
   // });
 
   art = require('./dist/index.js')
+  process.exit(0)
 });
 
 app.listen(app.get('port'), function() {

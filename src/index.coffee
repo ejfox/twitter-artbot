@@ -51,9 +51,11 @@ uploadTweet = (status, b64Content) ->
 console.log 'Running ', artScriptChoice
 #genart = require('./artscripts/'+artScriptChoice)(seed)
 genArt = require('./artscripts/'+artScriptChoice)
-art = new genArt(seed);
+art = new genArt(seed)
 art.init({}, ->
   canvas = art.canvas
   # Upload that image to Twitter
   uploadTweet(artScriptChoice+'-'+seed, canvas.toDataURL().split(',')[1])
 )
+
+process.exit(0)
