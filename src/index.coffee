@@ -1,5 +1,5 @@
 env = require 'node-env-file'
-env('./.env', {raise: false})
+env('./.env', {raise: false, overwrite: true})
 fs = require 'fs'
 d3 = require 'd3'
 d3Node = require 'd3-node'
@@ -10,7 +10,11 @@ rand = new randGen()
 seed = Date.now()
 rand.seed(seed)
 
-artScripts = ['102', '103', '104', '105', '106', '201', '202', '203', '204', '301', '401']
+artScripts = [
+  '101', '102', '103', '104', '105', '106', '201',
+  '202', '203', '204', '301', '401', '402', '403',
+  '404', '405', '501'
+]
 artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
@@ -54,8 +58,14 @@ genArt = require('./artscripts/'+artScriptChoice)
 art = new genArt(seed)
 art.init({}, ->
   canvas = art.canvas
+
+  if art.text
+    tweetText = art.text
+  else
+    tweetText = artScriptChoice+'-'+seed
+
   # Upload that image to Twitter
-  uploadTweet(artScriptChoice+'-'+seed, canvas.toDataURL().split(',')[1])
+  uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
 )
 
-process.exit(0)
+# process.exit(0)

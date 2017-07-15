@@ -5,7 +5,8 @@
   env = require('node-env-file');
 
   env('./.env', {
-    raise: false
+    raise: false,
+    overwrite: true
   });
 
   fs = require('fs');
@@ -26,7 +27,7 @@
 
   rand.seed(seed);
 
-  artScripts = ['102', '103', '104', '105', '106', '201', '202', '203', '204', '301', '401'];
+  artScripts = ['101', '102', '103', '104', '105', '106', '201', '202', '203', '204', '301', '401', '402', '403', '404', '405', '501'];
 
   artScriptChoice = artScripts[rand(artScripts.length)];
 
@@ -85,11 +86,14 @@
   art = new genArt(seed);
 
   art.init({}, function() {
-    var canvas;
+    var canvas, tweetText;
     canvas = art.canvas;
-    return uploadTweet(artScriptChoice + '-' + seed, canvas.toDataURL().split(',')[1]);
+    if (art.text) {
+      tweetText = art.text;
+    } else {
+      tweetText = artScriptChoice + '-' + seed;
+    }
+    return uploadTweet(tweetText, canvas.toDataURL().split(',')[1]);
   });
-
-  process.exit(0);
 
 }).call(this);

@@ -23,8 +23,7 @@ app.get('/', function(request, response) {
   //   console.log(stderr)
   // });
 
-  art = require('./dist/index.js')
-  process.exit(0)
+  art = require('./dist/index.js');
 });
 
 app.listen(app.get('port'), function() {
