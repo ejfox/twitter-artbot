@@ -28,20 +28,20 @@
       this.makeSimulation = bind(this.makeSimulation, this);
       this.makeParticles = bind(this.makeParticles, this);
       this.init = bind(this.init, this);
-      var bgColor, d3n;
+      var bgColor, d3n, operation;
       console.log('Seed:', seed);
       d3n = new d3Node({
         canvasModule: canvasModule
       });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.opacity = 0.05;
-      this.width = 1200;
+      this.opacity = 1;
+      this.width = 720;
       this.height = 720;
       console.log('width', this.width, 'height', this.height);
       this.text = "Hello world";
-      this.count = 220;
-      this.numTicks = 5000;
+      this.count = 100;
+      this.numTicks = 9000;
       this.count = this.chance.integer({
         min: 1,
         max: this.count
@@ -58,7 +58,7 @@
         fixed: 2
       });
       this.simplex = new SimplexNoise();
-      bgColor = d3.hsl('#DBE2CE');
+      bgColor = d3.hsl('#F5DACF');
       this.noiseStep = this.chance.floating({
         min: 0.5,
         max: 8,
@@ -67,9 +67,10 @@
       this.ctx.fillStyle = bgColor.toString();
       this.ctx.fillRect(0, 0, this.width, this.height);
       if (this.chance.bool({
-        likelihood: 95
+        likelihood: 15
       })) {
-        this.ctx.globalCompositeOperation = 'multiply';
+        operation = this.chance.pickone(['multiply', 'difference']);
+        this.ctx.globalCompositeOperation = operation;
       }
     }
 
@@ -92,7 +93,7 @@
       var colors;
       console.log('Making ' + this.count + ' particles');
       this.text += ' ' + this.count + ' particles';
-      colors = ['#111e4f', '#FF0D5D', '#ff0dca', '#0ddbff', 'rgba(255, 253, 13, 0.4)'];
+      colors = ['#FB998C', '#FDC46A', '#749383', '#96B5A3'];
       return this.data = d3.range(this.count).map((function(_this) {
         return function(d, i) {
           var c;
@@ -104,7 +105,7 @@
             opacity: _this.opacity,
             radius: _this.chance.integer({
               min: 0.5,
-              max: 3
+              max: 4
             })
           };
         };
@@ -112,6 +113,7 @@
     };
 
     GenArt.prototype.makeSimulation = function() {
+      var centerX, centerY;
       this.simulation = d3.forceSimulation().force('collide', d3.forceCollide((function(_this) {
         return function(d) {
           return d.radius * _this.chance.integer({
@@ -119,7 +121,36 @@
             max: 20
           });
         };
-      })(this))).force('center', d3.forceCenter(this.width / 2, this.height / 2)).nodes(this.data);
+      })(this)));
+      if (this.chance.bool({
+        likelihood: 85
+      })) {
+        centerX = this.width / 2;
+        centerY = this.height / 2;
+        if (this.chance.bool({
+          likelihood: 20
+        })) {
+          centerX += this.chance.integer({
+            min: -200,
+            max: 200
+          });
+        }
+        if (this.chance.bool({
+          likelihood: 20
+        })) {
+          centerY += this.chance.integer({
+            min: -200,
+            max: 200
+          });
+        }
+        this.simulation.force('center', d3.forceCenter(centerX, centerY));
+      }
+      if (this.chance.bool({
+        likelihood: 45
+      })) {
+        this.simulation.force('charge', d3.forceManyBody().distanceMax(this.width / 4).strength(10));
+      }
+      this.simulation.nodes(this.data);
       return this.simulation.stop();
     };
 
@@ -127,7 +158,10 @@
       var clampNum, gvx, gvy, stepValue;
       this.ticks++;
       this.simulation.tick();
-      this.simulation.alpha(0.8);
+      this.simulation.tick();
+      if (this.chance.bool()) {
+        this.simulation.alpha(0.8);
+      }
       gvy = this.chance.floating();
       gvx = this.chance.floating();
       stepValue = this.chance.floating({
@@ -138,32 +172,19 @@
       return this.data.forEach((function(_this) {
         return function(d, i) {
           var c, noiseValue;
-          if (d.y >= _this.height) {
-            d.dead = true;
-          }
-          if (d.x >= _this.width) {
-            d.dead = true;
-          }
           noiseValue = _this.simplex.noise2D(d.x, d.y);
-          d.radius += noiseValue;
-          d.vx += (noiseValue * _this.noiseStep) * gvx;
-          d.vy += (noiseValue * _this.noiseStep) * gvy;
+          d.radius *= noiseValue / 2;
           d.x = _.clamp(d.x, 0, _this.width);
           d.y = _.clamp(d.y, 0, _this.height);
-          d.radius = _.clamp(d.radius, 0.1, 8);
+          d.radius = _.clamp(d.radius, 1, 90);
           c = d3.hsl(d.color);
-          if (_this.chance.bool()) {
-            c.h += noiseValue;
-          }
           c.opacity = d.opacity;
           d.color = c.toString();
-          if (!d.dead) {
-            _this.ctx.beginPath();
-            _this.ctx.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
-            _this.ctx.closePath();
-            _this.ctx.fillStyle = d.color;
-            _this.ctx.fill();
-          }
+          _this.ctx.beginPath();
+          _this.ctx.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
+          _this.ctx.closePath();
+          _this.ctx.fillStyle = d.color;
+          _this.ctx.fill();
           if (callback) {
             return callback;
           }

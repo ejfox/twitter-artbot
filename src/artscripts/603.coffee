@@ -20,17 +20,17 @@ class GenArt
     # @numTicks = 9000 # Max number of times to tick over those particles
 
     # @opacity = 0.99
-    @opacity = 0.05
+    @opacity = 1
 
     # Canvas width and height
-    @width = 1200
+    @width = 720
     @height = 720
     console.log 'width', @width, 'height', @height
 
     @text = "Hello world"
 
-    @count = 220
-    @numTicks = 5000
+    @count = 100
+    @numTicks = 9000
     # @numTicks = 320
 
     @count = @chance.integer({min: 1, max: @count})
@@ -45,7 +45,7 @@ class GenArt
     @simplex = new SimplexNoise()
 
     # make bg
-    bgColor =  d3.hsl('#DBE2CE')
+    bgColor =  d3.hsl('#F5DACF')
 
     @noiseStep = @chance.floating {min: 0.5, max: 8, fixed: 2}
 
@@ -58,8 +58,9 @@ class GenArt
     @ctx.fillStyle = bgColor.toString()
     @ctx.fillRect(0, 0, @width, @height)
 
-    if @chance.bool { likelihood: 95 }
-      @ctx.globalCompositeOperation = 'multiply'
+    if @chance.bool { likelihood: 15 }
+      operation = @chance.pickone ['multiply', 'difference']
+      @ctx.globalCompositeOperation = operation
 
   init: (options = {}, callback) =>
     @makeParticles()
@@ -79,9 +80,7 @@ class GenArt
 
     # colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645',
     # '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)']
-    colors = [ '#111e4f', '#FF0D5D', '#ff0dca', '#0ddbff',
-      'rgba(255, 253, 13, 0.4)'
-    ]
+    colors = [ '#FB998C', '#FDC46A', '#749383', '#96B5A3']
 
 
     @data = d3.range(@count).map (d,i) =>
@@ -96,16 +95,31 @@ class GenArt
         # color: 'black'
         vx: 10
         opacity: @opacity
-        radius: @chance.integer {min: 0.5, max: 3}
+        radius: @chance.integer {min: 0.5, max: 4}
       }
 
   makeSimulation: =>
     @simulation = d3.forceSimulation()
       .force 'collide', d3.forceCollide (d) =>
         d.radius * @chance.integer {min: 2, max: 20}
-      .force 'center', d3.forceCenter(@width/2, @height/2)
-      # .force 'charge', d3.forceManyBody()
-      .nodes @data
+
+      if @chance.bool {likelihood: 85}
+
+        centerX = @width / 2
+        centerY = @height / 2
+
+        if @chance.bool {likelihood: 20}
+          centerX += @chance.integer {min: -200, max: 200}
+
+        if @chance.bool {likelihood: 20}
+          centerY += @chance.integer {min: -200, max: 200}
+
+        @simulation.force 'center', d3.forceCenter(centerX, centerY)
+
+      if @chance.bool {likelihood: 45}
+        @simulation.force 'charge', d3.forceManyBody().distanceMax(@width/4).strength(10)
+
+      @simulation.nodes @data
 
     @simulation.stop()
 
@@ -114,7 +128,10 @@ class GenArt
 
 
     @simulation.tick()
-    @simulation.alpha 0.8
+    @simulation.tick()
+    if @chance.bool()
+      @simulation.alpha 0.8
+
 
     gvy = @chance.floating()
     gvx = @chance.floating()
@@ -127,44 +144,25 @@ class GenArt
 
     # console.log 'tick'
     @data.forEach((d,i) =>
-      if d.y >= @height
-        # d.y = 0
-        d.dead = true
-      if d.x >= @width
-        # d.x = 0
-        d.dead = true
-
-      # if i is 5
-      #   console.log 'd.x', d.x, 'd.y', d.y
-
       noiseValue = @simplex.noise2D(d.x, d.y)
 
-      d.radius += noiseValue
-
-      d.vx += (noiseValue * @noiseStep) * gvx
-      d.vy += (noiseValue * @noiseStep) * gvy
+      d.radius *= (noiseValue / 2)
 
 
       d.x = _.clamp(d.x, 0, @width)
       d.y = _.clamp(d.y, 0, @height)
-      d.radius = _.clamp(d.radius, 0.1, 8)
+
+      d.radius = _.clamp(d.radius, 1, 90)
 
       c = d3.hsl d.color
-      if @chance.bool()
-        c.h += noiseValue #@chance.floating({min: 0, max: 0.25})
-        # if @chance.bool()
-        #   c.l += @chance.floating({min: -0.1, max: 0.1})
-        #   if @chance.bool()
-        #     c.opacity -= @chance.floating({min: -0.01, max: 0.01})
       c.opacity = d.opacity
       d.color = c.toString()
 
-      if !d.dead
-        @ctx.beginPath()
-        @ctx.arc(d.x, d.y, d.radius, 0, 2*Math.PI)
-        @ctx.closePath()
-        @ctx.fillStyle = d.color
-        @ctx.fill()
+      @ctx.beginPath()
+      @ctx.arc(d.x, d.y, d.radius, 0, 2*Math.PI)
+      @ctx.closePath()
+      @ctx.fillStyle = d.color
+      @ctx.fill()
 
       if callback
         callback
