@@ -16,7 +16,7 @@ artScripts = [
   '402', '403', '404', '405',
   '501', '502', '503', '504', '505'
   '601', '602', '603',
-  '701'
+  '701', '702'
 ]
 artScriptChoice = artScripts[rand(artScripts.length)]
 
