@@ -62,7 +62,7 @@ art.init({}, ->
   canvas = art.canvas
 
   if art.text
-    tweetText = art.text
+    tweetText = art.text + ' ' + artScriptChoice+'-'+seed
   else
     tweetText = artScriptChoice+'-'+seed
 
