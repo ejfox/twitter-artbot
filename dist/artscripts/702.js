@@ -135,6 +135,7 @@
           _this.ctx.font = textSize + ' InputCompressedBold';
           _this.ctx.fillStyle = d.color;
           _this.ctx.translate(d.x, d.y);
+          _this.text = d.text;
           text = d.text.split('');
           startAngle = Math.PI;
           _this.ctx.textBaseline = 'middle';

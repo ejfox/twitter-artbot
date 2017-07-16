@@ -136,6 +136,8 @@ class GenArt
       @ctx.fillStyle = d.color
       @ctx.translate d.x, d.y
 
+      @text = d.text
+
       text = d.text.split('')
 
       startAngle = (Math.PI)
@@ -178,7 +180,7 @@ class GenArt
           else if @chance.bool {likelihood: 5}
             letter = 'xxx'
 
-        
+
         if letter
           @ctx.rotate (chardWid/2) / (d.radius - textSize)
           @ctx.fillText(letter, 0, (0 - d.radius + textSize / 2))
