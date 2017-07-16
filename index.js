@@ -14,6 +14,8 @@ app.set('view engine', 'ejs');
 app.get('/', function(request, response) {
   // response.render('pages/index');
 
+  art = require('./dist/index.js');
+
   response.set('Content-Type', 'text/html');
   response.send(new Buffer('<h1>Tweeting</h1>'));
 
@@ -23,7 +25,7 @@ app.get('/', function(request, response) {
   //   console.log(stderr)
   // });
 
-  art = require('./dist/index.js');
+
 });
 
 app.listen(app.get('port'), function() {

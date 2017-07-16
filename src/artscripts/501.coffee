@@ -1,4 +1,4 @@
-fs = require 'fs'
+fs = require 'fs-extra'
 d3 = require 'd3'
 _ = require 'lodash'
 d3Node = require 'd3-node'
@@ -21,17 +21,18 @@ class GenArt
     @opacity = 0.6
 
     # Canvas width and height
-    @width = 1200
-    @height = 1200
+    @width = 900
+    @height = 900
     console.log 'width', @width, 'height', @height
 
     @text = "Hello world"
 
-    @count = 66
+    @count = 99
     @numTicks = 9999
+    # @numTicks = 320
 
     @count = @chance.integer({min: 1, max: @count})
-    @numTicks = @chance.integer({min: 666, max: @numTicks})
+    @numTicks = @chance.integer({min: 50, max: @numTicks})
 
     # Create the canvas with D3 Node
     @canvas = d3n.createCanvas @width, @height
@@ -58,6 +59,8 @@ class GenArt
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
+
+    @text += ' ' + @count + ' particles'
 
     colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645',
     '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)']
@@ -110,7 +113,7 @@ class GenArt
 
       }
 
-  tick: =>
+  tick: (callback) =>
     @ticks++
 
     gvy = @chance.integer {min: -3, max: 3}
@@ -199,26 +202,36 @@ class GenArt
         @ctx.fillStyle = d.color
         @ctx.fill()
 
+      if callback
+        callback
     )
 
-  tickTil: (count) ->
+  tickTil: (count) =>
     console.log 'Ticking ' + @data.length + ' particles ' + count + ' times'
 
     console.time('ticked for')
+    i = 0
     for [0..count]
+      i++
       @tick()
+
     console.timeEnd('ticked for')
 
   saveFile: (filename) ->
     if !filename
       filename = path.basename(__filename, '.js') + '-' + @seed
     fileOutput = './dist/' + filename + '.png'
-    console.log('canvas output --> ' + fileOutput);
 
-    # Save image locally to /dist/
-    @canvas.pngStream().pipe(fs.createWriteStream(fileOutput))
+    pngFile = fs.createWriteStream(fileOutput)
+    stream = @canvas.pngStream()
 
-run = =>
+    stream.on 'data', (chunk) ->
+      pngFile.write chunk
+
+    stream.on 'end', ->
+      console.log 'canvas saved --> ' + fileOutput
+
+run = ->
   # If this is being called from the command line
 
   # --seed foo
