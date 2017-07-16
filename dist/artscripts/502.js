@@ -32,7 +32,7 @@
       });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.opacity = 0.6;
+      this.opacity = 0.99;
       this.width = 900;
       this.height = 900;
       console.log('width', this.width, 'height', this.height);
@@ -81,7 +81,7 @@
       var circleColor, circleCount, circleSize, color, colors;
       console.log('Making ' + this.count + ' particles');
       this.text += ' ' + this.count + ' particles';
-      colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645', '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)'];
+      colors = [''];
       color = this.chance.pickone(colors);
       circleSize = this.chance.integer({
         min: 6,
@@ -104,11 +104,6 @@
             min: 0,
             max: _this.height
           });
-          _this.ctx.beginPath();
-          _this.ctx.arc(x, y, circleSize, 0, 2 * Math.PI);
-          _this.ctx.closePath();
-          _this.ctx.fillStyle = cColor;
-          _this.ctx.fill();
           return {
             x: x,
             y: y,
@@ -139,7 +134,7 @@
             deadmarked: false,
             cattraction: _this.chance.integer({
               min: 1.2,
-              max: 4
+              max: 9
             }),
             center: _this.chance.integer({
               min: 0,
@@ -153,20 +148,23 @@
     GenArt.prototype.tick = function(callback) {
       var clampNum, gvx, gvy;
       this.ticks++;
-      gvy = this.chance.integer({
-        min: -3,
-        max: 3
+      gvy = this.chance.floating({
+        min: -1,
+        max: 1
       });
-      gvx = this.chance.integer({
-        min: -3,
-        max: 3
+      gvx = this.chance.floating({
+        min: -1,
+        max: 1
       });
       clampNum = this.clampNum;
       return this.data.forEach((function(_this) {
         return function(d, i) {
           var c, cColor, dColor, myC;
-          if (d.y === _this.height) {
-            d.vy = -24;
+          if (d.y >= _this.height) {
+            d.y = 0;
+          }
+          if (d.x >= _this.width) {
+            d.x = 0;
           }
           myC = _this.centers[d.center];
           d.vy = gvy + d.vy + _this.chance.floating({
@@ -182,53 +180,26 @@
           });
           d.vx = _.clamp(d.vx, -clampNum, clampNum);
           if (_this.chance.bool({
-            likelihood: 95
+            likelihood: i * 0.01
           })) {
-            if (d.x < myC.x) {
-              d.x += d.vx / _this.chance.floating({
-                min: 1.4,
-                max: 8,
-                fixed: 2
-              });
-            }
-            if (d.x > myC.x) {
-              d.x -= d.vx / _this.chance.floating({
-                min: 1.4,
-                max: 8,
-                fixed: 2
-              });
-            }
-            if (d.y < myC.y) {
-              d.y += d.vy / _this.chance.floating({
-                min: 1.4,
-                max: 8,
-                fixed: 2
-              });
-            }
-            if (d.y > myC.y) {
-              d.y -= d.vy / _this.chance.floating({
-                min: 1.4,
-                max: 8,
-                fixed: 2
-              });
-            }
-            cColor = d3.hsl(myC.color);
-            dColor = d3.hsl(d.color);
-            if (cColor.h < dColor.h) {
-              dColor.h -= _this.chance.floating({
-                min: 0.1,
+            d.radius += (d.vx + d.vy) / 10;
+          }
+          cColor = d3.hsl(myC.color);
+          dColor = d3.hsl(d.color);
+          if (cColor.h < dColor.h) {
+            dColor.h -= _this.chance.floating({
+              min: -0.1,
+              max: 1,
+              fixed: 2
+            });
+            d.color = dColor.toString();
+            if (cColor.s < dColor.s) {
+              dColor.s -= _this.chance.floating({
+                min: -0.1,
                 max: 1,
                 fixed: 2
               });
               d.color = dColor.toString();
-              if (cColor.s < dColor.s) {
-                dColor.s -= _this.chance.floating({
-                  min: 0.1,
-                  max: 1,
-                  fixed: 2
-                });
-                d.color = dColor.toString();
-              }
             }
           }
           if (_this.chance.bool({
