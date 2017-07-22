@@ -6,6 +6,8 @@ d3Node = require 'd3-node'
 canvasModule = require 'canvas-prebuilt'
 randGen = require 'random-seed'
 Twit = require 'twit'
+Chance = require 'chance'
+chance = new Chance()
 rand = new randGen()
 seed = Date.now()
 rand.seed(seed)
@@ -66,6 +68,13 @@ art.init({}, ->
     tweetText = art.text + ' ' + artScriptChoice+'-'+seed
   else
     tweetText = artScriptChoice+'-'+seed
+
+
+  artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
+    'artyedit', 'artyPolar', 'artyPetals'
+  ]
+  if chance.bool {likelihood: 10}
+    tweetText += '/cc @'+chance.pickone artBots
 
   # Upload that image to Twitter
   uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
