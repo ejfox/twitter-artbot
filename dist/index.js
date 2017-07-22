@@ -101,7 +101,7 @@
     if (chance.bool({
       likelihood: 10
     })) {
-      tweetText += '/cc @' + chance.pickone(artBots);
+      tweetText += ' /cc @' + chance.pickone(artBots);
     }
     return uploadTweet(tweetText, canvas.toDataURL().split(',')[1]);
   });

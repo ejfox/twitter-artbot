@@ -74,7 +74,7 @@ art.init({}, ->
     'artyedit', 'artyPolar', 'artyPetals'
   ]
   if chance.bool {likelihood: 10}
-    tweetText += '/cc @'+chance.pickone artBots
+    tweetText += ' /cc @'+chance.pickone artBots
 
   # Upload that image to Twitter
   uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
