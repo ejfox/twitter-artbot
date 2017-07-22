@@ -25,6 +25,8 @@ class GenArt
     # @opacity = 0.99
     @opacity = 0.95
 
+    @text = ''
+
     # Canvas width and height
     @width = 1080
     @height = 720
@@ -99,7 +101,7 @@ class GenArt
 
     @text += ' ' + 'uselinks:' + @useLinks
     @text += ' ' + 'onetarget:' + @oneLinkTarget
-    @text += ' ' + 'onetarget:' + @oneLinkTarget
+    @text += ' ' + 'sizeChange:' + @sizeChange
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')

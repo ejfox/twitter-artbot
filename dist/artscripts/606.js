@@ -42,6 +42,7 @@
         global: true
       });
       this.opacity = 0.95;
+      this.text = '';
       this.width = 1080;
       this.height = 720;
       console.log('width', this.width, 'height', this.height);
@@ -109,7 +110,7 @@
       console.log('Multicolor: ', this.multiColor);
       this.text += ' ' + 'uselinks:' + this.useLinks;
       this.text += ' ' + 'onetarget:' + this.oneLinkTarget;
-      return this.text += ' ' + 'onetarget:' + this.oneLinkTarget;
+      return this.text += ' ' + 'sizeChange:' + this.sizeChange;
     };
 
     GenArt.prototype.makeParticles = function() {
