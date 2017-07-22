@@ -31,7 +31,7 @@
       this.makeParticles = bind(this.makeParticles, this);
       this.logSettings = bind(this.logSettings, this);
       this.init = bind(this.init, this);
-      var d3n;
+      var d3n, size, sizes;
       console.log('Seed:', seed);
       d3n = new d3Node({
         canvasModule: canvasModule
@@ -41,24 +41,98 @@
       seedrandom(this.seed, {
         global: true
       });
-      this.opacity = 0.95;
-      this.width = 1080;
-      this.height = 720;
+      this.opacity = this.chance.floating({
+        min: 0.001,
+        max: 0.95,
+        fixed: 2
+      });
+      this.linkOpacity = this.chance.floating({
+        min: 0.001,
+        max: 0.15,
+        fixed: 2
+      });
+      sizes = [[1080, 720], [900, 900], [1200, 1200], [900, 500]];
+      if (this.chance.bool({
+        likelihood: 10
+      })) {
+        sizes.push([320, 320]);
+      }
+      if (this.chance.bool({
+        likelihood: 10
+      })) {
+        sizes.push([320, 960]);
+      }
+      size = this.chance.pickone(sizes);
+      this.width = size[0];
+      this.height = size[1];
       console.log('width', this.width, 'height', this.height);
-      this.text = "Hello world";
-      this.count = 39;
-      this.numTicks = 7500;
-      this.linkCount = 53;
-      this.colors = ['#B0E1F0', '#FDADD1', '#FFFFBC', '#A5DDC2', '#D7D9F8', '#F09BC1', '#E6FFE6', '#C2CDC5', '#BE497E', '#19426E', '#BFE5FF', '#A5DDC2', '#FAA21F', '#CB3F24'];
-      this.hueChange = false;
-      this.sizeChange = true;
-      this.multiColor = true;
-      this.clampBorders = this.chance.bool({
+      this.count = 25;
+      this.numTicks = 1500;
+      this.linkCount = this.count * 0.8;
+      this.count = this.chance.integer({
+        min: 5,
+        max: this.count
+      });
+      this.linkCount = this.chance.integer({
+        min: 5,
+        max: this.linkCount
+      });
+      this.numTicks = this.chance.integer({
+        min: this.numTicks / 2,
+        max: this.numTicks * 1.5
+      });
+      this.colors = ['#1AF8FA', '#FA023C', '#C8FF00', '#FF0092', '#FFCA1B', '#B6FF00', '#228DFF', '#BA01FF'];
+      this.colors = _.shuffle(this.colors);
+      if (this.chance.bool()) {
+        this.colors = this.colors.splice(0, this.chance.integer({
+          min: 1,
+          max: this.colors.length - 1
+        }));
+      }
+      this.hueChange = this.chance.bool({
         likelihood: 60
       });
-      this.useLinks = true;
-      this.oneLinkTarget = true;
-      this.drawLinks = true;
+      this.sizeChange = this.chance.bool({
+        likelihood: 40
+      });
+      this.multiColor = this.chance.bool({
+        likelihood: 82
+      });
+      this.clampBorders = this.chance.bool({
+        likelihood: 78
+      });
+      this.useLinks = this.chance.bool({
+        likelihood: 64
+      });
+      this.oneLinkTarget = this.chance.bool({
+        likelihood: 45
+      });
+      this.drawLinks = this.chance.bool({
+        likelihood: 88
+      });
+      this.allLinked = this.chance.bool({
+        likelihood: 76
+      });
+      this.coloredLinks = this.chance.bool({
+        likelihood: 6
+      });
+      this.straightLines = this.chance.bool({
+        likelihood: 6
+      });
+      this.connectToCenter = this.chance.bool({
+        likelihood: 26
+      });
+      this.curveTho = this.chance.floating({
+        min: 0.9,
+        max: 1.3
+      });
+      this.curveThe = this.chance.floating({
+        min: 0.9,
+        max: 1.3
+      });
+      this.text += ' ' + this.curveTho + 'tho';
+      this.text += ' ' + this.curveThe + 'the';
+      this.text += ' colors: ' + JSON.stringify(this.colors);
       this.numTicks = this.chance.integer({
         min: this.numTicks / 2,
         max: this.numTicks
@@ -71,17 +145,23 @@
         fixed: 3
       });
       this.simplex = new SimplexNoise(Math.random);
-      this.bgColor = d3.hsl(this.chance.pickone(this.colors));
+      this.bgColor = d3.hsl(this.chance.pickone(['#413D3D', '#040004']));
       this.ctx.fillStyle = this.bgColor.toString();
       this.ctx.fillRect(0, 0, this.width, this.height);
       if (this.chance.bool({
-        likelihood: 5
+        likelihood: 1
       })) {
         this.ctx.globalCompositeOperation = 'multiply';
-      } else if (this.chance.bool({
-        likelihood: 2
+      }
+      if (this.chance.bool({
+        likelihood: 1
       })) {
         this.ctx.globalCompositeOperation = 'difference';
+      }
+      if (this.chance.bool({
+        likelihood: 1
+      })) {
+        this.ctx.globalCompositeOperation = 'lighten';
       }
     }
 
@@ -102,6 +182,8 @@
     };
 
     GenArt.prototype.logSettings = function() {
+      console.log('curveTho', this.curveTho);
+      console.log('curveThe', this.curveThe);
       console.log('Colors: ', JSON.stringify(this.colors));
       console.log('One Link Target:', this.oneLinkTarget);
       console.log('BG Color: ', this.bgColor.toString());
@@ -114,7 +196,6 @@
     GenArt.prototype.makeParticles = function() {
       var c, linkTarget;
       console.log('Making ' + this.count + ' particles');
-      this.text += ' ' + this.count + ' particles';
       c = this.chance.pickone(this.colors);
       this.data = d3.range(this.count).map((function(_this) {
         return function(d, i) {
@@ -123,14 +204,12 @@
             c = _this.chance.pickone(_this.colors);
           }
           radius = _this.chance.integer({
-            min: 2,
-            max: 4
+            min: 0.5,
+            max: 2.5
           });
           return {
             index: i,
             id: i,
-            x: _this.width / 2,
-            y: _this.height / 2,
             color: c.toString(),
             opacity: _this.opacity,
             radius: radius
@@ -142,7 +221,7 @@
         min: 1,
         max: this.count - 1
       });
-      return this.links = d3.range(this.linkCount).map((function(_this) {
+      this.links = d3.range(this.linkCount).map((function(_this) {
         return function(d, i) {
           var linkSource;
           linkSource = _this.chance.integer({
@@ -159,10 +238,28 @@
             source: linkSource,
             target: linkTarget,
             distance: _this.chance.integer({
-              min: 10,
-              max: _this.width / 4
+              min: _this.width / 10,
+              max: _this.width / 5
             })
           };
+        };
+      })(this));
+      return this.data.forEach((function(_this) {
+        return function(d, i) {
+          var color;
+          color = _this.chance.pickone(['rgba(5,5,5,0.2)', 'rgba(255,255,255,0.5)']);
+          return _this.links.push({
+            source: i,
+            target: _this.chance.integer({
+              min: 1,
+              max: _this.count - 1
+            }),
+            distance: _this.chance.integer({
+              min: _this.width / 20,
+              max: _this.width / 5
+            }),
+            color: color
+          });
         };
       })(this));
     };
@@ -174,20 +271,23 @@
         max: 8
       });
       alphaDecay = this.chance.floating({
-        min: 0.00001,
-        max: 0.01,
+        min: 0.0005,
+        max: 0.005,
         fixed: 6
       });
+      console.log('alphaDecay: ' + alphaDecay);
       collideStrength = this.chance.floating({
         min: 0.01,
-        max: 0.99,
+        max: 0.09,
         fixed: 3
       });
+      console.log('collideStrength: ' + collideStrength);
       manyBodyStrength = this.chance.floating({
-        min: -60,
-        max: 10,
+        min: -30,
+        max: 30,
         fixed: 3
       });
+      console.log('manyBodyStrength: ' + manyBodyStrength);
       this.simulation = d3.forceSimulation().nodes(this.data).alphaDecay(alphaDecay).force('collide', d3.forceCollide(function(d) {
         return d.radius * collideMult;
       }).strength(collideStrength)).force('center', d3.forceCenter(this.width / 2, this.height / 2)).force('charge', d3.forceManyBody().strength(manyBodyStrength)).force('links', d3.forceLink(this.links).distance(function(d) {
@@ -197,8 +297,26 @@
     };
 
     GenArt.prototype.tick = function(callback) {
-      var clampNum, gvx, gvy, stepValue;
+      var c, clampNum, gvx, gvy, stepValue;
       this.ticks++;
+      if (this.chance.bool({
+        likelihood: 10
+      })) {
+        this.curveTho += this.chance.floating({
+          min: -1,
+          max: 1,
+          fixed: 2
+        });
+      }
+      if (this.chance.bool({
+        likelihood: 20
+      })) {
+        this.curveThe += this.chance.floating({
+          min: -1,
+          max: 1,
+          fixed: 2
+        });
+      }
       this.simulation.tick();
       gvy = this.chance.floating();
       gvx = this.chance.floating();
@@ -207,24 +325,58 @@
         max: 1.6
       });
       clampNum = this.clampNum;
-      this.data.forEach((function(_this) {
+      this.links.forEach((function(_this) {
         return function(d, i) {
-          var c, noiseValue;
-          if (d.y >= _this.height) {
+          var cpx, cpy;
+          if (!_this.connectToCenter) {
+            _this.ctx.moveTo(d.source.x, d.source.y);
+          } else {
+            _this.ctx.moveTo(_this.width / 2, _this.height / 2);
+          }
+          if (_this.chance.bool()) {
+            cpx = d.target.x / _this.curveTho;
+            cpy = d.target.y / _this.curveThe;
+          } else {
+            cpx = d.target.x / _this.curveThe;
+            cpy = d.target.y / _this.curveTho;
+          }
+          if (_this.straightLines) {
+            return _this.ctx.lineTo(d.target.x, d.target.y);
+          } else {
+            return _this.ctx.quadraticCurveTo(cpx, cpy, d.target.x, d.target.y);
+          }
+        };
+      })(this));
+      if (this.coloredLinks) {
+        c = d3.hsl(this.chance.pickone(this.colors));
+      } else {
+        c = d3.hsl('#FFF');
+      }
+      c.opacity = this.linkOpacity;
+      this.ctx.strokeStyle = c.toString();
+      this.ctx.stroke();
+      return this.data.forEach((function(_this) {
+        return function(d, i) {
+          var noiseValue;
+          if (d.y > _this.height || d.y < 0) {
             d.dead = true;
           }
-          if (d.x >= _this.width) {
+          if (d.x > _this.width || d.x < 0) {
             d.dead = true;
           }
           noiseValue = _this.simplex.noise2D(d.x, d.y);
           if (_this.chance.bool()) {
-            d.vx += noiseValue * 1.4;
+            d.vx += noiseValue * 2.4;
+          } else {
+            d.vx -= noiseValue * 2.4;
           }
           if (_this.chance.bool()) {
             d.vy += noiseValue * 2.4;
+          } else {
+            d.vy -= noiseValue * 2.4;
           }
           if (_this.sizeChange) {
-            d.radius += noiseValue / 4;
+            d.radius += noiseValue / 2.5;
           }
           if (_this.clampBorders) {
             d.x = _.clamp(d.x + d.radius, d.radius, _this.width - d.radius);
@@ -236,6 +388,7 @@
           }
           c.opacity = d.opacity;
           if (_this.ticks === (_this.count - 1)) {
+            d.radius = d.radius * 4;
             c.opacity = 1;
           }
           d.color = c.toString();
@@ -243,7 +396,9 @@
             _this.ctx.beginPath();
             _this.ctx.arc(d.x, d.y, d.radius, 0, 2 * Math.PI);
             _this.ctx.closePath();
-            _this.ctx.fillStyle = d.color;
+            c = d3.hsl(d.color);
+            c.opacity = d.opacity;
+            _this.ctx.fillStyle = c.toString();
             _this.ctx.fill();
           }
           if (callback) {
@@ -251,14 +406,6 @@
           }
         };
       })(this));
-      this.links.forEach((function(_this) {
-        return function(d, i) {
-          _this.ctx.moveTo(d.source.x, d.source.y);
-          return _this.ctx.lineTo(d.target.x, d.target.y);
-        };
-      })(this));
-      this.ctx.strokeStyle = 'rgba(10,10,10,1)';
-      return this.ctx.stroke();
     };
 
     GenArt.prototype.tickTil = function(count) {

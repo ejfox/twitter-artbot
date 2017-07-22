@@ -23,32 +23,66 @@ class GenArt
     seedrandom(@seed, {global: true})
 
     # @opacity = 0.99
-    @opacity = 0.95
+    @opacity = @chance.floating {min: 0.001, max: 0.95, fixed: 2}
+    @linkOpacity = @chance.floating {min: 0.001, max: 0.15, fixed: 2}
+
+    sizes = [[1080,720], [900,900], [1200,1200], [900,500]]
+
+    if @chance.bool {likelihood: 10}
+      sizes.push [320, 320]
+
+    if @chance.bool {likelihood: 10}
+      sizes.push [320, 960]
+
+    size = @chance.pickone sizes
 
     # Canvas width and height
-    @width = 1080
-    @height = 720
+    @width = size[0]
+    @height = size[1]
     console.log 'width', @width, 'height', @height
 
-    @text = "Hello world"
-
-    @count = 39
-    @numTicks = 7500
-    @linkCount = 53
+    @count = 25
+    @numTicks = 1500
+    @linkCount = @count * 0.8
     # @numTicks = 320
 
-    @colors = [ '#B0E1F0', '#FDADD1', '#FFFFBC', '#A5DDC2',
-          '#D7D9F8', '#F09BC1', '#E6FFE6', '#C2CDC5', '#BE497E',
-          '#19426E', '#BFE5FF', '#A5DDC2', '#FAA21F', '#CB3F24'
-        ]
+    @count = @chance.integer {min: 5, max: @count}
+    @linkCount = @chance.integer {min: 5, max: @linkCount}
+    @numTicks = @chance.integer {min: @numTicks / 2, max: @numTicks * 1.5}
 
-    @hueChange = false
-    @sizeChange = true
-    @multiColor = true
-    @clampBorders = @chance.bool { likelihood: 60}
-    @useLinks = true
-    @oneLinkTarget = true
-    @drawLinks = true
+    # @colors = [ '#B0E1F0', '#FDADD1', '#FFFFBC', '#A5DDC2',
+    #       '#D7D9F8', '#F09BC1', '#E6FFE6', '#C2CDC5', '#BE497E',
+    #       '#19426E', '#BFE5FF', '#A5DDC2', '#FAA21F', '#CB3F24'
+    #     ]
+
+    @colors = ['#1AF8FA', '#FA023C', '#C8FF00', '#FF0092', '#FFCA1B',
+      '#B6FF00','#228DFF', '#BA01FF'
+    ]
+
+    @colors = _.shuffle @colors
+
+    if @chance.bool()
+      @colors = @colors.splice(0, @chance.integer {min: 1, max: @colors.length - 1})
+
+    @hueChange = @chance.bool { likelihood: 60}
+    @sizeChange = @chance.bool { likelihood: 40}
+    @multiColor = @chance.bool { likelihood: 82}
+    @clampBorders = @chance.bool { likelihood: 78}
+    @useLinks = @chance.bool { likelihood: 64}
+    @oneLinkTarget = @chance.bool { likelihood: 45}
+    @drawLinks = @chance.bool { likelihood: 88}
+    @allLinked = @chance.bool { likelihood: 76}
+    @coloredLinks = @chance.bool { likelihood: 6}
+    @straightLines = @chance.bool { likelihood: 6}
+    @connectToCenter = @chance.bool { likelihood: 26}
+
+    @curveTho = @chance.floating {min: 0.9, max: 1.3}
+    @curveThe = @chance.floating {min: 0.9, max: 1.3}
+
+    @text += ' ' + @curveTho + 'tho'
+    @text += ' ' + @curveThe + 'the'
+
+    @text += ' colors: ' + JSON.stringify(@colors)
 
     # @count = @chance.integer({min: 1, max: @count})
 
@@ -63,7 +97,8 @@ class GenArt
     @simplex = new SimplexNoise(Math.random)
 
     # make bg
-    @bgColor =  d3.hsl(@chance.pickone @colors)
+    # @bgColor =  d3.hsl(@chance.pickone @colors)
+    @bgColor =  d3.hsl(@chance.pickone ['#413D3D', '#040004'])
 
     # if @chance.bool()
     #   if @chance.bool()
@@ -74,10 +109,14 @@ class GenArt
     @ctx.fillStyle = @bgColor.toString()
     @ctx.fillRect(0, 0, @width, @height)
 
-    if @chance.bool { likelihood: 5 }
+    if @chance.bool { likelihood: 1 }
       @ctx.globalCompositeOperation = 'multiply'
-    else if @chance.bool { likelihood: 2 }
+
+    if @chance.bool { likelihood: 1 }
       @ctx.globalCompositeOperation = 'difference'
+
+    if @chance.bool { likelihood: 1 }
+      @ctx.globalCompositeOperation = 'lighten'
 
   init: (options = {}, callback) =>
     @logSettings()
@@ -92,6 +131,8 @@ class GenArt
       callback()
 
   logSettings: =>
+    console.log 'curveTho', @curveTho
+    console.log 'curveThe', @curveThe
     console.log 'Colors: ', JSON.stringify @colors
     console.log 'One Link Target:', @oneLinkTarget
     console.log 'BG Color: ', @bgColor.toString()
@@ -103,7 +144,7 @@ class GenArt
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
 
-    @text += ' ' + @count + ' particles'
+    # @text += ' ' + @count + ' particles'
 
     # colors = ['#FA9921', '#FF0D5D', '#ff0dad', '#090645',
     # '#23cf68', '#87d606', '#111e4f', 'rgba(158, 12, 3, 0.5)']
@@ -114,15 +155,15 @@ class GenArt
       if @multiColor
         c = @chance.pickone @colors
 
-      radius = @chance.integer {min: 2, max: 4}
+      radius = @chance.integer {min: 0.5, max: 2.5}
 
       {
         index: i
         id: i
         # x: @chance.integer {min: 0, max: @width}
         # y: @chance.integer {min: 0, max: @height}
-        x: @width / 2
-        y: @height / 2
+        # x: @width / 2
+        # y: @height / 2
         color: c.toString()
         # color: 'black'
         opacity: @opacity
@@ -141,15 +182,27 @@ class GenArt
       {
         source: linkSource
         target: linkTarget
-        distance: @chance.integer {min: 10, max: @width / 4}
+        distance: @chance.integer {min: @width / 10, max: @width / 5}
+      }
+
+    @data.forEach (d,i) =>
+      color = @chance.pickone ['rgba(5,5,5,0.2)', 'rgba(255,255,255,0.5)']
+      @links.push {
+        source: i
+        target: @chance.integer {min: 1, max: @count - 1}
+        distance: @chance.integer {min: @width / 20, max: @width / 5}
+        color: color
       }
 
   makeSimulation: =>
     collideMult = @chance.integer {min: 1, max: 8}
 
-    alphaDecay = @chance.floating {min: 0.00001, max: 0.01, fixed: 6}
-    collideStrength = @chance.floating {min: 0.01, max: 0.99, fixed: 3}
-    manyBodyStrength = @chance.floating {min: -60, max: 10, fixed: 3}
+    alphaDecay = @chance.floating {min: 0.0005, max: 0.005, fixed: 6}
+    console.log 'alphaDecay: '+alphaDecay
+    collideStrength = @chance.floating {min: 0.01, max: 0.09, fixed: 3}
+    console.log 'collideStrength: '+collideStrength
+    manyBodyStrength = @chance.floating {min: -30, max: 30, fixed: 3}
+    console.log 'manyBodyStrength: '+manyBodyStrength
 
     @simulation = d3.forceSimulation()
       .nodes @data
@@ -164,6 +217,13 @@ class GenArt
   tick: (callback) =>
     @ticks++
 
+    if @chance.bool {likelihood: 10}
+      @curveTho += @chance.floating {min: -1, max: 1, fixed: 2}
+
+    if @chance.bool {likelihood: 20}
+      @curveThe += @chance.floating {min: -1, max: 1, fixed: 2}
+
+
 
     @simulation.tick()
 
@@ -176,24 +236,56 @@ class GenArt
     # console.log 'Move clamp: ', clampNum
 
 
+    @links.forEach((d,i) =>
+
+      if !@connectToCenter
+        @ctx.moveTo(d.source.x, d.source.y)
+      else
+        @ctx.moveTo(@width/2, @height/2)
+
+      if @chance.bool()
+        cpx = d.target.x / @curveTho
+        cpy = d.target.y / @curveThe
+      else
+        cpx = d.target.x / @curveThe
+        cpy = d.target.y / @curveTho
+
+      if @straightLines
+        @ctx.lineTo(d.target.x, d.target.y)
+      else
+        @ctx.quadraticCurveTo(cpx, cpy, d.target.x, d.target.y)
+    )
+
+    if @coloredLinks
+      c = d3.hsl @chance.pickone @colors
+    else
+      c = d3.hsl '#FFF'
+    c.opacity = @linkOpacity
+    @ctx.strokeStyle = c.toString()
+    @ctx.stroke()
+
     # console.log 'tick'
     @data.forEach((d,i) =>
-      if d.y >= @height
+      if d.y > @height || d.y < 0
         # d.y = 0
         d.dead = true
-      if d.x >= @width
+      if d.x > @width || d.x < 0
         # d.x = 0
         d.dead = true
 
       noiseValue = @simplex.noise2D(d.x, d.y)
 
       if @chance.bool()
-        d.vx += noiseValue * 1.4
+        d.vx += noiseValue * 2.4
+      else
+        d.vx -= noiseValue * 2.4
       if @chance.bool()
         d.vy += noiseValue * 2.4
+      else
+        d.vy -= noiseValue * 2.4
 
       if @sizeChange
-        d.radius += (noiseValue / 4 )
+        d.radius += (noiseValue / 2.5 )
 
       if @clampBorders
         d.x = _.clamp(d.x + d.radius, d.radius, @width - d.radius)
@@ -209,6 +301,7 @@ class GenArt
       c.opacity = d.opacity
 
       if @ticks is (@count - 1)
+        d.radius = d.radius * 4
         c.opacity = 1
 
       d.color = c.toString()
@@ -217,19 +310,14 @@ class GenArt
         @ctx.beginPath()
         @ctx.arc(d.x, d.y, d.radius, 0, 2*Math.PI)
         @ctx.closePath()
-        @ctx.fillStyle = d.color
+        c = d3.hsl d.color
+        c.opacity = d.opacity
+        @ctx.fillStyle = c.toString()
         @ctx.fill()
 
       if callback
         callback
     )
-
-    @links.forEach((d,i) =>
-      @ctx.moveTo(d.source.x, d.source.y)
-      @ctx.lineTo(d.target.x, d.target.y)
-    )
-    @ctx.strokeStyle = 'rgba(10,10,10,1)'
-    @ctx.stroke()
 
   tickTil: (count) =>
     console.log 'Ticking ' + @data.length + ' particles ' + count + ' times'
