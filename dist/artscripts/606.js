@@ -45,7 +45,6 @@
       this.width = 1080;
       this.height = 720;
       console.log('width', this.width, 'height', this.height);
-      this.text = "Hello world";
       this.count = 39;
       this.numTicks = 7500;
       this.linkCount = 53;
@@ -107,7 +106,10 @@
       console.log('Links: ', this.useLinks);
       console.log('Hue change: ', this.hueChange);
       console.log('Size change: ', this.sizeChange);
-      return console.log('Multicolor: ', this.multiColor);
+      console.log('Multicolor: ', this.multiColor);
+      this.text += ' ' + 'uselinks:' + this.useLinks;
+      this.text += ' ' + 'onetarget:' + this.oneLinkTarget;
+      return this.text += ' ' + 'onetarget:' + this.oneLinkTarget;
     };
 
     GenArt.prototype.makeParticles = function() {

@@ -30,8 +30,6 @@ class GenArt
     @height = 720
     console.log 'width', @width, 'height', @height
 
-    @text = "Hello world"
-
     @count = 39
     @numTicks = 7500
     @linkCount = 53
@@ -98,6 +96,10 @@ class GenArt
     console.log 'Hue change: ', @hueChange
     console.log 'Size change: ', @sizeChange
     console.log 'Multicolor: ', @multiColor
+
+    @text += ' ' + 'uselinks:' + @useLinks
+    @text += ' ' + 'onetarget:' + @oneLinkTarget
+    @text += ' ' + 'onetarget:' + @oneLinkTarget
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
