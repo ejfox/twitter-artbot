@@ -1,6 +1,6 @@
 {
   "name": "twitter-artbot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "D3 Twitter Artbot",
   "repository": "https://github.com/ejfox/twitter-artbot/",
   "main": "index.js",
