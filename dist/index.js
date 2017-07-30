@@ -97,9 +97,9 @@
     } else {
       tweetText = artScriptChoice + '-' + seed;
     }
-    artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals'];
+    artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'];
     if (chance.bool({
-      likelihood: 10
+      likelihood: 14
     })) {
       tweetText += ' #bot2bot @' + chance.pickone(artBots);
     }

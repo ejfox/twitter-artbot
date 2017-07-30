@@ -70,9 +70,9 @@ art.init({}, ->
 
 
   artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
-    'artyedit', 'artyPolar', 'artyPetals'
+    'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'
   ]
-  if chance.bool {likelihood: 10}
+  if chance.bool {likelihood: 14}
     tweetText += ' #bot2bot @'+chance.pickone artBots
 
   # Upload that image to Twitter
