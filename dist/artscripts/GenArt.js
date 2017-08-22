@@ -24,15 +24,12 @@
       this.tick = bind(this.tick, this);
       this.makeParticles = bind(this.makeParticles, this);
       this.init = bind(this.init, this);
-      var d3n;
-      console.log('Seed:', seed);
-      d3n = new d3Node({
-        canvasModule: canvasModule
-      });
       this.seed = seed;
       this.chance = new Chance(this.seed);
-      this.count = 2900;
-      this.numTicks = 2000;
+      this.count = 65;
+      this.numTicks = 16;
+      this.opacity = 1;
+      this.text = this.seed;
       this.count = this.chance.integer({
         min: 1,
         max: this.count
@@ -41,19 +38,25 @@
         min: 1,
         max: this.numTicks
       });
-      this.width = 1700;
+      this.width = 1250;
       this.height = 1250;
-      console.log('width', this.width, 'height', this.height);
-      this.canvas = d3n.createCanvas(this.width, this.height);
-      this.ctx = this.canvas.getContext('2d');
-      this.ctx.fillStyle = 'white';
-      this.ctx.fillRect(0, 0, this.width, this.height);
+      this.bgColor = 'black';
     }
 
     GenArt.prototype.init = function(options, callback) {
+      var d3n;
       if (options == null) {
         options = {};
       }
+      console.log('Seed:', this.seed);
+      console.log('width', this.width, 'height', this.height);
+      d3n = new d3Node({
+        canvasModule: canvasModule
+      });
+      this.canvas = d3n.createCanvas(this.width, this.height);
+      this.ctx = this.canvas.getContext('2d');
+      this.ctx.fillStyle = this.bgColor;
+      this.ctx.fillRect(0, 0, this.width, this.height);
       this.makeParticles();
       this.tickTil(this.numTicks);
       if (options.save) {
@@ -68,20 +71,21 @@
       console.log('Making ' + this.count + ' particles');
       this.data = d3.range(this.count).map((function(_this) {
         return function() {
-          var c, x, y;
-          x = _this.chance.natural({
-            min: 0,
-            max: _this.width
+          var c, offset, offsetAmount, x, y;
+          offsetAmount = 250;
+          offset = {};
+          offset.x = _this.chance.floating({
+            min: -offsetAmount,
+            max: offsetAmount
           });
-          y = _this.chance.natural({
-            min: 0,
-            max: _this.height
+          offset.y = _this.chance.floating({
+            min: -offsetAmount,
+            max: offsetAmount
           });
-          c = d3.hsl('red');
-          c.h += _this.chance.natural({
-            min: 0,
-            max: 14
-          });
+          x = (_this.width / 2) + offset.x;
+          y = (_this.height / 2) + offset.y;
+          c = d3.hsl('white');
+          c.opacity = _this.opacity;
           return {
             x: x,
             y: y,
@@ -93,29 +97,29 @@
     };
 
     GenArt.prototype.tick = function() {
+      var ticks;
+      if (!this.ticks) {
+        ticks = 0;
+      }
       this.ticks++;
       return this.data.forEach((function(_this) {
         return function(d, i) {
-          var c, randOffset;
-          randOffset = 14;
-          if (_this.chance.d100() > 50) {
-            d.x -= _this.chance.integer({
-              min: 0,
-              max: randOffset
+          if (_this.chance.bool({
+            likelihood: 50
+          })) {
+            d.x += _this.chance.floating({
+              min: -8,
+              max: 8
             });
           }
-          if (_this.chance.d100() > 50) {
-            d.y -= _this.chance.integer({
-              min: 0,
-              max: randOffset
+          if (_this.chance.bool({
+            likelihood: 50
+          })) {
+            d.y += _this.chance.floating({
+              min: -8,
+              max: 8
             });
           }
-          c = d3.hsl(d.color);
-          c.h += _this.chance.natural({
-            min: 0,
-            max: 90
-          });
-          d.color = c.toString();
           _this.ctx.beginPath();
           _this.ctx.rect(d.x, d.y, 2, 2);
           _this.ctx.fillStyle = d.color;
@@ -128,11 +132,11 @@
     GenArt.prototype.tickTil = function(count) {
       var j, ref;
       console.log('Ticking ' + this.data.length + ' particles ' + count + ' times');
-      console.time('ticked for');
+      console.time('Ticked for');
       for (j = 0, ref = count; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--) {
         this.tick();
       }
-      return console.timeEnd('ticked for');
+      return console.timeEnd('Ticked for');
     };
 
     GenArt.prototype.saveFile = function(filename) {
@@ -149,31 +153,29 @@
 
   })();
 
-  run = (function(_this) {
-    return function() {
-      var genart, seed;
-      if (argv.seed) {
-        seed = argv.seed;
-      } else {
-        seed = Date.now();
-      }
-      genart = new GenArt(seed);
-      if (argv.count) {
-        genart.count = argv.count;
-      }
-      if (argv.ticks) {
-        genart.numTicks = argv.ticks;
-      }
-      return genart.init({
-        save: true
-      });
-    };
-  })(this);
-
-  module.exports = GenArt;
+  run = function() {
+    var genart, seed;
+    if (argv.seed) {
+      seed = argv.seed;
+    } else {
+      seed = Date.now();
+    }
+    genart = new GenArt(seed);
+    if (argv.count) {
+      genart.count = argv.count;
+    }
+    if (argv.ticks) {
+      genart.numTicks = argv.ticks;
+    }
+    return genart.init({
+      save: true
+    });
+  };
 
   if (require.main === module) {
     run();
   }
+
+  module.exports = GenArt;
 
 }).call(this);
