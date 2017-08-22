@@ -10,7 +10,12 @@ Chance = require 'chance'
 chance = new Chance()
 rand = new randGen()
 seed = Date.now()
+schedule = require 'node-schedule'
 rand.seed(seed)
+
+argv = require 'yargs'
+  .alias 'f', 'force'
+  .argv
 
 artScripts = [
   '103', '104',
@@ -48,7 +53,9 @@ uploadTweet = (status, b64Content) ->
             status: status
             media_ids: [mediaIdStr]
           }
-          T.post('statuses/update', params, (err, data, response) -> console.log('Uploaded',data.id))
+          T.post('statuses/update', params, (err, data, response) ->
+            console.log('Uploaded',data.id)
+          )
         else
           console.log 'Error: ', err
       )
@@ -56,27 +63,33 @@ uploadTweet = (status, b64Content) ->
       console.log 'Error uploading media: ', err
   )
 
-console.log 'Running ', artScriptChoice
-#genart = require('./artscripts/'+artScriptChoice)(seed)
-genArt = require('./artscripts/'+artScriptChoice)
-art = new genArt(seed)
-art.init({}, ->
-  canvas = art.canvas
+tweetArt = ->
+  console.log 'Running ', artScriptChoice
+  #genart = require('./artscripts/'+artScriptChoice)(seed)
+  genArt = require('./artscripts/'+artScriptChoice)
+  art = new genArt(seed)
+  art.init({}, ->
+    canvas = art.canvas
 
-  if art.text
-    tweetText = art.text + ' ' + artScriptChoice+'-'+seed
-  else
-    tweetText = artScriptChoice+'-'+seed
+    if art.text
+      tweetText = art.text + ' ' + artScriptChoice+'-'+seed
+    else
+      tweetText = artScriptChoice+'-'+seed
 
 
-  artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
-    'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'
-  ]
-  if chance.bool {likelihood: 14}
-    tweetText += ' #bot2bot @'+chance.pickone artBots
+    artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
+      'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'
+    ]
+    if chance.bool {likelihood: 14}
+      tweetText += ' #bot2bot @'+chance.pickone artBots
 
-  # Upload that image to Twitter
-  uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
-)
+    # Upload that image to Twitter
+    uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
+  )
 
-# process.exit(0)
+if argv.force
+  tweetArt()
+else
+  # Run tweetArt() on the 42nd minute of the hour
+  console.log 'Running... waiting for **:20'
+  tweetCron = schedule.scheduleJob '20 * * * *', -> tweetArt()
