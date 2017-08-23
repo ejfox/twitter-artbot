@@ -43,20 +43,24 @@
       this.bgColor = 'black';
     }
 
-    GenArt.prototype.init = function(options, callback) {
+    GenArt.prototype.makeCanvas = function() {
       var d3n;
-      if (options == null) {
-        options = {};
-      }
-      console.log('Seed:', this.seed);
-      console.log('width', this.width, 'height', this.height);
       d3n = new d3Node({
         canvasModule: canvasModule
       });
       this.canvas = d3n.createCanvas(this.width, this.height);
       this.ctx = this.canvas.getContext('2d');
       this.ctx.fillStyle = this.bgColor;
-      this.ctx.fillRect(0, 0, this.width, this.height);
+      return this.ctx.fillRect(0, 0, this.width, this.height);
+    };
+
+    GenArt.prototype.init = function(options, callback) {
+      if (options == null) {
+        options = {};
+      }
+      console.log('Seed:', this.seed);
+      console.log('width', this.width, 'height', this.height);
+      this.makeCanvas();
       this.makeParticles();
       this.tickTil(this.numTicks);
       if (options.save) {
@@ -139,14 +143,20 @@
       return console.timeEnd('Ticked for');
     };
 
-    GenArt.prototype.saveFile = function(filename) {
-      var fileOutput;
-      if (!filename) {
-        filename = path.basename(__filename, '.js') + '-' + this.seed;
+    GenArt.prototype.saveFile = function(filename, callback) {
+      var file, fileOutput, stream;
+      if (!this.filename) {
+        this.filename = path.basename(__filename, '.js') + '-' + this.seed;
       }
-      fileOutput = './dist/' + filename + '.png';
+      fileOutput = './dist/' + this.filename + '.png';
       console.log('canvas output --> ' + fileOutput);
-      return this.canvas.pngStream().pipe(fs.createWriteStream(fileOutput));
+      file = fs.createWriteStream(fileOutput);
+      stream = this.canvas.pngStream().pipe(file);
+      return stream.on('finish', function() {
+        if (callback) {
+          return callback();
+        }
+      });
     };
 
     return GenArt;

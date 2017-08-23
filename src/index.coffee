@@ -15,14 +15,11 @@ rand.seed(seed)
 
 argv = require 'yargs'
   .alias 'f', 'force'
+  .alias 'm', 'movie'
   .argv
 
 artScripts = [
-  '103', '104',
-  '201',
-  '503',
-  '606', '607', '608'
-  '703'
+  '_boilerplate'
 ]
 artScriptChoice = artScripts[rand(artScripts.length)]
 
@@ -87,8 +84,43 @@ tweetArt = ->
     uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
   )
 
+makeMovie = ->
+  console.log 'Running ', artScriptChoice
+
+  genArt = require('./artscripts/'+artScriptChoice)
+  art = new genArt(seed)
+  art.init = ->
+    console.log('Seed:', @seed)
+    console.log 'width', @width, 'height', @height
+    @makeCanvas()
+    @makeParticles()
+
+    ###
+    while ticks is < @numTicks
+      @tick()
+      then save file
+      wait until saveFile is done
+      then repeat
+    ###
+    # @tickTil(@numTicks)
+    t = 0
+    loopTicks = ->
+      @saveFile('testmov-'+t+'-'+@seed, ->
+        t++
+        if t < @numTicks
+          loopTicks()
+      )
+
+    loopTicks()
+
+    if callback
+      callback()
+  art.init()
+
 if argv.force
   tweetArt()
+else if argv.movie
+  makeMovie()
 else
   # Run tweetArt() on the 42nd minute of the hour
   console.log 'Running... waiting for **:20'

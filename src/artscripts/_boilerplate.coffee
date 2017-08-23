@@ -13,10 +13,33 @@ GenArt = require './GenArt'
 
 # Make new instance
 art = new GenArt(seed)
-art.numTicks = 150
+art.filename = path.basename(__filename, '.js') + '-' + seed
+art.count = 8
+art.numTicks = 5000
 art.bgColor = '#999'
 art.fillColor = 'black'
 art.opacity = 0.5
+
+art.makeParticles = ->
+  console.log('Making ' + @count + ' particles')
+  @data = d3.range(@count).map =>
+    offsetAmount = @chance.integer {min: 25, max: 500}
+    offset = {}
+    offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
+    offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
+    x = (@width / 2 ) + offset.x
+    y = (@height / 2 ) + offset.y
+
+    c = d3.hsl('white')
+    # c.h += @chance.natural({min: 0, max: 14})
+    c.opacity = @opacity
+
+    {
+      x: x
+      y: y
+      color: c.toString()
+    }
+  return @data
 
 art.tick = ->
   if !@ticks
@@ -27,10 +50,10 @@ art.tick = ->
     # Modify the data
 
     if @chance.bool {likelihood: 50}
-      d.x += @chance.floating {min: -8, max: 8}
+      d.x += @chance.floating {min: -2, max: 2}
 
     if @chance.bool {likelihood: 50}
-      d.y += @chance.floating {min: -8, max: 8}
+      d.y += @chance.floating {min: -2, max: 2}
 
     # Paint the data
     @ctx.beginPath()
@@ -44,3 +67,5 @@ art.tick = ->
 
 # Make the art
 art.init({save: true})
+
+module.exports = GenArt

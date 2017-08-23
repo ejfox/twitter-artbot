@@ -24,13 +24,49 @@
 
   art = new GenArt(seed);
 
-  art.numTicks = 150;
+  art.filename = path.basename(__filename, '.js') + '-' + seed;
+
+  art.count = 8;
+
+  art.numTicks = 5000;
 
   art.bgColor = '#999';
 
   art.fillColor = 'black';
 
   art.opacity = 0.5;
+
+  art.makeParticles = function() {
+    console.log('Making ' + this.count + ' particles');
+    this.data = d3.range(this.count).map((function(_this) {
+      return function() {
+        var c, offset, offsetAmount, x, y;
+        offsetAmount = _this.chance.integer({
+          min: 25,
+          max: 500
+        });
+        offset = {};
+        offset.x = _this.chance.floating({
+          min: -offsetAmount,
+          max: offsetAmount
+        });
+        offset.y = _this.chance.floating({
+          min: -offsetAmount,
+          max: offsetAmount
+        });
+        x = (_this.width / 2) + offset.x;
+        y = (_this.height / 2) + offset.y;
+        c = d3.hsl('white');
+        c.opacity = _this.opacity;
+        return {
+          x: x,
+          y: y,
+          color: c.toString()
+        };
+      };
+    })(this));
+    return this.data;
+  };
 
   art.tick = function() {
     var ticks;
@@ -44,16 +80,16 @@
           likelihood: 50
         })) {
           d.x += _this.chance.floating({
-            min: -8,
-            max: 8
+            min: -2,
+            max: 2
           });
         }
         if (_this.chance.bool({
           likelihood: 50
         })) {
           d.y += _this.chance.floating({
-            min: -8,
-            max: 8
+            min: -2,
+            max: 2
           });
         }
         _this.ctx.beginPath();
@@ -68,5 +104,7 @@
   art.init({
     save: true
   });
+
+  module.exports = GenArt;
 
 }).call(this);

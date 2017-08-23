@@ -31,9 +31,7 @@ class GenArt
 
     @bgColor = 'black'
 
-  init: (options = {}, callback) =>
-    console.log('Seed:', @seed)
-    console.log 'width', @width, 'height', @height
+  makeCanvas: ->
     # Create the canvas with D3 Node
     d3n = new d3Node { canvasModule }
     @canvas = d3n.createCanvas @width, @height
@@ -42,6 +40,11 @@ class GenArt
     # make bg
     @ctx.fillStyle = @bgColor
     @ctx.fillRect(0, 0, @width, @height)
+
+  init: (options = {}, callback) =>
+    console.log('Seed:', @seed)
+    console.log 'width', @width, 'height', @height
+    @makeCanvas()
     @makeParticles()
     @tickTil(@numTicks)
 
@@ -54,7 +57,6 @@ class GenArt
 
   makeParticles: =>
     console.log('Making ' + @count + ' particles')
-
     @data = d3.range(@count).map =>
       offsetAmount = 250
       offset = {}
@@ -103,14 +105,19 @@ class GenArt
       @tick()
     console.timeEnd('Ticked for')
 
-  saveFile: (filename) ->
-    if !filename
-      filename = path.basename(__filename, '.js') + '-' + @seed
-    fileOutput = './dist/' + filename + '.png'
+  saveFile: (filename, callback) ->
+    if !@filename
+      @filename = path.basename(__filename, '.js') + '-' + @seed
+    fileOutput = './dist/' + @filename + '.png'
     console.log('canvas output --> ' + fileOutput)
+    file = fs.createWriteStream(fileOutput)
 
     # Save image locally to /dist/
-    @canvas.pngStream().pipe(fs.createWriteStream(fileOutput))
+    stream = @canvas.pngStream().pipe(file)
+
+    stream.on 'finish', ->
+      if callback
+        callback()
 
 run = ->
   # If this is being called from the command line
