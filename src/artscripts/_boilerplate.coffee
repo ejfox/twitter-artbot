@@ -4,6 +4,7 @@ _ = require 'lodash'
 d3Node = require 'd3-node'
 canvasModule = require 'canvas-prebuilt'
 Chance = require 'chance'
+SimplexNoise = require 'simplex-noise'
 path = require 'path'
 argv = require 'yargs'
   .alias 's', 'seed'
@@ -18,7 +19,7 @@ art.count = 8
 art.numTicks = 5000
 art.bgColor = '#999'
 art.fillColor = 'black'
-art.opacity = 0.5
+art.simplex = new SimplexNoise
 
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
@@ -49,6 +50,8 @@ art.tick = ->
   @data.forEach((d,i) =>
     # Modify the data
 
+    noiseValue = @simplex.noise2D(d.x, d.y)
+
     if @chance.bool {likelihood: 50}
       d.x += @chance.floating {min: -2, max: 2}
 
@@ -57,7 +60,7 @@ art.tick = ->
 
     # Paint the data
     @ctx.beginPath()
-    @ctx.rect d.x, d.y, 2, 2
+    @ctx.rect d.x, d.y, 1, 1
     # @ctx.fillStyle = d.color
     @ctx.fillStyle = @fillColor
     @ctx.fill()

@@ -38,8 +38,8 @@
         min: 1,
         max: this.numTicks
       });
-      this.width = 1250;
-      this.height = 1250;
+      this.width = 1080;
+      this.height = 720;
       this.bgColor = 'black';
     }
 
@@ -145,14 +145,14 @@
 
     GenArt.prototype.saveFile = function(filename, callback) {
       var file, fileOutput, stream;
-      if (!this.filename) {
-        this.filename = path.basename(__filename, '.js') + '-' + this.seed;
+      if (!filename) {
+        filename = path.basename(__filename, '.js') + '-' + this.seed;
       }
-      fileOutput = './dist/' + this.filename + '.png';
-      console.log('canvas output --> ' + fileOutput);
+      fileOutput = './dist/' + filename + '.png';
       file = fs.createWriteStream(fileOutput);
       stream = this.canvas.pngStream().pipe(file);
       return stream.on('finish', function() {
+        console.log('canvas output --> ' + fileOutput);
         if (callback) {
           return callback();
         }
@@ -165,6 +165,7 @@
 
   run = function() {
     var genart, seed;
+    console.log(' -- run');
     if (argv.seed) {
       seed = argv.seed;
     } else {
@@ -183,6 +184,7 @@
   };
 
   if (require.main === module) {
+    console.log('Running as module');
     run();
   }
 

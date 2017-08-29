@@ -35,7 +35,7 @@
 
   argv = require('yargs').alias('f', 'force').alias('m', 'movie').argv;
 
-  artScripts = ['_boilerplate'];
+  artScripts = ['8-28'];
 
   artScriptChoice = artScripts[rand(artScripts.length)];
 
@@ -89,6 +89,7 @@
 
   tweetArt = function() {
     var art, genArt;
+    console.log('tweetArt');
     console.log('Running ', artScriptChoice);
     genArt = require('./artscripts/' + artScriptChoice);
     art = new genArt(seed);
@@ -112,11 +113,12 @@
 
   makeMovie = function() {
     var art, genArt;
+    console.log('makeMovie');
     console.log('Running ', artScriptChoice);
     genArt = require('./artscripts/' + artScriptChoice);
     art = new genArt(seed);
     art.init = function() {
-      var loopTicks, t;
+      var loopTicks, t, tMax;
       console.log('Seed:', this.seed);
       console.log('width', this.width, 'height', this.height);
       this.makeCanvas();
@@ -130,18 +132,19 @@
         then repeat
        */
       t = 0;
-      loopTicks = function() {
-        return this.saveFile('testmov-' + t + '-' + this.seed, function() {
-          t++;
-          if (t < this.numTicks) {
-            return loopTicks();
-          }
-        });
-      };
-      loopTicks();
-      if (callback) {
-        return callback();
-      }
+      tMax = this.numTicks;
+      loopTicks = (function(_this) {
+        return function() {
+          _this.tick();
+          return _this.saveFile('testmov-' + t + '-' + _this.seed, function() {
+            t++;
+            if (t < tMax) {
+              return loopTicks();
+            }
+          });
+        };
+      })(this);
+      return loopTicks();
     };
     return art.init();
   };

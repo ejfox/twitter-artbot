@@ -19,7 +19,7 @@ argv = require 'yargs'
   .argv
 
 artScripts = [
-  '_boilerplate'
+  '8-28'
 ]
 artScriptChoice = artScripts[rand(artScripts.length)]
 
@@ -61,6 +61,7 @@ uploadTweet = (status, b64Content) ->
   )
 
 tweetArt = ->
+  console.log 'tweetArt'
   console.log 'Running ', artScriptChoice
   #genart = require('./artscripts/'+artScriptChoice)(seed)
   genArt = require('./artscripts/'+artScriptChoice)
@@ -85,6 +86,8 @@ tweetArt = ->
   )
 
 makeMovie = ->
+  console.log 'makeMovie'
+  # console.log 'Making movie...'
   console.log 'Running ', artScriptChoice
 
   genArt = require('./artscripts/'+artScriptChoice)
@@ -104,17 +107,21 @@ makeMovie = ->
     ###
     # @tickTil(@numTicks)
     t = 0
-    loopTicks = ->
+    tMax = @numTicks
+    loopTicks = =>
+      @tick()
+      # console.log 'movie tick ' + t
       @saveFile('testmov-'+t+'-'+@seed, ->
         t++
-        if t < @numTicks
+        if t < tMax
           loopTicks()
       )
 
     loopTicks()
-
-    if callback
-      callback()
+    #
+    # if callback
+    #   callback()
+  # console.log 'art.init', art.init
   art.init()
 
 if argv.force

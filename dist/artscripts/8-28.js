@@ -28,9 +28,9 @@
 
   art.filename = path.basename(__filename, '.js') + '-' + seed;
 
-  art.count = 8;
+  art.count = art.width;
 
-  art.numTicks = 5000;
+  art.numTicks = 2000;
 
   art.bgColor = '#999';
 
@@ -39,27 +39,25 @@
   art.simplex = new SimplexNoise;
 
   art.makeParticles = function() {
+    var amp;
     console.log('Making ' + this.count + ' particles');
+    amp = this.chance.integer({
+      min: 20,
+      max: 100
+    });
     this.data = d3.range(this.count).map((function(_this) {
-      return function() {
-        var c, offset, offsetAmount, x, y;
-        offsetAmount = _this.chance.integer({
-          min: 25,
-          max: 500
-        });
-        offset = {};
-        offset.x = _this.chance.floating({
-          min: -offsetAmount,
-          max: offsetAmount
-        });
-        offset.y = _this.chance.floating({
-          min: -offsetAmount,
-          max: offsetAmount
-        });
-        x = (_this.width / 2) + offset.x;
-        y = (_this.height / 2) + offset.y;
-        c = d3.hsl('white');
-        c.opacity = _this.opacity;
+      return function(d, i) {
+        var c, x, y;
+        x = i;
+        y = Math.sin(x * Math.PI / 180);
+        if (y >= 0) {
+          y = (_this.height / 2) - (y - 0) * amp;
+          d.color = 'red';
+        } else if (y < 0) {
+          y = (_this.height / 2) + (0 - y) * amp;
+          d.color = 'blue';
+        }
+        c = d3.hsl(d.color);
         return {
           x: x,
           y: y,
@@ -76,38 +74,33 @@
       ticks = 0;
     }
     this.ticks++;
+    this.theta += 0.02;
     return this.data.forEach((function(_this) {
       return function(d, i) {
         var noiseValue;
-        noiseValue = _this.simplex.noise2D(d.x, d.y);
+        noiseValue = _this.simplex.noise2D(d.x, d.y) * _this.chance.integer({
+          min: 1,
+          max: 15
+        });
         if (_this.chance.bool({
           likelihood: 50
         })) {
-          d.x += _this.chance.floating({
-            min: -2,
-            max: 2
-          });
-        }
-        if (_this.chance.bool({
-          likelihood: 50
-        })) {
-          d.y += _this.chance.floating({
-            min: -2,
-            max: 2
-          });
+          d.y += noiseValue;
         }
         _this.ctx.beginPath();
         _this.ctx.rect(d.x, d.y, 1, 1);
-        _this.ctx.fillStyle = _this.fillColor;
+        _this.ctx.fillStyle = d.color;
         _this.ctx.fill();
         return _this.ctx.closePath();
       };
     })(this));
   };
 
-  art.init({
-    save: true
-  });
+  if (require.main === module) {
+    art.init({
+      save: true
+    });
+  }
 
   module.exports = GenArt;
 

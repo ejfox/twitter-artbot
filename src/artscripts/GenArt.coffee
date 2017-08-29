@@ -26,8 +26,8 @@ class GenArt
     @numTicks = @chance.integer({min: 1, max: @numTicks})
 
     # Canvas width and height
-    @width = 1250
-    @height = 1250
+    @width = 1080
+    @height = 720
 
     @bgColor = 'black'
 
@@ -106,20 +106,23 @@ class GenArt
     console.timeEnd('Ticked for')
 
   saveFile: (filename, callback) ->
-    if !@filename
-      @filename = path.basename(__filename, '.js') + '-' + @seed
-    fileOutput = './dist/' + @filename + '.png'
-    console.log('canvas output --> ' + fileOutput)
+    # console.log 'callback: ', callback
+    if !filename
+      filename = path.basename(__filename, '.js') + '-' + @seed
+    fileOutput = './dist/' + filename + '.png'
     file = fs.createWriteStream(fileOutput)
 
     # Save image locally to /dist/
     stream = @canvas.pngStream().pipe(file)
 
     stream.on 'finish', ->
+      # console.log 'write stream finished'
+      console.log('canvas output --> ' + fileOutput)
       if callback
         callback()
 
 run = ->
+  console.log ' -- run'
   # If this is being called from the command line
   # --seed foo
   # would set the seed to "foo"
@@ -142,6 +145,7 @@ run = ->
   genart.init({save: true})
 
 if(require.main == module)
+  console.log 'Running as module'
   run()
 
 module.exports = GenArt
