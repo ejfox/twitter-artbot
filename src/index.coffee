@@ -19,7 +19,7 @@ argv = require 'yargs'
   .argv
 
 artScripts = [
-  '8-28'
+  '_boilerplate'
 ]
 artScriptChoice = artScripts[rand(artScripts.length)]
 
@@ -63,9 +63,8 @@ uploadTweet = (status, b64Content) ->
 tweetArt = ->
   console.log 'tweetArt'
   console.log 'Running ', artScriptChoice
-  #genart = require('./artscripts/'+artScriptChoice)(seed)
-  genArt = require('./artscripts/'+artScriptChoice)
-  art = new genArt(seed)
+  art = require('./artscripts/'+artScriptChoice)
+  # art = new genArt(seed)
   art.init({}, ->
     canvas = art.canvas
 
@@ -90,8 +89,8 @@ makeMovie = ->
   # console.log 'Making movie...'
   console.log 'Running ', artScriptChoice
 
-  genArt = require('./artscripts/'+artScriptChoice)
-  art = new genArt(seed)
+  art = require('./artscripts/'+artScriptChoice)
+  # art = new genArt(seed)
   art.init = ->
     console.log('Seed:', @seed)
     console.log 'width', @width, 'height', @height
@@ -108,13 +107,16 @@ makeMovie = ->
     # @tickTil(@numTicks)
     t = 0
     tMax = @numTicks
+    console.log 'Exporting ' + tMax + ' frames'
     loopTicks = =>
       @tick()
       # console.log 'movie tick ' + t
-      @saveFile('testmov-'+t+'-'+@seed, ->
+      @saveFile('mov-'+t+'-'+@seed, ->
         t++
         if t < tMax
           loopTicks()
+        else
+          console.log 'Completed exporting ticks'
       )
 
     loopTicks()
