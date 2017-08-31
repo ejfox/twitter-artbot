@@ -107,8 +107,11 @@ class GenArt
 
   saveFile: (filename, callback) ->
     # console.log 'callback: ', callback
-    if !filename
+    if !filename and !@filename
       filename = path.basename(__filename, '.js') + '-' + @seed
+    else if @filename
+      filename = @filename
+      
     fileOutput = './dist/' + filename + '.png'
     file = fs.createWriteStream(fileOutput)
 

@@ -145,8 +145,10 @@
 
     GenArt.prototype.saveFile = function(filename, callback) {
       var file, fileOutput, stream;
-      if (!filename) {
+      if (!filename && !this.filename) {
         filename = path.basename(__filename, '.js') + '-' + this.seed;
+      } else if (this.filename) {
+        filename = this.filename;
       }
       fileOutput = './dist/' + filename + '.png';
       file = fs.createWriteStream(fileOutput);
