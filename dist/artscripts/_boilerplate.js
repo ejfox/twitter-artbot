@@ -105,10 +105,12 @@
     })(this));
   };
 
-  art.init({
-    save: true
-  });
+  if (require.main === module) {
+    art.init({
+      save: true
+    });
+  }
 
-  module.exports = GenArt;
+  module.exports = art;
 
 }).call(this);

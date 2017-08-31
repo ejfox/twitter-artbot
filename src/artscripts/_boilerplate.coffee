@@ -68,7 +68,8 @@ art.tick = ->
   )
 
 
-# Make the art
-art.init({save: true})
+if(require.main == module)
+  # Make the art
+  art.init({save: true})
 
-module.exports = GenArt
+module.exports = art

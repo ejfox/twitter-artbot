@@ -27,17 +27,9 @@
       this.seed = seed;
       this.chance = new Chance(this.seed);
       this.count = 65;
-      this.numTicks = 16;
+      this.numTicks = 120;
       this.opacity = 1;
       this.text = this.seed;
-      this.count = this.chance.integer({
-        min: 1,
-        max: this.count
-      });
-      this.numTicks = this.chance.integer({
-        min: 1,
-        max: this.numTicks
-      });
       this.width = 1080;
       this.height = 720;
       this.bgColor = 'black';
@@ -147,7 +139,7 @@
       var file, fileOutput, stream;
       if (!filename && !this.filename) {
         filename = path.basename(__filename, '.js') + '-' + this.seed;
-      } else if (this.filename) {
+      } else if (!filename && this.filename) {
         filename = this.filename;
       }
       fileOutput = './dist/' + filename + '.png';

@@ -15,15 +15,11 @@ class GenArt
 
     @chance = new Chance(@seed) # init chance.js - chancejs.com
     @count = 65 # Max number of particles to create
-    @numTicks = 16 # Max number of times to tick over those particles
+    @numTicks = 120 # Max number of times to tick over those particles
 
     @opacity = 1
 
     @text = @seed
-
-    # Randomize count/ticks based on maxes we just set
-    @count = @chance.integer({min: 1, max: @count})
-    @numTicks = @chance.integer({min: 1, max: @numTicks})
 
     # Canvas width and height
     @width = 1080
@@ -42,6 +38,10 @@ class GenArt
     @ctx.fillRect(0, 0, @width, @height)
 
   init: (options = {}, callback) =>
+    # # Randomize count/ticks based on maxes we just set
+    # @count = @chance.integer({min: 1, max: @count})
+    # @numTicks = @chance.integer({min: 1, max: @numTicks})
+    #
     console.log('Seed:', @seed)
     console.log 'width', @width, 'height', @height
     @makeCanvas()
@@ -109,9 +109,9 @@ class GenArt
     # console.log 'callback: ', callback
     if !filename and !@filename
       filename = path.basename(__filename, '.js') + '-' + @seed
-    else if @filename
+    else if !filename and @filename
       filename = @filename
-      
+
     fileOutput = './dist/' + filename + '.png'
     file = fs.createWriteStream(fileOutput)
 
