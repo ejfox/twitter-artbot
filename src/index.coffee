@@ -22,7 +22,7 @@ argv = require 'yargs'
 
 # The array of artscript names that are chosen from randomly
 artScripts = [
-  '_boilerplate'
+  '9-10'
 ]
 
 # Force one script instead of the random behavior from the CLI
