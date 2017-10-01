@@ -1,14 +1,5 @@
 # Twitter Art Bot
 
-## Web view
-The ability to select art scripts and generate different seeds, and control parameters
-
-The URL structure is: twitterbot.app/ARTSCRIPT/SEED
-
-This will return a .png file for that artscript with the specified seed
-
-We will also have an index page that allows the user to select different art scripts and generate new images by calling the URL
-
 ## What it does
 Makes [generative art](https://en.wikipedia.org/wiki/Generative_art) and then automatically posts it to Twitter.
 
@@ -39,3 +30,12 @@ There are a few options available for artscripts.
 + **numTicks** is the number of times to run the `tick()` function in the artscript. In `-movie` mode, each tick is exported as a frame.
 + **width** and **height** are the width and height of the canvas in pixels.
 + **text** is the text in the tweet that accompanies the image.
+
+## Web view
+Artscripts can be accessed from the web using the express server in `index.js`
+
+The URL structure is: host/ARTSCRIPT/SEED
+
+This will return a .png file for that artscript with the specified seed
+
+TODO: We will also have an index page that allows the user to select different art scripts and generate new images by calling the URL
