@@ -12,13 +12,11 @@ Download this repo. Rename `.env-example` to `.env` and add your Twitter authent
 
 Run `npm dev` in another tab to automatically compile any .coffee file when it is saved
 
-To run any individual art script, you can (assuming you are in the project root) do `node dist/artscripts/$FILENAME` - to run the boilerplate example you would do `node dist/artscripts/$FILENAME`
-
-I will generally make changes to my art script and then run the above command to check it out, then tweak a little, run it again, so on and so forth.
+To run any individual art script, you can (assuming you are in the project root) do `node dist/artscripts/$FILENAME` - to run the boilerplate example you would do `node dist/artscripts/_boilerplate`
 
 To force the bot to randomly pick an artscript to run and tweet, use `node dist/index -force`
 
-To force the bot to randomly pick an artscript to export every frame of, use `node dist/index -movie`
+To force the bot to randomly pick an artscript to export every frame, use `node dist/index -movie`
 
 To get started on a new artscript, you can clone the boilerplate `cp src/artscripts/_boilerplate.coffee src/artscripts/MY-NEW-ARTSCRIPT.coffee` and then modifying that `atom src`
 
