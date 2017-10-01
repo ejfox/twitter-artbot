@@ -11,20 +11,21 @@ argv = require 'yargs'
   .argv
 
 class GenArt
-  constructor: (seed) ->
+  constructor: (seed, options) ->
     @seed = seed # The seed for the art
-    @count = 65 # Max number of particles to create
-    @numTicks = 120 # Max number of times to tick over those particles
-
-    @opacity = 1
-
-    @text = @seed
+    @count = 500 # Max number of particles to create
+    @numTicks = 1 # Max number of times to tick over those particles
+    @bgColor = 'black' # Canvas background color
+    @opacity = 1 # Default opacity of our particles
+    # @text = 'Hello world!' # The text for our tweet, should we want to overwrite it
 
     # Canvas width and height
     @width = 1080
     @height = 720
 
-    @bgColor = 'black'
+    if options
+      console.log('Options received!', options)
+      Object.assign(this, options)
 
   makeCanvas: ->
     # Create the canvas with D3 Node
@@ -32,7 +33,7 @@ class GenArt
     @canvas = d3n.createCanvas @width, @height
     @ctx = @canvas.getContext '2d'
 
-    # make bg
+    # Make the background color
     @ctx.fillStyle = @bgColor
     @ctx.fillRect(0, 0, @width, @height)
 
@@ -42,13 +43,13 @@ class GenArt
     # @numTicks = @chance.integer({min: 1, max: @numTicks})
     #
     @chance = new Chance(@seed) # init chance.js - chancejs.com
-    @simplex = new SimplexNoise(Chance.random)
+    @simplex = new SimplexNoise() # This is always random despite the seed
 
     console.log('----------------------------------------')
     console.log('Init seed:', @seed)
-    console.log('Chance float:', @chance.floating())
+    # console.log('Chance float:', @chance.floating())
     console.log('Chance random:', @chance.random())
-    console.log('Simplex 1,1:', @simplex.noise2D(1,1))
+    # console.log('Simplex 1,1:', @simplex.noise2D(1,1))
     console.log 'width', @width, 'height', @height
 
     @makeCanvas()
@@ -154,7 +155,6 @@ run = ->
   genart.init({save: true})
 
 if(require.main == module)
-  console.log 'Running as module'
   run()
 
 module.exports = GenArt

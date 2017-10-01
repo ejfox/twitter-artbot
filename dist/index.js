@@ -129,14 +129,6 @@
       console.log('width', this.width, 'height', this.height);
       this.makeCanvas();
       this.makeParticles();
-
-      /*
-      while ticks is < @numTicks
-        @tick()
-        then save file
-        wait until saveFile is done
-        then repeat
-       */
       t = 0;
       tMax = this.numTicks;
       console.log('Exporting ' + tMax + ' frames');

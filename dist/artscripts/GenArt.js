@@ -22,18 +22,21 @@
   argv = require('yargs').alias('s', 'seed').argv;
 
   GenArt = (function() {
-    function GenArt(seed) {
+    function GenArt(seed, options) {
       this.tick = bind(this.tick, this);
       this.makeParticles = bind(this.makeParticles, this);
       this.init = bind(this.init, this);
       this.seed = seed;
-      this.count = 65;
-      this.numTicks = 120;
+      this.count = 500;
+      this.numTicks = 1;
+      this.bgColor = 'black';
       this.opacity = 1;
-      this.text = this.seed;
       this.width = 1080;
       this.height = 720;
-      this.bgColor = 'black';
+      if (options) {
+        console.log('Options received!', options);
+        Object.assign(this, options);
+      }
     }
 
     GenArt.prototype.makeCanvas = function() {
@@ -52,12 +55,10 @@
         options = {};
       }
       this.chance = new Chance(this.seed);
-      this.simplex = new SimplexNoise(Chance.random);
+      this.simplex = new SimplexNoise();
       console.log('----------------------------------------');
       console.log('Init seed:', this.seed);
-      console.log('Chance float:', this.chance.floating());
       console.log('Chance random:', this.chance.random());
-      console.log('Simplex 1,1:', this.simplex.noise2D(1, 1));
       console.log('width', this.width, 'height', this.height);
       this.makeCanvas();
       this.makeParticles();
@@ -184,7 +185,6 @@
   };
 
   if (require.main === module) {
-    console.log('Running as module');
     run();
   }
 

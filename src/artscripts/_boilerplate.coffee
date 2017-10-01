@@ -1,3 +1,9 @@
+# Title: Boilerplate Artscript
+# Author: EJ Fox <ejfox@ejfox.com>
+# Date created: 10/01/2017
+# Notes:
+
+# Set up our requirements
 fs = require 'fs'
 d3 = require 'd3'
 _ = require 'lodash'
@@ -10,17 +16,32 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+
+# Require GenArt which is the skeleton
+# around which all ArtScripts are built
 GenArt = require './GenArt'
 
-# Make new instance
-art = new GenArt(seed)
-art.filename = path.basename(__filename, '.js') + '-' + seed
-art.count = 8
-art.numTicks = 5000
-art.bgColor = 'white'
-art.fillColor = 'black'
-# art.simplex = new SimplexNoise
+# Make our .png filename (which references the name of the ArtScript)
+# For example if your ArtScript was named `_boilerplate`
+# Your output would be `_boilerplate-1506887448254.png`
+filename = path.basename(__filename, '.js') + '-' + seed
 
+# Set some options for our artscript
+options = {
+  filename: filename
+  count: 69
+  numTicks: 69
+  bgColor: 'white'
+  fillColor: 'black'
+}
+
+# Clone skeleton GenArt ArtScript
+# So we can modify it
+art = new GenArt(seed, options)
+
+# Overwrite the GenArt makeParticles function and customize
+# This is called at the start of the script and creates
+# The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
   @data = d3.range(@count).map =>
@@ -42,14 +63,17 @@ art.makeParticles = ->
     }
   return @data
 
+# Overwrite the GenArt tick function and customize
+# This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
     ticks = 0
   @ticks++
-  #console.log(@ticks, 'Ticking on ' + @data.length + ' particles')
-  @data.forEach((d,i) =>
-    # Modify the data
 
+  @data.forEach((d,i) =>
+    ###########################
+    #   Modify each particle  #
+    ###########################
     noiseValue = @simplex.noise2D(d.x, d.y)
 
     if @chance.bool {likelihood: 50}
@@ -63,7 +87,9 @@ art.tick = ->
     else
       d.y += @chance.floating {min: -2, max: 2}
 
-    # Paint the data
+    ###########################
+    # Then paint the particle #
+    ###########################
     @ctx.beginPath()
     @ctx.rect d.x, d.y, 1, 1
     # @ctx.fillStyle = d.color
@@ -81,7 +107,7 @@ run = ->
     seed = argv.seed
   else
     seed = Date.now()
-  genart = new GenArt(seed)
+  genart = new GenArt(seed, options)
   genart.init({save: true})
 
 if(require.main == module)
