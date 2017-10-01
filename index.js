@@ -11,10 +11,32 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+app.get('/art/:artscript/:seed', function(req, res){
+  var artscript = req.params.artscript
+  if(req.params.seed !== undefined)  {
+    var seed = req.params.seed
+  } else {
+    var seed = Date.now()
+  }
+  console.log('Artscript ' + artscript + ' requested with seed: ' + seed)
+  // res.send(req.params)
+
+  res.setHeader('Content-Type', 'image/png');
+
+  var art = require('./dist/artscripts/'+artscript)
+
+  art.seed = seed
+
+  art.init({}, function(){
+    canvas = art.canvas
+    canvas.pngStream().pipe(res)
+  })
+})
+
 app.get('/', function(request, response) {
   // response.render('pages/index');
 
-  art = require('./dist/index.js');
+  // art = require('./dist/index.js');
 
   response.set('Content-Type', 'text/html');
   response.send(new Buffer('<h1>Tweeting</h1>'));

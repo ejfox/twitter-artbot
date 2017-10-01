@@ -1,10 +1,19 @@
 # Twitter Art Bot
 
+## Web view
+The ability to select art scripts and generate different seeds, and control parameters
+
+The URL structure is: twitterbot.app/ARTSCRIPT/SEED
+
+This will return a .png file for that artscript with the specified seed
+
+We will also have an index page that allows the user to select different art scripts and generate new images by calling the URL
+
 ## What it does
-Makes [generative art](https://en.wikipedia.org/wiki/Generative_art) and then automatically posts it to Twitter. 
+Makes [generative art](https://en.wikipedia.org/wiki/Generative_art) and then automatically posts it to Twitter.
 
 ## Development
-Create a [new Twitter app and get your consumer key and token](https://apps.twitter.com/). 
+Create a [new Twitter app and get your consumer key and token](https://apps.twitter.com/).
 
 Download this repo. Rename `.env-example` to `.env` and add your Twitter authentication details.
 
@@ -12,7 +21,7 @@ Download this repo. Rename `.env-example` to `.env` and add your Twitter authent
 
 Run `npm dev` in another tab to automatically compile any .coffee file when it is saved
 
-To run any individual art script, you can (assuming you are in the project root) do `node dist/artscripts/$FILENAME` - to run the boilerplate example you would do `node dist/artscripts/$FILENAME` 
+To run any individual art script, you can (assuming you are in the project root) do `node dist/artscripts/$FILENAME` - to run the boilerplate example you would do `node dist/artscripts/$FILENAME`
 
 I will generally make changes to my art script and then run the above command to check it out, then tweak a little, run it again, so on and so forth.
 
@@ -25,12 +34,8 @@ To get started on a new artscript, you can clone the boilerplate `cp src/artscri
 ## Options
 There are a few options available for artscripts.
 
-+ **seed** is the seed used for the random number generators. For the most part, an artscript run with the same seed will produce the same image every time. Your results may vary. 
++ **seed** is the seed used for the random number generators. For the most part, an artscript run with the same seed will produce the same image every time. Your results may vary.
 + **count** is the number of things or particles to place on the page.
-+ **numTicks** is the number of times to run the `tick()` function in the artscript. In `-movie` mode, each tick is exported as a frame. 
-+ **width** and **height** are the width and height of the canvas in pixels. 
-+ **text** is the text in the tweet that accompanies the image. 
-
-
-
-
++ **numTicks** is the number of times to run the `tick()` function in the artscript. In `-movie` mode, each tick is exported as a frame.
++ **width** and **height** are the width and height of the canvas in pixels.
++ **text** is the text in the tweet that accompanies the image.

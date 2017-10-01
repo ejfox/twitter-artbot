@@ -4,6 +4,7 @@ _ = require 'lodash'
 d3Node = require 'd3-node'
 canvasModule = require 'canvas-prebuilt'
 Chance = require 'chance'
+SimplexNoise = require 'simplex-noise'
 path = require 'path'
 argv = require 'yargs'
   .alias 's', 'seed'
@@ -12,8 +13,6 @@ argv = require 'yargs'
 class GenArt
   constructor: (seed) ->
     @seed = seed # The seed for the art
-
-    @chance = new Chance(@seed) # init chance.js - chancejs.com
     @count = 65 # Max number of particles to create
     @numTicks = 120 # Max number of times to tick over those particles
 
@@ -42,8 +41,16 @@ class GenArt
     # @count = @chance.integer({min: 1, max: @count})
     # @numTicks = @chance.integer({min: 1, max: @numTicks})
     #
-    console.log('Seed:', @seed)
+    @chance = new Chance(@seed) # init chance.js - chancejs.com
+    @simplex = new SimplexNoise(Chance.random)
+
+    console.log('----------------------------------------')
+    console.log('Init seed:', @seed)
+    console.log('Chance float:', @chance.floating())
+    console.log('Chance random:', @chance.random())
+    console.log('Simplex 1,1:', @simplex.noise2D(1,1))
     console.log 'width', @width, 'height', @height
+
     @makeCanvas()
     @makeParticles()
     @tickTil(@numTicks)
@@ -125,7 +132,6 @@ class GenArt
         callback()
 
 run = ->
-  console.log ' -- run'
   # If this is being called from the command line
   # --seed foo
   # would set the seed to "foo"

@@ -8,6 +8,7 @@ randGen = require 'random-seed'
 Twit = require 'twit'
 Chance = require 'chance'
 chance = new Chance()
+SimplexNoise = require 'simplex-noise'
 rand = new randGen()
 seed = Date.now()
 schedule = require 'node-schedule'
@@ -21,7 +22,10 @@ argv = require 'yargs'
 artScripts = [
   '_boilerplate'
 ]
-artScriptChoice = artScripts[rand(artScripts.length)]
+if argv.artscript
+  artScriptChoice = argv.artscript
+else
+  artScriptChoice = artScripts[rand(artScripts.length)]
 
 d3n = new d3Node { canvasModule }
 
@@ -92,6 +96,9 @@ makeMovie = ->
   art = require('./artscripts/'+artScriptChoice)
   # art = new genArt(seed)
   art.init = ->
+    @chance = new Chance(@seed) # init chance.js - chancejs.com
+    @simplex = new SimplexNoise(Chance.random)
+
     console.log('Seed:', @seed)
     console.log 'width', @width, 'height', @height
     @makeCanvas()
@@ -111,7 +118,7 @@ makeMovie = ->
     loopTicks = =>
       @tick()
       # console.log 'movie tick ' + t
-      @saveFile('mov-'+t+'-'+@seed, ->
+      @saveFile(artScriptChoice + '-mov-' + t + '-' + @seed, ->
         t++
         if t < tMax
           loopTicks()

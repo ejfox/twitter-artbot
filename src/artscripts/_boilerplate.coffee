@@ -4,7 +4,7 @@ _ = require 'lodash'
 d3Node = require 'd3-node'
 canvasModule = require 'canvas-prebuilt'
 Chance = require 'chance'
-SimplexNoise = require 'simplex-noise'
+# SimplexNoise = require 'simplex-noise'
 path = require 'path'
 argv = require 'yargs'
   .alias 's', 'seed'
@@ -17,9 +17,9 @@ art = new GenArt(seed)
 art.filename = path.basename(__filename, '.js') + '-' + seed
 art.count = 8
 art.numTicks = 5000
-art.bgColor = '#999'
+art.bgColor = 'white'
 art.fillColor = 'black'
-art.simplex = new SimplexNoise
+# art.simplex = new SimplexNoise
 
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
@@ -58,6 +58,11 @@ art.tick = ->
     if @chance.bool {likelihood: 50}
       d.y += @chance.floating {min: -2, max: 2}
 
+    if noiseValue > 0
+      d.x += @chance.floating {min: -2, max: 2}
+    else
+      d.y += @chance.floating {min: -2, max: 2}
+
     # Paint the data
     @ctx.beginPath()
     @ctx.rect d.x, d.y, 1, 1
@@ -68,8 +73,18 @@ art.tick = ->
   )
 
 
+run = ->
+  # If this is being called from the command line
+  # --seed foo
+  # would set the seed to "foo"
+  if argv.seed
+    seed = argv.seed
+  else
+    seed = Date.now()
+  genart = new GenArt(seed)
+  genart.init({save: true})
+
 if(require.main == module)
-  # Make the art
-  art.init({save: true})
+  run()
 
 module.exports = art
