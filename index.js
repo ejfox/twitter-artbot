@@ -44,7 +44,7 @@ app.get('/', function(request, response) {
   // art = require('./dist/index.js');
 
   response.set('Content-Type', 'text/html');
-  response.send(new Buffer('<h1>Tweeting</h1>'));
+  response.send(new Buffer('<h1>Hi</h1>'));
 
   // var cmd = 'node ./dist/index.js';
   // exec(cmd, function(error, stdout, stderr) {
