@@ -12,3 +12,4 @@ npm-debug.log
 *.log
 npm-debug.log
 *.log
+.DS_Store

@@ -11,10 +11,37 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
+app.get('/art/:artscript/:seed', function(req, res){
+  var artscript = req.params.artscript
+
+  // Look for a seed in the URL
+  // If it's not there, use unix epoch
+  if(req.params.seed !== undefined)  {
+    var seed = req.params.seed
+  } else {
+    var seed = Date.now()
+  }
+  console.log('Artscript ' + artscript + ' requested with seed: ' + seed)
+
+  // We're going to return the result as a png
+  res.setHeader('Content-Type', 'image/png');
+
+  // Call the appropriate artscript
+  var art = require('./dist/artscripts/'+artscript)
+  art.seed = seed
+
+  // Pass a callback that when its done generating, we pull
+  // the canvas and pipe it back as the response
+  art.init({}, function(){
+    canvas = art.canvas
+    canvas.pngStream().pipe(res)
+  })
+})
+
 app.get('/', function(request, response) {
   // response.render('pages/index');
 
-  art = require('./dist/index.js');
+  // art = require('./dist/index.js');
 
   response.set('Content-Type', 'text/html');
   response.send(new Buffer('<h1>Tweeting</h1>'));

@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "(coffee --compile --output dist --watch src &)",
-    "start": "node index.js",
+    "start": "node dist/index.js",
     "postinstall": "node dist/index.js"
   },
   "author": "EJ Fox <ejfox@ejfox.com>",
@@ -30,7 +30,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "node-env-file": "^0.1.8",
-    "node-schedule": "^1.2.4",
+    "node-schedule": "^1.2.5",
     "random-seed": "^0.3.0",
     "seedrandom": "^2.4.3",
     "simplex-noise": "^2.3.0",
