@@ -6,6 +6,7 @@
 # Set up our requirements
 # SimplexNoise = require 'simplex-noise'
 path = require 'path'
+d3 = require 'd3'
 argv = require 'yargs'
   .alias 's', 'seed'
   .argv

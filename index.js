@@ -1,7 +1,9 @@
 var env = require('node-env-file');
 var express = require('express');
+var fs = require('fs')
 var app = express();
 var exec = require('child_process').exec;
+var _ = require('lodash')
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -10,7 +12,6 @@ app.use(express.static(__dirname + '/public'));
 // views is directory for all template files
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
-
 
 // Artscript route without seed
 app.get('/art/:artscript', function(req, res){
@@ -62,19 +63,62 @@ app.get('/art/:artscript/:seed', function(req, res){
   })
 })
 
+availableArtScripts = function() {
+  var artScripts = []
+  fs.readdir('./src/artscripts/', function(err, scripts){
+    console.log('Scripts: ', scripts)
+
+    scripts.forEach(function(d,i){
+      // console.log('i', i)
+      // console.log('d', d)
+      scriptName = d.split('.')[0]
+      // console.log(scriptName)
+      artScripts.push(scriptName)
+    })
+  })
+  return artScripts
+}
+
 app.get('/', function(request, response) {
   // response.render('pages/index');
 
   // art = require('./dist/index.js');
 
-  response.set('Content-Type', 'text/html');
-  response.send(new Buffer('<h1>Hi</h1>'));
+  var artImg = _.template('<h2> <%= scriptName %> </h2> <img src="art/<%= scriptName %>/<%= seed %>" alt=""></img>')
 
-  // var cmd = 'node ./dist/index.js';
-  // exec(cmd, function(error, stdout, stderr) {
-  //   // command output is in stdout
-  //   console.log(stderr)
-  // });
+  artScripts = availableArtScripts()
+  seed = Date.now()
+
+  console.log('---->', artScripts)
+
+  pageHtml = ""
+
+  var artScripts = []
+  fs.readdir('./src/artscripts/', function(err, scripts){
+    console.log('Scripts: ', scripts)
+
+    scripts.forEach(function(d,i){
+      // console.log('i', i)
+      // console.log('d', d)
+      scriptName = d.split('.')[0]
+      // console.log(scriptName)
+      if(scriptName === 'GenArt') {
+        // Skip this one
+      } else {
+        artScripts.push(scriptName)
+      }
+    })
+
+    artScripts.forEach(function(d,i){
+      var imgHtml = artImg({scriptName: d, seed: seed})
+      pageHtml += imgHtml
+    })
+
+    response.set('Content-Type', 'text/html');
+    // response.send(new Buffer('<h1>Hi</h1>'));
+    response.send(new Buffer(pageHtml));
+
+  })
 
 
 });
