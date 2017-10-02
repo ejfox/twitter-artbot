@@ -165,5 +165,9 @@ else if argv.movie
   makeMovie()
 else
   # Run tweetArt() on the 20th minute of the hour
-  console.log 'Running... waiting for **:20'
-  tweetCron = schedule.scheduleJob '20 * * * *', -> tweetArt()
+  runMinute = 20 # Minute of the hour to run, eg **:20
+  console.log 'Running... waiting for **:'+runMinute
+  # tweetCron = schedule.scheduleJob '20 * * * *', -> tweetArt()
+  tweetCron = schedule.scheduleJob runMinute+' * * * *', ->
+    console.log 'Gonna tweet some art now!'
+    tweetArt()
