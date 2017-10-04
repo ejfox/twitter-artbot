@@ -45,6 +45,11 @@ class GenArt
     @chance = new Chance(@seed) # init chance.js - chancejs.com
     @simplex = new SimplexNoise() # This is always random despite the seed
 
+    if @randomizeCount
+      @count = @chance.integer {min: @count * 0.25, max: @count}
+    if @randomizeTicks
+      @numTicks = @chance.integer {min: @numTicks * 0.1, max: @numTicks}
+
     console.log('----------------------------------------')
     console.log('Init seed:', @seed)
     # console.log('Chance float:', @chance.floating())

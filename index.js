@@ -97,6 +97,8 @@ app.get('/', function(request, response) {
   fs.readdir('./src/artscripts/', function(err, scripts){
     console.log('Scripts: ', scripts)
 
+    scripts.reverse() // So page displays top to bottom
+
     scripts.forEach(function(d,i){
       // console.log('i', i)
       // console.log('d', d)

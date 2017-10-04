@@ -56,6 +56,18 @@
       }
       this.chance = new Chance(this.seed);
       this.simplex = new SimplexNoise();
+      if (this.randomizeCount) {
+        this.count = this.chance.integer({
+          min: this.count * 0.25,
+          max: this.count
+        });
+      }
+      if (this.randomizeTicks) {
+        this.numTicks = this.chance.integer({
+          min: this.numTicks * 0.1,
+          max: this.numTicks
+        });
+      }
       console.log('----------------------------------------');
       console.log('Init seed:', this.seed);
       console.log('Chance random:', this.chance.random());

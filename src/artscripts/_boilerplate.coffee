@@ -75,6 +75,9 @@ art.tick = ->
     if @chance.bool {likelihood: 50}
       d.y += @chance.floating {min: -2, max: 2}
 
+    # Simplex noise is always random, not seeded
+    # This will introduce randomness even with the same seed
+    # Use with care, and for subtle effects
     if noiseValue > 0
       d.x += @chance.floating {min: -2, max: 2}
     else
@@ -100,8 +103,8 @@ run = ->
     seed = argv.seed
   else
     seed = Date.now()
-  genart = new GenArt(seed, options)
-  genart.init({save: true})
+  art.seed = seed
+  art.init({save: true})
 
 if(require.main == module)
   run()

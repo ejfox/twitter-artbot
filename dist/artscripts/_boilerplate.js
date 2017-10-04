@@ -101,14 +101,13 @@
   };
 
   run = function() {
-    var genart;
     if (argv.seed) {
       seed = argv.seed;
     } else {
       seed = Date.now();
     }
-    genart = new GenArt(seed, options);
-    return genart.init({
+    art.seed = seed;
+    return art.init({
       save: true
     });
   };
