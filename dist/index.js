@@ -37,7 +37,7 @@
 
   argv = require('yargs').alias('f', 'force').alias('m', 'movie').argv;
 
-  artScripts = ['9-10', '10-1', '10-2', '10-3'];
+  artScripts = ['9-10', '10-1', '10-2', '10-3', '10-4', '10-4-2', '10-4-3'];
 
   if (argv.artscript) {
     artScriptChoice = argv.artscript;

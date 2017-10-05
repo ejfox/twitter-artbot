@@ -1,7 +1,7 @@
 # Title: Boilerplate Artscript
 # Author: EJ Fox <ejfox@ejfox.com>
-# Date created: 10/02/2017
-# Notes:
+# Date created: 10/04/2017
+# Notes: Force layout art
 
 # Set up our requirements
 # SimplexNoise = require 'simplex-noise'
@@ -12,6 +12,7 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+clColors = require('nice-color-palettes/200')
 Chance = require('chance')
 
 # Require GenArt which is the skeleton
@@ -24,33 +25,39 @@ GenArt = require './GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 12
-  numTicks: 1900
+  width: 720
+  height: 1280
+  count: 92
+  numTicks: 60
   bgColor: 'white'
   fillColor: 'white'
   opacity: 1
-  randomizeCount: true
+  randomizeCount: false
   randomizeTicks: true
-  radius: 80
   minRadius: 2
-  drawLinks: false
-  constrainEdges: true
+  drawLinks: true
+  constrainEdges: false
   colorChangeAmount: 2.5
 }
 
 # Clone skeleton GenArt ArtScript
 # So we can modify it
 art = new GenArt(seed, options)
-
 # Overwrite the GenArt makeParticles function and customize
 # This is called at the start of the script and creates
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
-  @colors = ['#2ed991', '#2ed9c9', '#2e87d9', '#dbdf1d', '#d92e99'
-    '#d92752', '#2799d9'
-  ]
+  # @colors = ['#2ed991', '#2ed9c9', '#2e87d9', '#dbdf1d', '#d92e99'
+  #   '#d92752', '#2799d9'
+  # ]
   # @colors = ['#FFF']
+
+  colorNum = @chance.integer {min: 1, max: 200}
+  @colors = clColors[colorNum]
+
+
+
   @data = d3.range(@count).map (d,i) =>
     offsetAmount = @chance.integer {min: 250, max: 900}
     offset = {}
@@ -71,12 +78,12 @@ art.makeParticles = ->
       x: @width / 2
       y: @height / 2
       color: c.toString()
-      radius: @radius
+      radius: @chance.integer {min: 2, max: 48}
       opacity: @opacity
     }
 
-    if i is 1
-      datum.radius = @chance.integer {min: 50, max: 150}
+    # if i is 1
+    #   datum.radius = @chance.integer {min: 35, max: 180}
 
     if i % 25 >= 1
       datum.x = @width * 0.2
@@ -84,7 +91,7 @@ art.makeParticles = ->
 
     return datum
 
-  @links = d3.range(@count * @chance.floating({min: 0.1, max: 10})).map =>
+  @links = d3.range(@count * @chance.floating({min: 0.5, max: 50})).map =>
     {
       # source: @chance.integer({min: 0, max: @data.length-1})
       source: @chance.integer({min: 0, max: @count-1})
@@ -97,9 +104,10 @@ art.makeParticles = ->
       target: i
     }
 
-  alphaDecay = @chance.floating {min: 0.05, max: 0.25}
-  velocityDecay = @chance.floating {min: 0.01, max: 0.25}
-  charge = @chance.floating {min: -30, max: 30}
+  alphaDecay = @chance.floating {min: 0.01, max: 0.25}
+  velocityDecay = @chance.floating {min: 0.01, max: 0.15}
+  # charge = @chance.floating {min: -80, max: 40}
+  charge = -200
   centerOffsetX = @chance.floating {min: 0.35, max: 1.25}
   centerOffsetY = @chance.floating {min: 0.35, max: 1.25}
 
@@ -109,7 +117,7 @@ art.makeParticles = ->
     .velocityDecay(velocityDecay)
     .force 'charge', d3.forceManyBody().strength(charge)
     .force 'collide', d3.forceCollide((d) -> d.radius * 1.2).iterations(8)
-    .force 'link', d3.forceLink(@links).distance(10).strength(0.5)
+    .force 'link', d3.forceLink(@links).distance(10).strength(1)
     .force 'center', d3.forceCenter((@width/2)*centerOffsetX,(@height/2)*centerOffsetY)
 
   # console.log 'links', @links
@@ -124,20 +132,24 @@ art.tick = ->
   @ticks++
 
   # @simulation.tick()
-  for tick in [0..2]
+  for tick in [0..20]
     @simulation.tick()
 
   if @drawLinks
-    if @chance.bool {likelihood: 5}
-      @links.forEach( (d,i) =>
+    @links.forEach( (d,i) =>
+      if d.i is 1
         linkopacity = @chance.floating {min: 0, max: 0.8}
         @ctx.beginPath();
         @ctx.moveTo(d.source.x, d.source.y);
         @ctx.lineTo(d.target.x, d.target.y);
         # @ctx.closePath();
-        @ctx.strokeStyle = 'rgba(255,255,255,'+linkopacity+')'
+        # @ctx.strokeStyle = 'rgba(255,255,255,'+linkopacity+')'
+        c = d3.hsl d.target.color
+        c.opacity = 0.2
+        # d.color = c.toString()
+        @ctx.strokeStyle = d.target.color
         @ctx.stroke();
-      )
+    )
 
   @data.forEach((d,i) =>
     ###########################
@@ -151,10 +163,10 @@ art.tick = ->
 
     if @chance.bool {likelihood: 15}
       # d.x += @chance.floating {min: -d.radius*1.2, max: d.radius*1.2}
-      d.vx += 0.5
+      d.vx *= 2
     else if @chance.bool {likelihood: 15}
       # d.y += @chance.floating {min: -d.radius*1.2, max: d.radius*1.2}
-      d.vx += 0.5
+      d.vx *= 2
 
     if @chance.bool {likelihood: 25}
       d.x += @chance.floating {min: -maxStep, max: maxStep}
@@ -165,7 +177,7 @@ art.tick = ->
     if i is 1
       d.opacity = 0
       if @chance.bool {likelihood: 70}
-        d.x += @chance.integer {min: -2, max: 7}
+        d.y += @chance.integer {min: -2, max: 7}
 
     if @constrainEdges
       d.x = _.clamp(d.x, 0+d.radius, @width-d.radius)
@@ -176,22 +188,26 @@ art.tick = ->
     # Simplex noise is always random, not seeded
     # This will introduce randomness even with the same seed
     # Use with care, and for subtle effects
-    # d.radius += (noiseValue * 0.2) + (d.x / (@width*16))
+    d.radius -= ((noiseValue * 0.2) + (d.x / (@width*16))) * 0.5
 
     if noiseValue > 0
       d.x += @chance.floating {min: -6, max: 6}
-      d.radius -= (noiseValue * 0.66)
+      # d.radius -= (noiseValue * 0.66)
     else
       d.y += @chance.floating {min: -6, max: 6}
-      d.radius += (noiseValue * 0.05)
+      # d.radius += (noiseValue * 0.05)
 
 
-    colorChangeAmount = (d.vy + d.vx) * 0.64
+    colorChangeAmount = (d.vy + d.vx) * 0.14
 
     # Modify color / transparency
     # d.opacity -= 0.001
     c = d3.hsl(d.color)
-    c.h += colorChangeAmount #@chance.integer({min: -colorChangeAmount, max: colorChangeAmount})
+    c.h += colorChangeAmount * 0.5 #@chance.integer({min: -colorChangeAmount, max: colorChangeAmount})
+    if noiseValue > 0
+      c.s += colorChangeAmount * 0.01
+    else
+      c.s -= colorChangeAmount * 0.01
     c.opacity = d.opacity
     d.color = c.toString()
 
@@ -203,20 +219,15 @@ art.tick = ->
     @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
     # @ctx.fillStyle = d.color
 
-    if d.radius < 5
-      @ctx.fillStyle = d.color
-      @ctx.strokeStyle = 'white'
-      @ctx.lineWidth = 0.5
-    else
-      @ctx.fillStyle = 'white'
-      @ctx.strokeStyle = d.color
-      @ctx.lineWidth = 1 + (d.radius * 0.025)
-    # @ctx.fillStyle = @fillColor
 
+    @ctx.fillStyle = d.color
+    @ctx.strokeStyle = 'white'
+    @ctx.lineWidth = 2
 
-    if i isnt 1
-      @ctx.fill()
-      @ctx.stroke()
+    # if i isnt 1
+    @ctx.fill()
+    @ctx.stroke()
+
     @ctx.closePath()
   )
 

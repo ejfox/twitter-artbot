@@ -28,6 +28,7 @@
     "fs-extra": "^4.0.0",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
+    "nice-color-palettes": "^2.0.0",
     "node-env-file": "^0.1.8",
     "node-schedule": "^1.2.5",
     "random-seed": "^0.3.0",
