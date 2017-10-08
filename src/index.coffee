@@ -105,7 +105,8 @@ tweetArt = ->
     # It selects randomly who to tweet at from this array
     # It appends "#bot2bot @handle" to the Tweet
     artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
-      'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'
+      'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot',
+      'ImgShuffleBOT'
     ]
     if chance.bool {likelihood: 14}
       tweetText += ' #bot2bot @'+chance.pickone artBots

@@ -106,7 +106,7 @@
       } else {
         tweetText = artScriptChoice + '-' + seed;
       }
-      artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII'];
+      artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot', 'ImgShuffleBOT'];
       if (chance.bool({
         likelihood: 14
       })) {
