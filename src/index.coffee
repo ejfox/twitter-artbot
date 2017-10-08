@@ -27,7 +27,7 @@ artScripts = [
   '10-2',
   '10-3', '10-3-2',
   '10-4', '10-4-2', '10-4-3'
-  '10-7', '10-7-2', '10-7-3', '10-7-4', 
+  '10-7', '10-7-2', '10-7-3', '10-7-4',
 ]
 
 # Force one script instead of the random behavior from the CLI
@@ -49,6 +49,22 @@ T = new Twit(
     timeout_ms: 60*1000
   }
 )
+
+exportAllScripts = ->
+  console.log 'Exporting all scripts'
+  artScript = 0
+  exportArt = ->
+    artScriptChoice = artScripts[artScript]
+    console.log 'Exporting '+artScriptChoice
+    art = require('./artscripts/'+artScriptChoice)
+    artScript++
+    art.init({}, ->
+      art.saveFile(artScriptChoice, ->
+        exportArt()
+      )
+    )
+  exportArt()
+
 
 uploadTweet = (status, b64Content) ->
   # status: the string to be used as the tweet's text
@@ -169,6 +185,9 @@ if argv.force
 else if argv.movie
   # If we run this script --movie we export every frame
   makeMovie()
+else if argv.exportall
+  # If we run this script --movie we export every frame
+  exportAllScripts()
 else
   # Run tweetArt() on the 20th minute of the hour
   runMinute = 20 # Minute of the hour to run, eg **:20
