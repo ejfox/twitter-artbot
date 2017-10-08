@@ -51,12 +51,14 @@
     };
 
     GenArt.prototype.init = function(options, callback) {
+      var countMin;
       if (options == null) {
         options = {};
       }
       this.chance = new Chance(this.seed);
       this.simplex = new SimplexNoise();
       if (this.randomizeCount) {
+        countMin = _.clamp(this.count * 0.25, 1, 100);
         this.count = this.chance.integer({
           min: this.count * 0.25,
           max: this.count

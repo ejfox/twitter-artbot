@@ -46,6 +46,7 @@ class GenArt
     @simplex = new SimplexNoise() # This is always random despite the seed
 
     if @randomizeCount
+      countMin = _.clamp(@count * 0.25, 1, 100)
       @count = @chance.integer {min: @count * 0.25, max: @count}
     if @randomizeTicks
       @numTicks = @chance.integer {min: @numTicks * 0.1, max: @numTicks}
