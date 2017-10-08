@@ -22,7 +22,12 @@ argv = require 'yargs'
 
 # The array of artscript names that are chosen from randomly
 artScripts = [
-  '9-10', '10-1', '10-2', '10-3', '10-4', '10-4-2', '10-4-3'
+  '9-10',
+  '10-1',
+  '10-2',
+  '10-3', '10-3-2',
+  '10-4', '10-4-2', '10-4-3'
+  '10-7', '10-7-2', '10-7-3', '10-7-4', 
 ]
 
 # Force one script instead of the random behavior from the CLI
