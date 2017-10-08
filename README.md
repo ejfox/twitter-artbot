@@ -37,3 +37,14 @@ The URL structure is: host/ARTSCRIPT/SEED
 This will return a .png file for that artscript with the specified seed
 
 TODO: We will also have an index page that allows the user to select different art scripts and generate new images by calling the URL
+
+## Examples
+
+
+![9-10](https://i.imgur.com/96fLEBe.png)
+![10-2](https://i.imgur.com/WNcRDgg.png)
+![10-3-2](https://i.imgur.com/bxW0bex.png)
+![10-4-3](https://i.imgur.com/BTgXBOQ.png)
+![10-3](https://i.imgur.com/HGAz9QZ.png)
+![10-7-2](https://i.imgur.com/Y77isUO.png)
+
