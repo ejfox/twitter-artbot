@@ -36,6 +36,7 @@
     "seedrandom": "^2.4.3",
     "simplex-noise": "^2.3.0",
     "svg2png": "^4.1.1",
+    "three": "^0.87.1",
     "twit": "^2.2.5",
     "yargs": "^8.0.1"
   }
