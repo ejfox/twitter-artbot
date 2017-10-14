@@ -20,6 +20,12 @@ To force the bot to randomly pick an artscript to export every frame, use `node 
 
 To get started on a new artscript, you can clone the boilerplate `cp src/artscripts/_boilerplate.coffee src/artscripts/MY-NEW-ARTSCRIPT.coffee` and then modifying that `atom src`
 
+## Useful commands
+
+`watch -n0 node dist/artscripts/10-14` repeatedly runs the `10-14` artscript
+
+`ffmpeg -framerate 24 -pattern_type glob -i '*.png' -c:v libx264 -pix_fmt yuv420p $FILENAME.mp4` combines all exported .png files into a movie
+
 ## Options
 There are a few options available for artscripts.
 
@@ -47,4 +53,3 @@ TODO: We will also have an index page that allows the user to select different a
 ![10-4-3](https://i.imgur.com/BTgXBOQ.png)
 ![10-3](https://i.imgur.com/HGAz9QZ.png)
 ![10-7-2](https://i.imgur.com/Y77isUO.png)
-
