@@ -23,7 +23,8 @@
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
     count: 5,
-    numTicks: 1,
+    numTicks: 5,
+    randomizeTicks: true,
     bgColor: 'white',
     fillColor: 'black'
   };
@@ -31,18 +32,34 @@
   art = new GenArt(seed, options);
 
   art.makeParticles = function() {
-    var bg, cubeSize, faces, geometry, hex, material, planeGeometry, planeMaterial, segments;
+    var bg, camSize, planeGeometry, planeMaterial;
     this.colors = this.chance.pickone(clColors);
     console.log('colors ->', this.colors);
+    this.cubes = [];
     this.scene = new THREE.Scene();
     bg = this.colors[this.colors.length - 1];
     this.colors.pop();
     this.scene.background = new THREE.Color(bg);
-    this.camera = new THREE.PerspectiveCamera(35, 1, 1, 10000);
-    this.camera.position.z = 20;
+    camSize = this.chance.integer({
+      min: 18,
+      max: 50
+    });
+    this.camera = new THREE.PerspectiveCamera(camSize, 1, 1, 10000);
+    this.camera.position.z = this.chance.integer({
+      min: 15,
+      max: 30
+    });
     this.light = new THREE.PointLight(new THREE.Color(this.chance.pickone(this.colors)), 1.2);
     this.light.position.set(0, 0, 12);
     this.light.castShadow = true;
+    this.light.position.y = this.chance.integer({
+      min: -25,
+      max: 25
+    });
+    this.light.position.z = this.chance.integer({
+      min: 25,
+      max: 90
+    });
     this.scene.add(this.light);
     this.canvas.style = {};
     this.renderer = new THREE.CanvasRenderer({
@@ -51,33 +68,14 @@
     this.renderer.shadowMapEnabled = true;
     this.renderer.shadowMapSoft = true;
     this.renderer.shaadowMapBias = 0.0039;
-    this.renderer.shadowMapDarkness = 0.5;
+    this.renderer.shadowMapDarkness = this.chance.floating({
+      min: 0.1,
+      max: 0.8
+    });
     this.renderer.shadowMapWidth = 1024;
     this.renderer.shadowMapHeight = 1024;
     this.renderer.setSize(this.width, this.height);
     this.renderer.setClearColor(0x3399ff);
-    cubeSize = this.chance.integer({
-      min: 2,
-      max: 5
-    });
-    segments = 0;
-    geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-    faces = 0;
-    while (faces < geometry.faces.length) {
-      hex = this.chance.pickone(this.colors);
-      geometry.faces[faces].color = new THREE.Color(hex);
-      geometry.faces[faces + 1].color = new THREE.Color(hex);
-      faces += 2;
-    }
-    material = new THREE.MeshLambertMaterial({
-      color: new THREE.Color(this.chance.pickone(this.colors))
-    });
-    this.cube = new THREE.Mesh(geometry, material);
-    this.cube.rotation.y = this.chance.pickone([-90, -45, 0, 45, 90]);
-    this.cube.rotation.x = this.chance.pickone([-90, -45, 0, 45, 90]);
-    this.cube.rotation.z = this.chance.pickone([-90, -45, 0, 45, 90]);
-    this.cube.castShadow = true;
-    this.scene.add(this.cube);
     planeGeometry = new THREE.PlaneGeometry(1000, 1000, 0);
     planeMaterial = new THREE.MeshBasicMaterial({
       color: 0xffff00,
@@ -127,6 +125,33 @@
     }
     this.ticks++;
     rotateAmount = 12;
+    this.data.forEach((function(_this) {
+      return function(d, i) {
+        var cubeSize, faces, geometry, hex, material, segments;
+        cubeSize = _this.chance.integer({
+          min: 2,
+          max: 5
+        });
+        segments = 0;
+        geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+        faces = 0;
+        while (faces < geometry.faces.length) {
+          hex = _this.chance.pickone(_this.colors);
+          geometry.faces[faces].color = new THREE.Color(hex);
+          geometry.faces[faces + 1].color = new THREE.Color(hex);
+          faces += 2;
+        }
+        material = new THREE.MeshLambertMaterial({
+          color: new THREE.Color(_this.chance.pickone(_this.colors))
+        });
+        _this.cubes[i] = new THREE.Mesh(geometry, material);
+        _this.cubes[i].rotation.y = _this.chance.pickone([-90, -45, 0, 45, 90]);
+        _this.cubes[i].rotation.x = _this.chance.pickone([-90, -45, 0, 45, 90]);
+        _this.cubes[i].rotation.z = _this.chance.pickone([-90, -45, 0, 45, 90]);
+        _this.cubes[i].castShadow = true;
+        return _this.scene.add(_this.cubes[i]);
+      };
+    })(this));
     return this.renderer.render(this.scene, this.camera);
   };
 
