@@ -69,10 +69,11 @@ art.makeParticles = ->
 
   # composite = @chance.pickone ['source-out', 'multiply', 'screen', 'soft-light', 'xor']
   if @chance.bool {likelihood: 30}
-    composite = @chance.pickone ['multiply', 'screen']
+    # composite = @chance.pickone ['multiply', 'screen']
+    composite = 'multiply'
     console.log composite
     @ctx.globalCompositeOperation = composite
-    @opacity = 0.25
+    @opacity = 0.45
 
 
   xposStart = 12#@chance.integer({min: 5, max: 180})

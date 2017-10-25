@@ -20,7 +20,7 @@ argv = require 'yargs'
   .argv
 _ = require 'lodash'
 seed = Date.now()
-clColors = require('nice-color-palettes/500')
+clColors = require('nice-color-palettes/100')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -34,10 +34,10 @@ deg2rad = Math.PI / 180
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  numTicks: 4444
+  numTicks: 6666
   count: 12
-  randomizeTicks: false
-  randomizeCount: false
+  randomizeTicks: true
+  randomizeCount: true
   bgColor: 'white'
   constrainEdges: false
 }
@@ -65,9 +65,9 @@ art.makeParticles = ->
 
   # @colors = @chance.pickone clColors
   @colors = clColors[thedate.getDate()]
-
-  @ctx.fillStyle = @chance.pickone @colors
-  # @colors.pop()
+  # @colors = _.shuffle @colors
+  @ctx.fillStyle = @colors[@colors.length - 1]
+  @colors.pop()
   @ctx.fillRect(0, 0, @width, @height)
 
   # composite = @chance.pickone ['source-out', 'multiply', 'screen', 'soft-light', 'xor']
@@ -217,7 +217,7 @@ art.tick = ->
         d.angle = 360
 
     c = d3.hsl(d.color)
-    c.h += @chance.floating({min: -0.01, max: 0.18})
+    c.h += @chance.floating({min: -0.01, max: 0.12})
     # c.opacity += @chance.floating({min: -0.1, max: 0.25})
 
     if c.h > 360

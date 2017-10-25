@@ -61,10 +61,10 @@
     if (this.chance.bool({
       likelihood: 30
     })) {
-      composite = this.chance.pickone(['multiply', 'screen']);
+      composite = 'multiply';
       console.log(composite);
       this.ctx.globalCompositeOperation = composite;
-      this.opacity = 0.25;
+      this.opacity = 0.45;
     }
     xposStart = 12;
     xpos = xposStart;

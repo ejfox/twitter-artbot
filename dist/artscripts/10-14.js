@@ -20,7 +20,7 @@
 
   seed = Date.now();
 
-  clColors = require('nice-color-palettes/500');
+  clColors = require('nice-color-palettes/100');
 
   GenArt = require('./GenArt');
 
@@ -28,10 +28,10 @@
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
-    numTicks: 4444,
+    numTicks: 6666,
     count: 12,
-    randomizeTicks: false,
-    randomizeCount: false,
+    randomizeTicks: true,
+    randomizeCount: true,
     bgColor: 'white',
     constrainEdges: false
   };
@@ -56,7 +56,8 @@
     thedate = new Date();
     console.log('Making ' + this.count + ' particles');
     this.colors = clColors[thedate.getDate()];
-    this.ctx.fillStyle = this.chance.pickone(this.colors);
+    this.ctx.fillStyle = this.colors[this.colors.length - 1];
+    this.colors.pop();
     this.ctx.fillRect(0, 0, this.width, this.height);
     xposStart = this.chance.integer({
       min: 5,
@@ -192,7 +193,7 @@
         c = d3.hsl(d.color);
         c.h += _this.chance.floating({
           min: -0.01,
-          max: 0.18
+          max: 0.12
         });
         if (c.h > 360) {
           c.h = 0;
