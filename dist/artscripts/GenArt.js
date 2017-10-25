@@ -32,7 +32,7 @@
       this.bgColor = 'black';
       this.opacity = 1;
       this.width = 1080;
-      this.height = 720;
+      this.height = 1080;
       if (options) {
         console.log('Options received!', options);
         Object.assign(this, options);

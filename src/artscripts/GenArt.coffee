@@ -21,7 +21,7 @@ class GenArt
 
     # Canvas width and height
     @width = 1080
-    @height = 720
+    @height = 1080
 
     if options
       console.log('Options received!', options)
