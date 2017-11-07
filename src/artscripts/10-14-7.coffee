@@ -7,6 +7,7 @@
 # SimplexNoise = require 'simplex-noise'
 path = require 'path'
 d3 = require 'd3'
+_ = require 'lodash'
 argv = require 'yargs'
   .alias 's', 'seed'
   .argv
@@ -15,6 +16,8 @@ global.THREE = require('../../lib/three/three.js')
 require('../../lib/three/canvasrenderer.js')
 require('../../lib/three/projector.js')
 clColors = require('nice-color-palettes/100')
+# OBJLoader = require 'three-obj-loader'
+# OBJLoader(THREE)
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -60,10 +63,13 @@ art.makeParticles = ->
   # @camera.position.z += @chance.integer {min: -10, max: 188}
 
   # @camera.position.y = 150
-  @camera.position.z = @chance.integer {min: 12, max: 40}
-  @camera.rotation.z = @chance.integer {min: -2, max: 2}
+  # @camera.position.z = @chance.integer {min: 12, max: 40}
   # @camera.rotation.y = @chance.integer {min: -2, max: 2}
   # @camera.rotation.x = @chance.integer {min: -2, max: 2}
+
+  # @camera.rotation.x = -100
+  # @camera.rotation.y = -100
+  # @camera.rotation.z = -100
 
   @light = new THREE.PointLight(new THREE.Color( @chance.pickone(@colors) ), 1.2)
   @light.position.set(0,0,12)
@@ -90,14 +96,35 @@ art.makeParticles = ->
   @renderer.setSize(@width, @height)
   @renderer.setClearColor(0x3399ff)
 
-  planeGeometry = new THREE.PlaneGeometry(1000, 1000, 0)
-  planeMaterial = new THREE.MeshBasicMaterial({
-      color: 0xffff00
-      side: THREE.DoubleSide
-  })
+  # loader = new THREE.OBJLoader()
+  # loader = new THREE.JSONLoader()
+  # loader = require('three-json-loader')(THREE)
+  loader = new THREE.ObjectLoader()
+  objData = require('../models/trump.json')
 
-  @plane = new THREE.Mesh(planeGeometry, planeMaterial)
-  @plane.receiveShadow = true
+  # console.log 'objData', _.keys(objData)
+  # objMesh = loader objData
+
+  objMesh = loader.parse objData, (objGeometry) ->
+    console.log 'object loaded'
+    material = new THREE.MeshLambertMaterial({
+      # color: new THREE.Color( @chance.pickone(@colors) )
+      color: new THREE.Color( '#000' )
+      wireframe: true
+    })
+    obj = new THREE.Mesh(objGeometry, material)
+
+    obj.geometry.computeBoundingBox()
+    boundingBox = obj.geometry.computeBoundingBox
+    position = new THREE.Vector3()
+    position.subVectors boundingBox.max, boundingBox.min
+    position.multiplyScalar 0.5
+    position.add boundingBox.min
+    position.applyMatrix4 objMesh.matrixWorld
+    console.log '-------------'
+    console.log 'New obj position', position
+    @scene.add obj
+
   # @plane.rotation.y = @chance.pickone [-90, -45, 0, 45, 90]
   # @plane.rotation.x = @chance.pickone [-90, -45, 45, 90]
   # @plane.rotation.z = @chance.pickone [-90, -45, 0, 45, 90]
@@ -112,23 +139,8 @@ art.makeParticles = ->
 
   console.log('Making ' + @count + ' particles')
   @data = d3.range(@count).map =>
-    offsetAmount = @chance.integer {min: 25, max: 500}
-    offset = {}
-    offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
-    offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
-    # x = (@width / 2 ) + offset.x
-    # y = (@height / 2 ) + offset.y
-    x = @chance.integer {min: -8, max: 8}
-    y = @chance.integer {min: -8, max: 8}
-
-    c = d3.hsl('white')
-    # c.h += @chance.natural({min: 0, max: 14})
-    c.opacity = @opacity
-
     {
-      x: x
-      y: y
-      color: c.toString()
+      sup: 'sup'
     }
   return @data
 
@@ -151,73 +163,7 @@ art.tick = ->
 
   # @camera.position.y += @chance.integer {min: -180, max: 180}
 
-  @data.forEach((d,i) =>
-    ###########################
-    #   Modify each particle  #
-    ###########################
-    # noiseValue = @simplex.noise2D(d.x, d.y)
-    #
-    # if @chance.bool {likelihood: 50}
-    #   d.x += @chance.floating {min: -2, max: 2}
-    #
-    # if @chance.bool {likelihood: 50}
-    #   d.y += @chance.floating {min: -2, max: 2}
-    #
-    # # Simplex noise is always random, not seeded
-    # # This will introduce randomness even with the same seed
-    # # Use with care, and for subtle effects
-    # if noiseValue > 0
-    #   d.x += @chance.floating {min: -2, max: 2}
-    # else
-    #   d.y += @chance.floating {min: -2, max: 2}
 
-    ###########################
-    # Then paint the particle #
-    ###########################
-    # @ctx.beginPath()
-    # @ctx.rect d.x, d.y, 1, 1
-    # # @ctx.fillStyle = d.color
-    # @ctx.fillStyle = @fillColor
-    # @ctx.fill()
-    # @ctx.closePath()
-
-    cubeSize = @chance.integer {min: 1, max: 4}
-    # segments = @chance.integer {min: 1, max: 4}
-    segments = 0
-    # geometry = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize, segments, segments, segments)
-    geometry = new THREE.BoxGeometry(cubeSize,cubeSize,cubeSize)
-    faces = 0
-    # hex = '#999'
-    hex = @chance.pickone @colors
-    while faces < geometry.faces.length
-      # hex = Math.random() * 0xffffff
-      # hex2 = @chance.pickone @colors
-      geometry.faces[faces].color = new THREE.Color( hex );
-      geometry.faces[faces + 1].color = new THREE.Color( hex );
-      faces += 2
-
-    # material = new THREE.MeshBasicMaterial({
-    #   vertexColors: THREE.FaceColors
-    #   overdraw: 0.5
-    #   # wireframe: @chance.bool()
-    # })
-
-    material = new THREE.MeshLambertMaterial({
-      # color: new THREE.Color( @chance.pickone(@colors) )
-      color: new THREE.Color( '#000' )
-      wireframe: true
-    })
-
-    @cubes[i] = new THREE.Mesh(geometry, material)
-    @cubes[i].position.y = d.y
-    @cubes[i].position.x = d.x
-    # if @chance.bool()
-    #   @cubes[i].rotation.y = @chance.pickone [-90, -45, 0, 45, 90]
-    #   @cubes[i].rotation.x = @chance.pickone [-90, -45, 0, 45, 90]
-    #   @cubes[i].rotation.z = @chance.pickone [-90, -45, 0, 45, 90]
-    @cubes[i].castShadow = true
-    @scene.add(@cubes[i])
-  )
 
   @renderer.render(@scene, @camera)
 
