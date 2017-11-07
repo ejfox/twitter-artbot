@@ -18,9 +18,9 @@
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
-    count: 11,
+    count: 14,
     randomizeCount: true,
-    numTicks: 7777,
+    numTicks: 9999,
     randomizeTicks: true,
     bgColor: 'white',
     fillColor: 'black'
@@ -36,7 +36,7 @@
     if (this.count <= 2) {
       this.count = 3;
     }
-    this.curveOptions = [d3.curveBasisClosed, d3.curveBasisOpen, d3.curveNatural, d3.curveStep];
+    this.curveOptions = [d3.curveBasisClosed, d3.curveBasisOpen];
     this.line = d3.line().x(function(d) {
       return d.x;
     }).y(function(d) {
@@ -85,10 +85,8 @@
         noiseValue = _this.simplex.noise2D(d.x, d.y);
         d.x = _.clamp(d.x, 0, _this.width);
         d.y = _.clamp(d.y, 0, _this.height);
-        maxStep = 8;
-        if (i === 1) {
-          d.y++;
-        }
+        maxStep = i * 2;
+        maxStep = _.clamp(maxStep, 0, _this.width / 5);
         if (_this.chance.bool({
           likelihood: 50
         })) {

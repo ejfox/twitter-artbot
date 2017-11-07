@@ -24,9 +24,9 @@ GenArt = require './GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 11
+  count: 14
   randomizeCount: true
-  numTicks: 7777
+  numTicks: 9999
   randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
@@ -49,9 +49,7 @@ art.makeParticles = ->
 
   @curveOptions = [
     d3.curveBasisClosed,
-    d3.curveBasisOpen,
-    d3.curveNatural,
-    d3.curveStep
+    d3.curveBasisOpen
   ]
 
   @line = d3.line()
@@ -98,14 +96,12 @@ art.tick = ->
     d.x = _.clamp d.x, 0, @width
     d.y = _.clamp d.y, 0, @height
 
-    maxStep = 8
+    maxStep = i * 2
+    maxStep = _.clamp maxStep, 0, @width/5
 
     # if @chance.bool {likelihood: 1} and i is 1
     #   d.x += @chance.integer {min: 25, max: 100}
     #   d.y -= @chance.integer {min: 25, max: 100}
-
-    if i is 1
-      d.y++
 
     if @chance.bool {likelihood: 50}
       d.x += @chance.floating {min: -maxStep, max: maxStep}
