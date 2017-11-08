@@ -60,21 +60,25 @@ art.makeParticles = ->
     .curve d3.curveBasisClosed
     .context(@ctx)
 
+  startX = @chance.integer {min: 0, max: @width}
+
   @data = d3.range(@count).map (d,i) =>
     offsetAmount = @chance.integer {min: 125, max: @width / 2}
-    offsetAmount += i
+    # offsetAmount += i
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
     offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
     x = (@width / 2 ) + offset.x
-    y = (@height / 2 ) + offset.y
+    y = @chance.integer {min: 0, max: @height}
+
+    y += i * 25
 
     c = d3.hsl('white')
     # c.h += @chance.natural({min: 0, max: 14})
     c.opacity = @opacity
 
     {
-      x: x
+      x: startX
       y: y
       color: c.toString()
       radius: 4
@@ -100,7 +104,7 @@ art.tick = ->
     d.x = _.clamp d.x, 0, @width
     d.y = _.clamp d.y, 0, @height
 
-    maxStep = ((i * 2) + (@ticks / 10000)) * 0.6
+    maxStep = ((i * 2) + (@ticks / 10000)) * 1.1
 
     if i is @data.length-1
       maxStep *= 2

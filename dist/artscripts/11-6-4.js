@@ -29,6 +29,7 @@
   art = new GenArt(seed, options);
 
   art.makeParticles = function() {
+    var startX;
     console.log('Making ' + this.count + ' particles');
     this.colors = this.chance.pickone(clColors);
     this.color = this.chance.pickone(this.colors);
@@ -42,6 +43,10 @@
     }).y(function(d) {
       return d.y;
     }).curve(d3.curveBasisClosed).context(this.ctx);
+    startX = this.chance.integer({
+      min: 0,
+      max: this.width
+    });
     this.data = d3.range(this.count).map((function(_this) {
       return function(d, i) {
         var c, offset, offsetAmount, x, y;
@@ -49,7 +54,6 @@
           min: 125,
           max: _this.width / 2
         });
-        offsetAmount += i;
         offset = {};
         offset.x = _this.chance.floating({
           min: -offsetAmount,
@@ -60,11 +64,15 @@
           max: offsetAmount
         });
         x = (_this.width / 2) + offset.x;
-        y = (_this.height / 2) + offset.y;
+        y = _this.chance.integer({
+          min: 0,
+          max: _this.height
+        });
+        y += i * 25;
         c = d3.hsl('white');
         c.opacity = _this.opacity;
         return {
-          x: x,
+          x: startX,
           y: y,
           color: c.toString(),
           radius: 4
@@ -88,7 +96,7 @@
         d.y += noiseValue;
         d.x = _.clamp(d.x, 0, _this.width);
         d.y = _.clamp(d.y, 0, _this.height);
-        maxStep = ((i * 2) + (_this.ticks / 10000)) * 0.6;
+        maxStep = ((i * 2) + (_this.ticks / 10000)) * 1.1;
         if (i === _this.data.length - 1) {
           maxStep *= 2;
         }
