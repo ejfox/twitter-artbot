@@ -128,10 +128,9 @@ tweetArt = ->
     # It selects randomly who to tweet at from this array
     # It appends "#bot2bot @handle" to the Tweet
     artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
-      'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot',
-      'ImgShuffleBOT'
+      'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot'
     ]
-    if chance.bool {likelihood: 14}
+    if chance.bool {likelihood: 9}
       tweetText += ' #bot2bot @'+chance.pickone artBots
 
     # Upload the art to Twitter with the tweet text we've made
