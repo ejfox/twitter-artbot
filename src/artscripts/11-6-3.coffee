@@ -26,10 +26,12 @@ options = {
   filename: path.basename(__filename, '.js') + '-' + seed
   count: 10
   randomizeCount: false
-  numTicks: 2000
+  numTicks: 6000
   randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
+  width: 2200
+  height: 2200
 }
 
 # Clone skeleton GenArt ArtScript
@@ -61,7 +63,7 @@ art.makeParticles = ->
     .context(@ctx)
 
   @data = d3.range(@count).map (d,i) =>
-    offsetAmount = @chance.integer {min: 125, max: @width / 2}
+    offsetAmount = @chance.integer {min: 125, max: @width / 1.5}
     offsetAmount += i
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})

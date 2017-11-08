@@ -20,10 +20,12 @@
     filename: path.basename(__filename, '.js') + '-' + seed,
     count: 10,
     randomizeCount: false,
-    numTicks: 2000,
+    numTicks: 6000,
     randomizeTicks: true,
     bgColor: 'white',
-    fillColor: 'black'
+    fillColor: 'black',
+    width: 2200,
+    height: 2200
   };
 
   art = new GenArt(seed, options);
@@ -47,7 +49,7 @@
         var c, offset, offsetAmount, x, y;
         offsetAmount = _this.chance.integer({
           min: 125,
-          max: _this.width / 2
+          max: _this.width / 1.5
         });
         offsetAmount += i;
         offset = {};
