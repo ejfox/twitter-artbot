@@ -48,8 +48,11 @@ class GenArt
     if @randomizeCount
       countMin = _.clamp(@count * 0.25, 1, 100)
       @count = @chance.integer {min: @count * 0.25, max: @count}
+
     if @randomizeTicks
       @numTicks = @chance.integer {min: @numTicks * 0.1, max: @numTicks}
+      if @minTicks
+        @numTicks = _.clamp @numTicks, @minTicks, @numTicks
 
     console.log('----------------------------------------')
     console.log('Init seed:', @seed)

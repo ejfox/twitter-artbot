@@ -69,6 +69,9 @@
           min: this.numTicks * 0.1,
           max: this.numTicks
         });
+        if (this.minTicks) {
+          this.numTicks = _.clamp(this.numTicks, this.minTicks, this.numTicks);
+        }
       }
       console.log('----------------------------------------');
       console.log('Init seed:', this.seed);

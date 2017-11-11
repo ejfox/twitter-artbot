@@ -24,9 +24,9 @@ GenArt = require './GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 50
+  count: 25
   randomizeCount: true
-  numTicks: 5000
+  numTicks: 12000
   randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
@@ -44,19 +44,21 @@ art.makeParticles = ->
   @colors = @chance.pickone clColors
   @color = @chance.pickone @colors
   @ctx.globalCompositeOperation = 'multiply'
+  # @ctx.globalCompositeOperation = @chance.pickone ['multiply', 'difference']
   if @count <= 2
     @count = 3
 
   @curveOptions = [
-    d3.curveBasisClosed,
-    d3.curveBasisOpen
+    d3.curveMonotoneX,
+    d3.curveBasisOpen,
+    d3.curveNatural
   ]
 
   @line = d3.line()
     .x (d) -> d.x
     .y (d) -> d.y
     # .curve d3.curveStep
-    # .curve @chance.pickone @curveOptions
+    .curve @chance.pickone @curveOptions
     # .curve d3.curveBasisClosed
     .curve d3.curveBasisOpen
     .context(@ctx)
@@ -64,26 +66,28 @@ art.makeParticles = ->
   startX = @chance.integer {min: 100, max: @width-100}
 
   @data = d3.range(@count).map (d,i) =>
-    offsetAmount = @chance.integer {min: 125, max: @width / 2}
+    offsetAmount = @chance.integer {min: 25, max: @width / 4}
     # offsetAmount += i
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
     offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
-    x = (@width / 2 ) + offset.x
-    y = @chance.integer {min: 0, max: @height}
+    x = (@width / 2 ) #+ offset.x
+    y = i * (@height / (@count - 1))
 
-    y += i * 25
+    # y += i * 25
 
     c = d3.hsl('white')
     # c.h += @chance.natural({min: 0, max: 14})
     c.opacity = @opacity
 
     {
-      x: startX
+      x: x
       y: y
       color: c.toString()
       radius: 4
     }
+
+  @ogData = @data
   return @data
 
 # Overwrite the GenArt tick function and customize
@@ -97,19 +101,35 @@ art.tick = ->
     ###########################
     #   Modify each particle  #
     ###########################
-    noiseValue = @simplex.noise2D(d.x, d.y) * 2
+    noiseValue = @simplex.noise2D(d.x, d.y) * @chance.floating {min: 0.1, max: 2}
 
-    d.x += noiseValue
-    d.y += noiseValue
+    ogd = @ogData[i]
+
+    # d.x += noiseValue
+    # d.y += noiseValue
 
     d.x = _.clamp d.x, 0, @width
     d.y = _.clamp d.y, 0, @height
 
+    if @chance.bool()
+      if ogd.x < d.x
+        d.x += noiseValue
+
+      if ogd.y < d.y
+        d.y += noiseValue
+
+      if ogd.x > d.x
+        d.x -= noiseValue
+
+      if ogd.y > d.y
+        d.y -= noiseValue
+
+
     # maxStep = ((i * 2) + (@ticks / 10000)) * 0.65
-    maxStep = (i * 2) * 0.65
+    maxStep = i * 0.65
 
     if i is @data.length-1
-      maxStep *= 2
+      maxStep *= 1.5
     maxStep = _.clamp maxStep, 0, @width/4
 
     # if @chance.bool {likelihood: 1} and i is 1
@@ -131,8 +151,7 @@ art.tick = ->
 
 
 
-  if @chance.bool()
-    c.h += 0.1 + (@ticks / 10000)
+  c.h += 0.15 + (@ticks / 100000)
 
   if c.h is 359
     d.h = 0

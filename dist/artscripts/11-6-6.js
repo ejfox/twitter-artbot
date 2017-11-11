@@ -18,10 +18,10 @@
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
-    count: 50,
+    count: 48,
     randomizeCount: true,
-    numTicks: 5000,
-    minTicks: 1000,
+    numTicks: 16000,
+    minTicks: 2500,
     randomizeTicks: true,
     bgColor: 'white',
     fillColor: 'black'
@@ -38,12 +38,12 @@
     if (this.count <= 2) {
       this.count = 3;
     }
-    this.curveOptions = [d3.curveBasisClosed, d3.curveBasisOpen];
+    this.curveOptions = [d3.curveMonotoneX, d3.curveBasisOpen, d3.curveNatural];
     this.line = d3.line().x(function(d) {
       return d.x;
     }).y(function(d) {
       return d.y;
-    }).curve(d3.curveBasisOpen).context(this.ctx);
+    }).context(this.ctx);
     startX = this.chance.integer({
       min: 100,
       max: this.width - 100
@@ -52,8 +52,8 @@
       return function(d, i) {
         var c, offset, offsetAmount, x, y;
         offsetAmount = _this.chance.integer({
-          min: 125,
-          max: _this.width / 2
+          min: 25,
+          max: _this.width / 4
         });
         offset = {};
         offset.x = _this.chance.floating({
@@ -64,22 +64,24 @@
           min: -offsetAmount,
           max: offsetAmount
         });
-        x = (_this.width / 2) + offset.x;
-        y = _this.chance.integer({
-          min: 0,
-          max: _this.height
-        });
-        y += i * 25;
+        x = _this.width / 2;
+        y = i * (_this.height / (_this.count - 1));
+        _this.betaStep = 1 / _this.numTicks;
+        _this.beta = 0;
         c = d3.hsl('white');
         c.opacity = _this.opacity;
         return {
-          x: startX,
+          x: x + _this.chance.integer({
+            min: -offsetAmount,
+            max: offsetAmount
+          }),
           y: y,
           color: c.toString(),
           radius: 4
         };
       };
     })(this));
+    this.ogData = this.data;
     return this.data;
   };
 
@@ -89,21 +91,26 @@
       this.ticks = 0;
     }
     this.ticks++;
+    this.line.curve(d3.curveBundle.beta(+this.beta));
+    this.beta += this.betaStep;
     this.data.forEach((function(_this) {
       return function(d, i) {
-        var maxStep, noiseValue;
-        noiseValue = _this.simplex.noise2D(d.x, d.y) * 2;
-        d.x += noiseValue;
-        d.y += noiseValue;
+        var maxStep, noiseValue, ogd;
+        noiseValue = _this.simplex.noise2D(d.x, d.y) * _this.chance.floating({
+          min: 0.1,
+          max: 2
+        });
+        ogd = _this.ogData[i];
+        if (_this.chance.bool()) {
+          d.x += noiseValue;
+          d.y += noiseValue;
+        }
         d.x = _.clamp(d.x, 0, _this.width);
         d.y = _.clamp(d.y, 0, _this.height);
-        maxStep = (i * 2) * 0.65;
-        if (i === _this.data.length - 1) {
-          maxStep *= 2;
-        }
-        maxStep = _.clamp(maxStep, 0, _this.width / 4);
+        maxStep = (i * 0.25) + noiseValue;
+        maxStep = _.clamp(maxStep, 0.01, _this.width / 8);
         if (_this.chance.bool({
-          likelihood: 20
+          likelihood: 5
         })) {
           d.x += _this.chance.floating({
             min: -maxStep,
@@ -111,7 +118,7 @@
           });
         }
         if (_this.chance.bool({
-          likelihood: 20
+          likelihood: 5
         })) {
           return d.y += _this.chance.floating({
             min: -maxStep,
@@ -122,15 +129,16 @@
     })(this));
     c = d3.hsl(this.color);
     if (this.chance.bool()) {
-      sStep = 0.1;
+      sStep = this.chance.floating({
+        min: 0.01,
+        max: 0.2
+      });
       c.s += this.chance.floating({
         min: -sStep,
         max: sStep
       });
     }
-    if (this.chance.bool()) {
-      c.h += 0.1 + (this.ticks / 10000);
-    }
+    c.h += 0.2 + (this.ticks / 150000);
     if (c.h === 359) {
       d.h = 0;
     }
