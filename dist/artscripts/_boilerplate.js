@@ -55,9 +55,8 @@
   };
 
   art.tick = function() {
-    var ticks;
     if (!this.ticks) {
-      ticks = 0;
+      this.ticks = 0;
     }
     this.ticks++;
     return this.data.forEach((function(_this) {

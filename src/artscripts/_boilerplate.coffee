@@ -60,7 +60,7 @@ art.makeParticles = ->
 # This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
-    ticks = 0
+    @ticks = 0
   @ticks++
 
   @data.forEach((d,i) =>
