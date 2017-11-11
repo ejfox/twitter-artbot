@@ -16,8 +16,8 @@ global.THREE = require('../../lib/three/three.js')
 require('../../lib/three/canvasrenderer.js')
 require('../../lib/three/projector.js')
 clColors = require('nice-color-palettes/100')
-# OBJLoader = require 'three-obj-loader'
-# OBJLoader(THREE)
+OBJLoader = require 'three-obj-loader'
+OBJLoader(THREE)
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -36,6 +36,8 @@ options = {
   bgColor: 'white'
   fillColor: 'black'
 }
+
+objData = require('../models/trump.json')
 
 # Clone skeleton GenArt ArtScript
 # So we can modify it
@@ -96,44 +98,71 @@ art.makeParticles = ->
   @renderer.setSize(@width, @height)
   @renderer.setClearColor(0x3399ff)
 
-  # loader = new THREE.OBJLoader()
-  # loader = new THREE.JSONLoader()
-  # loader = require('three-json-loader')(THREE)
-  loader = new THREE.ObjectLoader()
-  objData = require('../models/trump.json')
 
-  # console.log 'objData', _.keys(objData)
-  # objMesh = loader objData
+  loader = new THREE.JSONLoader()
 
-  objMesh = loader.parse objData, (objGeometry) ->
-    console.log 'object loaded'
-    material = new THREE.MeshLambertMaterial({
+  loader.createModel objData, (done) ->
+    geometry = done
+
+  material = new THREE.MeshLambertMaterial({
       # color: new THREE.Color( @chance.pickone(@colors) )
       color: new THREE.Color( '#000' )
       wireframe: true
     })
-    obj = new THREE.Mesh(objGeometry, material)
 
-    obj.geometry.computeBoundingBox()
-    boundingBox = obj.geometry.computeBoundingBox
-    position = new THREE.Vector3()
-    position.subVectors boundingBox.max, boundingBox.min
-    position.multiplyScalar 0.5
-    position.add boundingBox.min
-    position.applyMatrix4 objMesh.matrixWorld
-    console.log '-------------'
-    console.log 'New obj position', position
-    @scene.add obj
+  mesh = new THREE.Mesh geometry, material
 
-  # @plane.rotation.y = @chance.pickone [-90, -45, 0, 45, 90]
-  # @plane.rotation.x = @chance.pickone [-90, -45, 45, 90]
-  # @plane.rotation.z = @chance.pickone [-90, -45, 0, 45, 90]
+  @scene.add mesh
 
-  # @plane.rotation.y = @chance.integer {min: -180, max: 180}
-  # @plane.rotation.x = @chance.integer {min: -180, max: 180}
-  # @plane.rotation.z = @chance.integer {min: -180, max: 180}
+
+  # loader = new THREE.OBJLoader()
+  # loader = new THREE.JSONLoader()
+  # loader = require('three-json-loader')(THREE)
+  # loader = new THREE.JSONLoader()
+  # loader = new THREE.ObjectLoader()
   #
-  # @scene.add @plane
+  # console.log 'objData ----------> ', objData
+  # console.log 'objData.geometry ----------> ', objData.geometries[0]
+  #
+  # model = loader.parse objData
+
+
+
+  # mesh = new THREE.Mesh(model.geometries[0], material)
+  # objData = JSON.stringify objData
+
+  # console.log 'objData', _.keys(objData)
+  # objMesh = loader objData
+
+  # objMesh = loader.parse objData, (objGeometry) ->
+  #   console.log 'object loaded'
+  #   material = new THREE.MeshLambertMaterial({
+  #     # color: new THREE.Color( @chance.pickone(@colors) )
+  #     color: new THREE.Color( '#000' )
+  #     wireframe: true
+  #   })
+  #   obj = new THREE.Mesh(objGeometry, material)
+  #
+  #   # obj.geometry.computeBoundingBox()
+  #   # boundingBox = obj.geometry.computeBoundingBox
+  #   # position = new THREE.Vector3()
+  #   # position.subVectors boundingBox.max, boundingBox.min
+  #   # position.multiplyScalar 0.5
+  #   # position.add boundingBox.min
+  #   # position.applyMatrix4 objMesh.matrixWorld
+  #   # console.log '-------------'
+  #   # console.log 'New obj position', position
+  #   @scene.add obj
+  #
+  # # @plane.rotation.y = @chance.pickone [-90, -45, 0, 45, 90]
+  # # @plane.rotation.x = @chance.pickone [-90, -45, 45, 90]
+  # # @plane.rotation.z = @chance.pickone [-90, -45, 0, 45, 90]
+  #
+  # # @plane.rotation.y = @chance.integer {min: -180, max: 180}
+  # # @plane.rotation.x = @chance.integer {min: -180, max: 180}
+  # # @plane.rotation.z = @chance.integer {min: -180, max: 180}
+  # #
+  # # @scene.add @plane
 
 
 
