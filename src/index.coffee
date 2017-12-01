@@ -23,14 +23,15 @@ argv = require 'yargs'
 # The array of artscript names that are chosen from randomly
 artScripts = [
   '9-10',
-  '10-1',
+  # '10-1',
   '10-3', '10-3-2',
-  '10-4-2', '10-4-3'
-  '10-7', '10-7-2', '10-7-3', '10-7-4',
+  '10-4-3'
+  '10-7', '10-7-3',
   '10-8', '10-8-2', '10-8-2',
   '10-14', '10-14-3', '10-14-4', '10-14-5', '10-14-6',
   '10-15',
-  '11-6', '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6'
+  '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6'
+  '12-1', '12-1-3'
 ]
 # Force one script instead of the random behavior from the CLI
 # by calling `node dist/index --artscript _boilerplate`
@@ -130,7 +131,7 @@ tweetArt = ->
     artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot',
       'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot'
     ]
-    if chance.bool {likelihood: 9}
+    if chance.bool {likelihood: 0.5}
       tweetText += ' #bot2bot @'+chance.pickone artBots
 
     # Upload the art to Twitter with the tweet text we've made

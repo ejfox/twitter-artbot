@@ -37,7 +37,7 @@
 
   argv = require('yargs').alias('f', 'force').alias('m', 'movie').argv;
 
-  artScripts = ['9-10', '10-1', '10-3', '10-3-2', '10-4-2', '10-4-3', '10-7', '10-7-2', '10-7-3', '10-7-4', '10-8', '10-8-2', '10-8-2', '10-14', '10-14-3', '10-14-4', '10-14-5', '10-14-6', '10-15', '11-6', '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6'];
+  artScripts = ['9-10', '10-3', '10-3-2', '10-4-3', '10-7', '10-7-3', '10-8', '10-8-2', '10-8-2', '10-14', '10-14-3', '10-14-4', '10-14-5', '10-14-6', '10-15', '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6', '12-1', '12-1-3'];
 
   if (argv.artscript) {
     artScriptChoice = argv.artscript;
@@ -127,7 +127,7 @@
       }
       artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot'];
       if (chance.bool({
-        likelihood: 9
+        likelihood: 0.5
       })) {
         tweetText += ' #bot2bot @' + chance.pickone(artBots);
       }
