@@ -31,8 +31,8 @@ artScripts = [
   # '10-14', '10-14-3', '10-14-4', '10-14-5', '10-14-6',
   # '10-15',
   # '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6'
-  # '12-1', 
-  '12-1-3'
+  # '12-1', '12-1-3'
+  '12-8-2', '12-8-3', '12-1', '12-1-3'
 ]
 # Force one script instead of the random behavior from the CLI
 # by calling `node dist/index --artscript _boilerplate`

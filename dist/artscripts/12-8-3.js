@@ -20,7 +20,7 @@
     filename: path.basename(__filename, '.js') + '-' + seed,
     count: 9,
     randomizeCount: true,
-    numTicks: 2000,
+    numTicks: 2500,
     minTicks: 25,
     randomizeTicks: true,
     bgColor: 'white',
@@ -46,7 +46,7 @@
       return d.x;
     }).y(function(d) {
       return d.y;
-    }).curve(this.chance.pickone(this.curveOptions)).context(this.ctx);
+    }).context(this.ctx);
     startX = this.chance.integer({
       min: 100,
       max: this.width - 100
@@ -89,7 +89,7 @@
     })(this));
     this.ogData = this.data;
     if (this.chance.bool({
-      likelihood: 15
+      likelihood: 25
     })) {
       this.data.push({
         x: offsetAmount,
@@ -97,7 +97,7 @@
       });
     }
     if (this.chance.bool({
-      likelihood: 15
+      likelihood: 25
     })) {
       this.data.push({
         x: this.width - offsetAmount,
@@ -105,7 +105,7 @@
       });
     }
     if (this.chance.bool({
-      likelihood: 15
+      likelihood: 25
     })) {
       this.data.push({
         x: this.width - offsetAmount,
@@ -113,7 +113,7 @@
       });
     }
     if (this.chance.bool({
-      likelihood: 15
+      likelihood: 25
     })) {
       this.data.push({
         x: offsetAmount,
@@ -130,6 +130,15 @@
     }
     this.ticks++;
     this.beta += this.betaStep;
+    if (this.chance.bool({
+      likelihood: 5
+    })) {
+      this.line = d3.line().x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      }).curve(this.chance.pickone(this.curveOptions)).context(this.ctx);
+    }
     this.data.forEach((function(_this) {
       return function(d, i) {
         var maxStep, noiseValue, ogd;

@@ -26,7 +26,7 @@ options = {
   filename: path.basename(__filename, '.js') + '-' + seed
   count: 9
   randomizeCount: true
-  numTicks: 2000
+  numTicks: 2500
   minTicks: 25
   randomizeTicks: true
   bgColor: 'white'
@@ -78,7 +78,7 @@ art.makeParticles = ->
     .x (d) -> d.x
     .y (d) -> d.y
   #   # .curve d3.curveStep
-    .curve @chance.pickone @curveOptions
+    # .curve @chance.pickone @curveOptions
   #   # .curve d3.curveBasisClosed
   #   .curve d3.curveBasisOpen
     .context(@ctx)
@@ -115,24 +115,24 @@ art.makeParticles = ->
   @ogData = @data
 
 
-  if @chance.bool({likelihood: 15})
+  if @chance.bool({likelihood: 25})
     @data.push {
         x: offsetAmount
         y: offsetAmount
       }
-  if @chance.bool({likelihood: 15})
+  if @chance.bool({likelihood: 25})
     @data.push {
         x: @width-offsetAmount
         y: offsetAmount
       }
 
-  if @chance.bool({likelihood: 15})
+  if @chance.bool({likelihood: 25})
     @data.push {
         x: @width-offsetAmount
         y: @height-offsetAmount
       }
 
-  if @chance.bool({likelihood: 15})
+  if @chance.bool({likelihood: 25})
     @data.push {
         x: offsetAmount
         y: @height-offsetAmount
@@ -153,6 +153,16 @@ art.tick = ->
   # @line = @line.curve(d3.curveBundle.beta(0.5))
 
   @beta += @betaStep
+
+  if @chance.bool({likelihood: 5})
+    @line = d3.line()
+      .x (d) -> d.x
+      .y (d) -> d.y
+    #   # .curve d3.curveStep
+      .curve @chance.pickone @curveOptions
+    #   # .curve d3.curveBasisClosed
+    #   .curve d3.curveBasisOpen
+      .context(@ctx)
 
   @data.forEach((d,i) =>
     ###########################
