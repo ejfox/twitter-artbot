@@ -39,6 +39,8 @@
     "three": "^0.87.1",
     "three-json-loader": "^1.0.0",
     "three-obj-loader": "^1.1.3",
+    "three-software-renderer": "^1.2.0",
+    "three.terrain.js": "^1.5.0",
     "twit": "^2.2.5",
     "yargs": "^8.0.1"
   }

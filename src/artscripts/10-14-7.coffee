@@ -11,6 +11,7 @@ _ = require 'lodash'
 argv = require 'yargs'
   .alias 's', 'seed'
   .argv
+fs = require 'fs'
 seed = Date.now()
 global.THREE = require('../../lib/three/three.js')
 require('../../lib/three/canvasrenderer.js')
@@ -47,122 +48,71 @@ art = new GenArt(seed, options)
 # This is called at the start of the script and creates
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
+  # @loader = new THREE.JSONLoader()
+  @loader = require('three-json-loader')(THREE)
 
-  if @chance.bool()
+  fs.readFile('./lib/obj/sniper-tf2.json', (err, data) =>
+    if err
+      throw err
+
     @colors = @chance.pickone clColors
-  else
-    @colors = ['#999', '#CCC', '#000', '#FFF']
+    if @chance.bool()
+      @colors.push '#FFF'
 
-  # @colors = ['#999', '#CCC', '#000', '#FFF']
-  console.log('colors ->', @colors)
-  @cubes = []
-  @scene = new THREE.Scene()
-  bg = @colors[@colors.length-1]
-  @colors.pop()
-  @scene.background = new THREE.Color(bg)
-  camSize = @chance.integer {min: 18, max: 72}
-  @camera = new THREE.PerspectiveCamera(camSize, 1, 1, 10000)
-  # @camera.position.z += @chance.integer {min: -10, max: 188}
+    @maxSegments = @chance.integer {min: 4, max: 64}
 
-  # @camera.position.y = 150
-  # @camera.position.z = @chance.integer {min: 12, max: 40}
-  # @camera.rotation.y = @chance.integer {min: -2, max: 2}
-  # @camera.rotation.x = @chance.integer {min: -2, max: 2}
+    # @colors = ['#999', '#CCC', '#000', '#FFF']
+    console.log('colors ->', @colors)
+    @cubes = []
+    @scene = new THREE.Scene()
+    bg = @colors[@colors.length-1]
+    @colors.pop()
+    @scene.background = new THREE.Color(bg)
+    camSize = @chance.integer {min: 18, max: 72}
+    @camera = new THREE.PerspectiveCamera(camSize, 1, 1, 10000)
+    # @camera.position.z += @chance.integer {min: -10, max: 188}
 
-  # @camera.rotation.x = -100
-  # @camera.rotation.y = -100
-  # @camera.rotation.z = -100
+    # @camera.position.y = 150
+    @camera.position.z = @chance.integer {min: 12, max: 60}
+    @camera.rotation.z = @chance.integer {min: -2, max: 2}
+    # @camera.rotation.y = @chance.integer {min: -2, max: 2}
+    # @camera.rotation.x = @chance.integer {min: -2, max: 2}
 
-  @light = new THREE.PointLight(new THREE.Color( @chance.pickone(@colors) ), 1.2)
-  @light.position.set(0,0,12)
-  @light.castShadow = true
-  @light.position.y = @chance.integer {min: -25, max: 25}
-  @light.position.z = @chance.integer {min: 25, max: 90}
-  @scene.add @light
+    @light = new THREE.PointLight(new THREE.Color( @chance.pickone(@colors) ), 1.2)
+    @light.position.set(0,0,12)
+    @light.castShadow = true
+    @light.position.y = @chance.integer {min: -25, max: 25}
+    @light.position.z = @chance.integer {min: 25, max: 90}
+    @scene.add @light
 
-  @canvas.style = {}
-  @renderer = new THREE.CanvasRenderer({
-      canvas: @canvas
-  })
-
-  @renderer.shadowMapEnabled = true
-  @renderer.shadowMapSoft = true
-
-  @renderer.shaadowMapBias = 0.0039
-  @renderer.shadowMapDarkness = @chance.floating {min: 0.1, max: 0.8}
-  @renderer.shadowMapWidth = 1024
-  @renderer.shadowMapHeight = 1024
-
-  # @renderer.setClearColor(0xffffff, 1)
-  # @renderer.setClearColor(0xffffff, 0)
-  @renderer.setSize(@width, @height)
-  @renderer.setClearColor(0x3399ff)
-
-
-  loader = new THREE.JSONLoader()
-
-  loader.createModel objData, (done) ->
-    geometry = done
-
-  material = new THREE.MeshLambertMaterial({
-      # color: new THREE.Color( @chance.pickone(@colors) )
-      color: new THREE.Color( '#000' )
-      wireframe: true
+    @canvas.style = {}
+    @renderer = new THREE.CanvasRenderer({
+        canvas: @canvas
     })
 
-  mesh = new THREE.Mesh geometry, material
+    @renderer.shadowMapEnabled = true
+    @renderer.shadowMapSoft = true
 
-  @scene.add mesh
+    @renderer.shaadowMapBias = 0.0039
+    @renderer.shadowMapDarkness = @chance.floating {min: 0.1, max: 0.8}
+    @renderer.shadowMapWidth = 1024
+    @renderer.shadowMapHeight = 1024
 
-
-  # loader = new THREE.OBJLoader()
-  # loader = new THREE.JSONLoader()
-  # loader = require('three-json-loader')(THREE)
-  # loader = new THREE.JSONLoader()
-  # loader = new THREE.ObjectLoader()
-  #
-  # console.log 'objData ----------> ', objData
-  # console.log 'objData.geometry ----------> ', objData.geometries[0]
-  #
-  # model = loader.parse objData
+    # @renderer.setClearColor(0xffffff, 1)
+    # @renderer.setClearColor(0xffffff, 0)
+    @renderer.setSize(@width, @height)
+    @renderer.setClearColor(0x3399ff)
+  
 
 
+    @renderer.render(@scene, @camera)
+  )
 
-  # mesh = new THREE.Mesh(model.geometries[0], material)
-  # objData = JSON.stringify objData
 
-  # console.log 'objData', _.keys(objData)
-  # objMesh = loader objData
 
-  # objMesh = loader.parse objData, (objGeometry) ->
-  #   console.log 'object loaded'
-  #   material = new THREE.MeshLambertMaterial({
-  #     # color: new THREE.Color( @chance.pickone(@colors) )
-  #     color: new THREE.Color( '#000' )
-  #     wireframe: true
-  #   })
-  #   obj = new THREE.Mesh(objGeometry, material)
-  #
-  #   # obj.geometry.computeBoundingBox()
-  #   # boundingBox = obj.geometry.computeBoundingBox
-  #   # position = new THREE.Vector3()
-  #   # position.subVectors boundingBox.max, boundingBox.min
-  #   # position.multiplyScalar 0.5
-  #   # position.add boundingBox.min
-  #   # position.applyMatrix4 objMesh.matrixWorld
-  #   # console.log '-------------'
-  #   # console.log 'New obj position', position
-  #   @scene.add obj
-  #
-  # # @plane.rotation.y = @chance.pickone [-90, -45, 0, 45, 90]
-  # # @plane.rotation.x = @chance.pickone [-90, -45, 45, 90]
-  # # @plane.rotation.z = @chance.pickone [-90, -45, 0, 45, 90]
-  #
-  # # @plane.rotation.y = @chance.integer {min: -180, max: 180}
-  # # @plane.rotation.x = @chance.integer {min: -180, max: 180}
-  # # @plane.rotation.z = @chance.integer {min: -180, max: 180}
-  # #
   # # @scene.add @plane
+
+
 
 
 
@@ -194,7 +144,7 @@ art.tick = ->
 
 
 
-  @renderer.render(@scene, @camera)
+  # @renderer.render(@scene, @camera)
 
 
 run = ->
