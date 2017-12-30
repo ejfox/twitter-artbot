@@ -22,7 +22,7 @@
     filename: path.basename(__filename, '.js') + '-' + seed,
     count: 1,
     randomizeCount: false,
-    numTicks: 55555,
+    numTicks: 95555,
     randomizeTicks: true,
     bgColor: 'white',
     fillColor: 'black',

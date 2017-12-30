@@ -30,7 +30,7 @@
       this.count = 500;
       this.numTicks = 1;
       this.bgColor = 'black';
-      this.opacity = 1;
+      this.opacity = 0.88;
       this.width = 1080;
       this.height = 1080;
       if (options) {
@@ -123,7 +123,7 @@
         ticks = 0;
       }
       this.ticks++;
-      return this.data.forEach((function(_this) {
+      this.data.forEach((function(_this) {
         return function(d, i) {
           if (_this.chance.bool({
             likelihood: 50
@@ -136,18 +136,18 @@
           if (_this.chance.bool({
             likelihood: 50
           })) {
-            d.y += _this.chance.floating({
+            return d.y += _this.chance.floating({
               min: -8,
               max: 8
             });
           }
-          _this.ctx.beginPath();
-          _this.ctx.rect(d.x, d.y, 2, 2);
-          _this.ctx.fillStyle = d.color;
-          _this.ctx.fill();
-          return _this.ctx.closePath();
         };
       })(this));
+      this.ctx.beginPath();
+      this.ctx.rect(d.x, d.y, 2, 2);
+      this.ctx.fillStyle = d.color;
+      this.ctx.fill();
+      return this.ctx.closePath();
     };
 
     GenArt.prototype.tickTil = function(count) {

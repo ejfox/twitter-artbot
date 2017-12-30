@@ -32,7 +32,7 @@
 
   art.numTicks = 92;
 
-  art.bgColor = '#000';
+  art.bgColor = '#FFF';
 
   art.fillColor = 'black';
 
@@ -54,7 +54,7 @@
         });
         x = _this.width / 2;
         y = (_this.height / 2) + offset.y;
-        c = d3.hsl('white');
+        c = d3.hsl('black');
         c.opacity = _this.opacity;
         if (_this.chance.bool({
           likelihood: 1

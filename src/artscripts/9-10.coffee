@@ -17,7 +17,7 @@ art = new GenArt(seed)
 art.filename = path.basename(__filename, '.js') + '-' + seed
 art.count = 24
 art.numTicks = 92
-art.bgColor = '#000'
+art.bgColor = '#FFF'
 art.fillColor = 'black'
 art.simplex = new SimplexNoise
 
@@ -31,7 +31,7 @@ art.makeParticles = ->
     x = (@width / 2 )
     y = (@height / 2 ) + offset.y
 
-    c = d3.hsl('white')
+    c = d3.hsl('black')
     # c.h += @chance.natural({min: 0, max: 14})
     c.opacity = @opacity
 

@@ -16,7 +16,7 @@ class GenArt
     @count = 500 # Max number of particles to create
     @numTicks = 1 # Max number of times to tick over those particles
     @bgColor = 'black' # Canvas background color
-    @opacity = 1 # Default opacity of our particles
+    @opacity = 0.88 # Default opacity of our particles
     # @text = 'Hello world!' # The text for our tweet, should we want to overwrite it
 
     # Canvas width and height
@@ -106,14 +106,13 @@ class GenArt
 
       if @chance.bool {likelihood: 50}
         d.y += @chance.floating {min: -8, max: 8}
-
-      # Paint the data
-      @ctx.beginPath()
-      @ctx.rect d.x, d.y, 2, 2
-      @ctx.fillStyle = d.color
-      @ctx.fill()
-      @ctx.closePath()
     )
+    # Paint the data
+    @ctx.beginPath()
+    @ctx.rect d.x, d.y, 2, 2
+    @ctx.fillStyle = d.color
+    @ctx.fill()
+    @ctx.closePath()
 
   tickTil: (count) ->
     console.log 'Ticking ' + @data.length + ' particles ' + count + ' times'

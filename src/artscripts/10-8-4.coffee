@@ -28,7 +28,7 @@ options = {
   count: 1
   # count: 3
   randomizeCount: false
-  numTicks: 55555
+  numTicks: 95555
   randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
