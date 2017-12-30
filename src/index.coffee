@@ -212,7 +212,7 @@ else if argv.exportall
   exportAllScripts()
 else
   stream = T.stream('user')
-  stream.on('tweet', handleTweetEvent)
+  # stream.on('tweet', handleTweetEvent)
   # Run tweetArt() on the 20th minute of the hour
   runMinute = 20 # Minute of the hour to run, eg **:20
   console.log 'Running... waiting for **:'+runMinute

@@ -197,7 +197,6 @@
     exportAllScripts();
   } else {
     stream = T.stream('user');
-    stream.on('tweet', handleTweetEvent);
     runMinute = 20;
     console.log('Running... waiting for **:' + runMinute);
     tweetCron = schedule.scheduleJob(runMinute + ' * * * *', function() {
