@@ -32,14 +32,14 @@ GenArt = require './GenArt'
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
   count: 18
-  text: '417'
-  numTicks: 225
-  minTicks: 5
+  text: 'Love'
+  numTicks: 417
+  minTicks: 24
   randomizeTicks: true
-  fontSize: 372
+  fontSize: 512
   bgColor: 'white'
   fillColor: 'black'
-  opacity: 0.18
+  opacity: 0.12
 }
 
 # Clone skeleton GenArt ArtScript
@@ -51,7 +51,8 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
-  @colors = @chance.pickone clColors
+  @colors = ['#000', '#000', '#000', '#EFEFEF']
+  # @colors = @chance.pickone clColors
   @color = @chance.pickone @colors
   @ctx.globalCompositeOperation = 'multiply'
   # @ctx.globalCompositeOperation = @chance.pickone ['multiply', 'difference']
@@ -95,20 +96,20 @@ art.makeParticles = ->
     x: @width / 2
     y: @height / 2
   })
-  console.log 'textsvg', textsvg
+  # console.log 'textsvg', textsvg
 
   # textpath = d3.select(textsvg).select('path')
   $parsedTextpath = cheerio.load(textsvg)
   d = $parsedTextpath('path').attr('d')
   parsedTextpath = parseSVG(d)
 
-  console.log 'parsedTextpath', parsedTextpath
+  # console.log 'parsedTextpath', parsedTextpath
 
   # parsedTextpath = parsedTextpath.filter (d) -> d.code is 'L'
   parsedTextpath = parsedTextpath.filter (d) -> d.code isnt 'Z'
 
   @data = parsedTextpath.map (d,i) =>
-    offsetAmount = @chance.integer {min: 0.5, max: @width * 0.12 }
+    offsetAmount = @chance.integer {min: 0.5, max: @width * 0.16 }
 
     # d.y += (@height / 2)
     # d.x += (@width / 2)
@@ -160,9 +161,9 @@ art.tick = ->
 
     ogd = @ogData[i]
 
-    # if @chance.bool({likelihood: 15})
-    #   d.x += noiseValue
-    #   d.y += noiseValue
+    if @chance.bool({likelihood: 4})
+      d.x += noiseValue
+      d.y += noiseValue
 
     d.x = _.clamp d.x, 0, @width
     d.y = _.clamp d.y, 0, @height

@@ -31,14 +31,14 @@
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
     count: 18,
-    text: '417',
-    numTicks: 225,
-    minTicks: 5,
+    text: 'Love',
+    numTicks: 417,
+    minTicks: 24,
     randomizeTicks: true,
-    fontSize: 372,
+    fontSize: 512,
     bgColor: 'white',
     fillColor: 'black',
-    opacity: 0.18
+    opacity: 0.12
   };
 
   art = new GenArt(seed, options);
@@ -46,7 +46,7 @@
   art.makeParticles = function() {
     var $parsedTextpath, colorRange, d, parsedTextpath, startX, textsvg;
     console.log('Making ' + this.count + ' particles');
-    this.colors = this.chance.pickone(clColors);
+    this.colors = ['#000', '#000', '#000', '#EFEFEF'];
     this.color = this.chance.pickone(this.colors);
     this.ctx.globalCompositeOperation = 'multiply';
     this.curveOptions = [d3.curveMonotoneX];
@@ -74,11 +74,9 @@
       x: this.width / 2,
       y: this.height / 2
     });
-    console.log('textsvg', textsvg);
     $parsedTextpath = cheerio.load(textsvg);
     d = $parsedTextpath('path').attr('d');
     parsedTextpath = parseSVG(d);
-    console.log('parsedTextpath', parsedTextpath);
     parsedTextpath = parsedTextpath.filter(function(d) {
       return d.code !== 'Z';
     });
@@ -87,7 +85,7 @@
         var c, offsetAmount;
         offsetAmount = _this.chance.integer({
           min: 0.5,
-          max: _this.width * 0.12
+          max: _this.width * 0.16
         });
         if (d.code === 'Q') {
           d.x = (d.x + d.x1) / 2;
@@ -130,6 +128,12 @@
           max: 2
         });
         ogd = _this.ogData[i];
+        if (_this.chance.bool({
+          likelihood: 4
+        })) {
+          d.x += noiseValue;
+          d.y += noiseValue;
+        }
         d.x = _.clamp(d.x, 0, _this.width);
         d.y = _.clamp(d.y, 0, _this.height);
         maxStep = (i * 0.1) + noiseValue;
