@@ -9,9 +9,9 @@ Twit = require 'twit'
 Chance = require 'chance'
 chance = new Chance()
 SimplexNoise = require 'simplex-noise'
+schedule = require 'node-schedule'
 rand = new randGen()
 seed = Date.now()
-schedule = require 'node-schedule'
 rand.seed(seed)
 
 # Arguments shortcuts that can be used from the CLI
@@ -121,7 +121,13 @@ uploadTweet = (status, b64Content) ->
       console.log 'Error uploading media: ', err
   )
 
-tweetArt = (forceArtscriptChoice, options)->
+tweetArt = (forceArtscriptChoice, options) ->
+
+  # Re-generate seed on every tweet
+  rand = new randGen()
+  seed = Date.now()
+  rand.seed(seed)
+
   if forceArtscriptChoice
     artScriptChoice = forceArtscriptChoice
   console.log 'tweetArt'

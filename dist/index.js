@@ -27,11 +27,11 @@
 
   SimplexNoise = require('simplex-noise');
 
+  schedule = require('node-schedule');
+
   rand = new randGen();
 
   seed = Date.now();
-
-  schedule = require('node-schedule');
 
   rand.seed(seed);
 
@@ -128,6 +128,9 @@
 
   tweetArt = function(forceArtscriptChoice, options) {
     var art;
+    rand = new randGen();
+    seed = Date.now();
+    rand.seed(seed);
     if (forceArtscriptChoice) {
       artScriptChoice = forceArtscriptChoice;
     }
