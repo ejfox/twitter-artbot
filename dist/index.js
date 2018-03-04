@@ -131,6 +131,7 @@
     rand = new randGen();
     seed = Date.now();
     rand.seed(seed);
+    artScriptChoice = artScripts[rand(artScripts.length)];
     if (forceArtscriptChoice) {
       artScriptChoice = forceArtscriptChoice;
     }
