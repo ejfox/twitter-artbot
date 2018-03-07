@@ -139,6 +139,9 @@ tweetArt = (forceArtscriptChoice, options) ->
   art.init(options, ->
     # This is the callback for once the art is generated
 
+    if !options
+      options = {}
+
     # Grab the canvas
     canvas = art.canvas
 

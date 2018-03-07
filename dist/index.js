@@ -140,6 +140,9 @@
     art = require('./artscripts/' + artScriptChoice);
     return art.init(options, function() {
       var artBots, canvas, tweetText;
+      if (!options) {
+        options = {};
+      }
       canvas = art.canvas;
       if (art.text) {
         tweetText = art.text + ' ' + artScriptChoice + '-' + seed;
