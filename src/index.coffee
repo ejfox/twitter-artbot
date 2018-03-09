@@ -1,5 +1,5 @@
 env = require 'node-env-file'
-env('./.env', {raise: false, overwrite: true})
+env('.env', {raise: false, overwrite: true})
 fs = require 'fs'
 d3 = require 'd3'
 d3Node = require 'd3-node'
@@ -19,6 +19,13 @@ argv = require 'yargs'
   .alias 'f', 'force'
   .alias 'm', 'movie'
   .argv
+
+
+chooseRandomScript = (artScripts) ->
+  rand = new randGen()
+  seed = Date.now()
+  rand.seed(seed)
+  artScripts[rand(artScripts.length)]
 
 # The array of artscript names that are chosen from randomly
 artScripts = [
@@ -42,7 +49,8 @@ artScripts = [
 if argv.artscript
   artScriptChoice = argv.artscript
 else
-  artScriptChoice = artScripts[rand(artScripts.length)]
+  # artScriptChoice = artScripts[rand(artScripts.length)]
+  artScriptChoice = chooseRandomScript artScripts
 
 d3n = new d3Node { canvasModule }
 
@@ -125,10 +133,7 @@ uploadTweet = (status, b64Content) ->
 tweetArt = (forceArtscriptChoice, options) ->
 
   # Re-generate seed on every tweet
-  rand = new randGen()
-  seed = Date.now()
-  rand.seed(seed)
-  artScriptChoice = artScripts[rand(artScripts.length)]
+  artScriptChoice = chooseRandomScript artScripts
 
   if forceArtscriptChoice
     artScriptChoice = forceArtscriptChoice
