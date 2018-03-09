@@ -150,8 +150,7 @@
       canvas = art.canvas;
       if (art.text) {
         tweetText = art.text + ' ' + artScriptChoice + '-' + seed;
-      }
-      if (art.text && options.mention) {
+      } else if (art.text && options.mention) {
         tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice + '-' + seed;
       } else {
         tweetText = artScriptChoice + '-' + seed;

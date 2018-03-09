@@ -154,8 +154,7 @@ tweetArt = (forceArtscriptChoice, options) ->
     # And append the artscript name and the seed
     if art.text
       tweetText = art.text + ' ' + artScriptChoice+'-'+seed
-
-    if art.text and options.mention
+    else if art.text and options.mention
       tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice+'-'+seed
     else
       # Otherwise just use the artscript and seed
