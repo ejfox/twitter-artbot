@@ -10,9 +10,9 @@ Chance = require 'chance'
 chance = new Chance()
 SimplexNoise = require 'simplex-noise'
 schedule = require 'node-schedule'
-rand = new randGen()
-seed = Date.now()
-rand.seed(seed)
+# rand = new randGen()
+# seed = Date.now()
+# rand.seed(seed)
 
 # Arguments shortcuts that can be used from the CLI
 argv = require 'yargs'
@@ -22,9 +22,8 @@ argv = require 'yargs'
 
 
 chooseRandomScript = (artScripts) ->
-  rand = new randGen()
-  seed = Date.now()
-  rand.seed(seed)
+  # rand = new randGen()
+  rand = randGen.create()
   artScripts[rand(artScripts.length)]
 
 # The array of artscript names that are chosen from randomly
@@ -100,14 +99,16 @@ uploadTweet = (status, b64Content) ->
   T.post('media/upload', { media_data: b64Content }, (err, data, response) ->
     # First, try to upload the image and wait for Twitter to respond
     mediaIdStr = data.media_id_string
-    console.log 'Uploading media...' + seed + ' Twitter ID: '+mediaIdStr
+    # console.log 'Uploading media...' + seed + ' Twitter ID: '+mediaIdStr
+    console.log 'Uploading media... Twitter ID: '+mediaIdStr
 
     # If there's no error, our image uploaded
     # Now we need to add some metadata to the image
     if !err
       console.log 'Twitter id:', mediaIdStr
       # The text used for screen readers on Twitter
-      altText = 'Randomly generated art from seed: '+seed
+      # altText = 'Randomly generated art from seed: '+seed
+      altText = "Art"
       meta_params = { media_id: mediaIdStr, alt_text: {text: altText} }
 
       T.post('media/metadata/create', meta_params, (err, data, response) ->
@@ -153,9 +154,9 @@ tweetArt = (forceArtscriptChoice, options) ->
     # If there was status text defined within the artscript, use that
     # And append the artscript name and the seed
     if art.text
-      tweetText = art.text + ' ' + artScriptChoice+'-'+seed
+      tweetText = art.text + ' ' + artScriptChoice+'-' + art.seed
     else if art.text and options.mention
-      tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice+'-'+seed
+      tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice+'-' + art.seed
     else
       # Otherwise just use the artscript and seed
       tweetText = artScriptChoice+'-'+seed
