@@ -37,7 +37,7 @@
     return artScripts[rand(artScripts.length)];
   };
 
-  artScripts = ['3-4-4'];
+  artScripts = ['9-10', '10-1', '10-3', '10-3-2', '10-4-3', '10-7', '10-7-3', '10-8', '10-8-4', '10-14', '10-14-3', '10-14-4', '10-14-5', '10-14-6', '10-15', '11-6-2', '11-6-3', '11-6-4', '11-6-5', '11-6-6', '12-1', '12-1-3', '12-8-2', '12-8-3', '12-1', '12-29', '12-29-2', '12-29-3', '12-29-4', '2-24', '2-24-2', '3-4-2', '3-4-3', '3-4', '3-4-4', '3-6-18', '3-12'];
 
   if (argv.artscript) {
     artScriptChoice = argv.artscript;
@@ -146,7 +146,7 @@
       } else if (art.text && options.mention) {
         tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice + '-' + art.seed;
       } else {
-        tweetText = artScriptChoice + '-' + seed;
+        tweetText = artScriptChoice + '-' + (art.seed || seed);
       }
       artBots = ['pixelsorter', 'a_quilt_bot', 'Lowpolybot', 'clipartbot', 'artyedit', 'artyPolar', 'artyPetals', 'IMG2ASCII', 'kaleid_o_bot', 'TweetMe4Moji', 'SUPHYPEBOT', 'colorisebot'];
       if (chance.bool({

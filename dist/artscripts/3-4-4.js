@@ -55,7 +55,7 @@
       min: 192,
       max: this.width * 0.8
     });
-    this.text = this.chance.pickone(['Atosa', 'ATOSA', 'atosa']);
+    this.text = this.chance.pickone(['417am', '1975', 'speak', 'trying', 'robot', 'run', 'random', 'big', 'small', 'know', 'leave', 'love']);
     this.curveOptions = [d3.curveMonotoneX];
     console.log('NUM TICKSSSSSSS', this.numTicks);
     colorRange = [this.chance.pickone(this.colors), this.chance.pickone(this.colors)];

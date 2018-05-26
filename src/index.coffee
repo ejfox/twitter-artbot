@@ -160,7 +160,7 @@ tweetArt = (forceArtscriptChoice, options) ->
       tweetText = '@' + options.mention + ' ' + art.text + ' ' + artScriptChoice+'-' + art.seed
     else
       # Otherwise just use the artscript and seed
-      tweetText = artScriptChoice+'-'+seed
+      tweetText = artScriptChoice+'-' + (art.seed || seed)
 
     # There's a 14% chance that the bot will cc another artbot on the tweet
     # It selects randomly who to tweet at from this array
