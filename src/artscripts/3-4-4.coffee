@@ -64,11 +64,14 @@ art.makeParticles = ->
   @fontSize = @chance.floating {min: 192, max: @width * 0.8}
 
   @text = @chance.pickone [
-    '417'
-    '417am'
-    '@'
-    '<3'
-    'love me'
+    'Atosa'
+    'ATOSA'
+    'atosa'
+    # '417'
+    # '417am'
+    # '@'
+    # '<3'
+    # 'love me'
   ]
 
   @curveOptions = [
