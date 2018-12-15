@@ -11,6 +11,7 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+_ = require 'lodash'
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -22,8 +23,10 @@ GenArt = require './../GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
+  count: 9
+  randomizeCount: true
+  numTicks: 6666
+  randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
 }
@@ -37,6 +40,7 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
+  @ctx.globalCompositeOperation = 'multiply'
   @data = d3.range(@count).map =>
     offsetAmount = @chance.integer {min: 25, max: 500}
     offset = {}
@@ -53,6 +57,7 @@ art.makeParticles = ->
       x: x
       y: y
       color: c.toString()
+      radius: 4
     }
   return @data
 
@@ -60,8 +65,15 @@ art.makeParticles = ->
 # This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
-    @ticks = 0
+    ticks = 0
   @ticks++
+
+  line = d3.line()
+    .x (d) -> d.x
+    .y (d) -> d.y
+    # .curve d3.curveStep
+    .curve d3.curveBasisClosed
+    .context(@ctx)
 
   @data.forEach((d,i) =>
     ###########################
@@ -69,31 +81,35 @@ art.tick = ->
     ###########################
     noiseValue = @simplex.noise2D(d.x, d.y)
 
-    if @chance.bool {likelihood: 50}
-      d.x += @chance.floating {min: -2, max: 2}
+    d.x = _.clamp d.x, 0, @width
+    d.y = _.clamp d.y, 0, @height
+
+    maxStep = 6
+
+    # if @chance.bool {likelihood: 1} and i is 1
+    #   d.x += @chance.integer {min: 25, max: 100}
+    #   d.y -= @chance.integer {min: 25, max: 100}
 
     if @chance.bool {likelihood: 50}
-      d.y += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -maxStep, max: maxStep}
+
+    if @chance.bool {likelihood: 50}
+      d.y += @chance.floating {min: -maxStep, max: maxStep}
 
     # Simplex noise is always random, not seeded
     # This will introduce randomness even with the same seed
     # Use with care, and for subtle effects
     if noiseValue > 0
-      d.x += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -maxStep, max: maxStep}
     else
-      d.y += @chance.floating {min: -2, max: 2}
-
-    ###########################
-    # Then paint the particle #
-    ###########################
-    @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
-    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
-    # @ctx.fillStyle = d.color
-    @ctx.fillStyle = @fillColor
-    @ctx.fill()
-    @ctx.closePath()
+      d.y += @chance.floating {min: -maxStep, max: maxStep}
   )
+
+  @ctx.beginPath()
+  line @data
+  @ctx.lineWidth = 1.2
+  @ctx.strokeStyle = 'rgba(0,0,0,0.01)'
+  @ctx.stroke()
 
 
 run = ->

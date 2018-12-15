@@ -11,6 +11,7 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+clColors = require('nice-color-palettes/200')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -22,8 +23,8 @@ GenArt = require './../GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
+  count: 99
+  numTicks: 9999
   bgColor: 'white'
   fillColor: 'black'
 }
@@ -37,6 +38,9 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
+
+  @colors = @chance.pickone clColors
+  @colors.push 'white'
   @data = d3.range(@count).map =>
     offsetAmount = @chance.integer {min: 25, max: 500}
     offset = {}
@@ -45,7 +49,8 @@ art.makeParticles = ->
     x = (@width / 2 ) + offset.x
     y = (@height / 2 ) + offset.y
 
-    c = d3.hsl('white')
+    color = @chance.pickone @colors
+    c = d3.hsl(color)
     # c.h += @chance.natural({min: 0, max: 14})
     c.opacity = @opacity
 
@@ -60,7 +65,7 @@ art.makeParticles = ->
 # This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
-    @ticks = 0
+    ticks = 0
   @ticks++
 
   @data.forEach((d,i) =>
@@ -87,10 +92,8 @@ art.tick = ->
     # Then paint the particle #
     ###########################
     @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
-    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
-    # @ctx.fillStyle = d.color
-    @ctx.fillStyle = @fillColor
+    @ctx.rect d.x, d.y, @chance.integer({min: 1, max: 3}), @chance.integer({min: 1, max: 100})
+    @ctx.fillStyle = d.color
     @ctx.fill()
     @ctx.closePath()
   )

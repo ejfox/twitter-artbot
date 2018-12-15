@@ -1,4 +1,4 @@
-# Title: Boilerplate Artscript
+# Title: 10-1
 # Author: EJ Fox <ejfox@ejfox.com>
 # Date created: 10/01/2017
 # Notes:
@@ -16,16 +16,18 @@ seed = Date.now()
 # around which all ArtScripts are built
 GenArt = require './../GenArt'
 
-# Filenames follow the format $ArtScript-$seed.png
-# For example: `_boilerplate-1506887448254.png`
+# Make our .png filename (which references the name of the ArtScript)
+# For example if your ArtScript was named `_boilerplate`
+# Your output would be `_boilerplate-1506887448254.png`
+filename = path.basename(__filename, '.js') + '-' + seed
 
 # Set some options for our artscript
 options = {
-  filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
-  bgColor: 'white'
-  fillColor: 'black'
+  filename: filename
+  count: 25
+  numTicks: 100
+  bgColor: 'black'
+  fillColor: 'white'
 }
 
 # Clone skeleton GenArt ArtScript
@@ -37,8 +39,9 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
+  offsetAmount = @chance.integer {min: 25, max: 750}
   @data = d3.range(@count).map =>
-    offsetAmount = @chance.integer {min: 25, max: 500}
+    targetOffsetAmount = @chance.integer {min: @width/2, max: @width}
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
     offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
@@ -52,6 +55,8 @@ art.makeParticles = ->
     {
       x: x
       y: y
+      targetX: x + @chance.floating({min: -targetOffsetAmount, max: targetOffsetAmount})
+      targetY: y + @chance.floating({min: -targetOffsetAmount, max: targetOffsetAmount})
       color: c.toString()
     }
   return @data
@@ -60,8 +65,11 @@ art.makeParticles = ->
 # This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
-    @ticks = 0
+    ticks = 0
   @ticks++
+
+  increase = Math.PI * 2 / @numTicks
+  angle = 0
 
   @data.forEach((d,i) =>
     ###########################
@@ -69,26 +77,35 @@ art.tick = ->
     ###########################
     noiseValue = @simplex.noise2D(d.x, d.y)
 
-    if @chance.bool {likelihood: 50}
-      d.x += @chance.floating {min: -2, max: 2}
+    # if Math.round(d.x) is Math.round(d.targetX)
+    #   d.x = @chance.floating {min: 0, max: @width}
+    #
+    # if Math.round(d.y) is Math.round(d.targetY)
+    #   d.y = @chance.floating {min: 0, max: @height}
+
+    # d.x += 20 * Math.cos( angle ) + 60
+    # d.y += 20 * Math.sin( angle ) + 60
+
+    angle += increase
 
     if @chance.bool {likelihood: 50}
-      d.y += @chance.floating {min: -2, max: 2}
+      if d.x < d.targetX
+        d.x += @chance.floating {min: 0, max: 2}
+      else if d.x < d.targetX
+        d.x += @chance.floating {min: -2, max: 0}
 
-    # Simplex noise is always random, not seeded
-    # This will introduce randomness even with the same seed
-    # Use with care, and for subtle effects
-    if noiseValue > 0
-      d.x += @chance.floating {min: -2, max: 2}
-    else
-      d.y += @chance.floating {min: -2, max: 2}
+    if @chance.bool {likelihood: 50}
+      if d.y < d.targetY
+        d.y += @chance.floating {min: 0, max: 2}
+      else if d.y < d.targetY
+        d.y += @chance.floating {min: -2, max: 0}
+
 
     ###########################
     # Then paint the particle #
     ###########################
     @ctx.beginPath()
     @ctx.rect d.x, d.y, 1, 1
-    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
     # @ctx.fillStyle = d.color
     @ctx.fillStyle = @fillColor
     @ctx.fill()
@@ -104,8 +121,8 @@ run = ->
     seed = argv.seed
   else
     seed = Date.now()
-  art.seed = seed
-  art.init({save: true})
+  genart = new GenArt(seed, options)
+  genart.init({save: true})
 
 if(require.main == module)
   run()

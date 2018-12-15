@@ -11,6 +11,7 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+_ = require 'lodash'
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -23,7 +24,7 @@ GenArt = require './../GenArt'
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
   count: 69
-  numTicks: 69
+  numTicks: 2
   bgColor: 'white'
   fillColor: 'black'
 }
@@ -37,13 +38,43 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
+  i = 0
+
+  buildingSizes = [
+    {
+      width: 72
+      height: 32
+    },
+    {
+      width: 16
+      height: 140
+    },
+    {
+      width: 8
+      height: 92
+    },
+  ]
+
   @data = d3.range(@count).map =>
-    offsetAmount = @chance.integer {min: 25, max: 500}
+    offsetAmount = @chance.integer {min: 2, max: @width}
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
     offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
     x = (@width / 2 ) + offset.x
-    y = (@height / 2 ) + offset.y
+
+    y = (@height * 0.85 ) #+ offset.y
+
+    if @presetBuildingSizes
+      buildingSize = @chance.pickone buildingSizes
+      width = buildingSize.width
+      height = buildingSize.height
+    else
+      width = @chance.pickone [8,16,24,72]
+      # height = @chance.integer {min: 25, max: @height * 0.75}
+      height = width * @chance.integer {min: 1, max: 12}
+      height = _.clamp height, 0, @height * 0.88
+
+    y = y-height
 
     c = d3.hsl('white')
     # c.h += @chance.natural({min: 0, max: 14})
@@ -53,6 +84,8 @@ art.makeParticles = ->
       x: x
       y: y
       color: c.toString()
+      height: height
+      width: width
     }
   return @data
 
@@ -63,11 +96,16 @@ art.tick = ->
     @ticks = 0
   @ticks++
 
+  # console.log 'ticks', @ticks, ' - ', @numTicks
+
+
   @data.forEach((d,i) =>
     ###########################
     #   Modify each particle  #
     ###########################
     noiseValue = @simplex.noise2D(d.x, d.y)
+
+    # console.log 'd->', d
 
     if @chance.bool {likelihood: 50}
       d.x += @chance.floating {min: -2, max: 2}
@@ -87,13 +125,25 @@ art.tick = ->
     # Then paint the particle #
     ###########################
     @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
+    @ctx.rect d.x, d.y, d.width, d.height
     # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
     # @ctx.fillStyle = d.color
     @ctx.fillStyle = @fillColor
+    @ctx.strokeStyle = @bgColor
     @ctx.fill()
+    @ctx.stroke()
     @ctx.closePath()
   )
+
+  if @ticks is @numTicks
+    console.log 'last frame'
+    @ctx.beginPath()
+    @ctx.rect 0, @height * 0.8, @width, 200
+    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
+    # @ctx.fillStyle = d.color
+    @ctx.fillStyle = 'black'
+    @ctx.fill()
+    @ctx.closePath()
 
 
 run = ->

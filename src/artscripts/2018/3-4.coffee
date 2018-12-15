@@ -1,6 +1,6 @@
 # Title: Boilerplate Artscript
 # Author: EJ Fox <ejfox@ejfox.com>
-# Date created: 10/01/2017
+# Date created: 03/04/2018
 # Notes:
 
 # Set up our requirements
@@ -11,6 +11,9 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+_ = require 'lodash'
+
+clColors = require('nice-color-palettes')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
@@ -22,10 +25,13 @@ GenArt = require './../GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
+  count: 62
+  randomizeCount: true
+  numTicks: 350
+  randomizeTicks: true
   bgColor: 'white'
   fillColor: 'black'
+  opacity: 0.7
 }
 
 # Clone skeleton GenArt ArtScript
@@ -37,22 +43,35 @@ art = new GenArt(seed, options)
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
   console.log('Making ' + @count + ' particles')
+
+  @colors = @chance.pickone clColors
   @data = d3.range(@count).map =>
-    offsetAmount = @chance.integer {min: 25, max: 500}
+    offsetAmount = @chance.integer {min: 12, max: @width * 0.6}
     offset = {}
     offset.x = @chance.floating({min: -offsetAmount, max: offsetAmount})
     offset.y = @chance.floating({min: -offsetAmount, max: offsetAmount})
     x = (@width / 2 ) + offset.x
     y = (@height / 2 ) + offset.y
 
-    c = d3.hsl('white')
+    c = d3.hsl(@chance.pickone(@colors))
     # c.h += @chance.natural({min: 0, max: 14})
     c.opacity = @opacity
+
+    thickness = 1
+
+    if @chance.bool {likelihood: 25}
+      thickness = @chance.pickone [1, 2, 4, 8]
 
     {
       x: x
       y: y
+      x1: x
+      y1: y
+      x2: x + @chance.floating({min: -offsetAmount, max: offsetAmount})
+      y2: y + @chance.floating({min: -offsetAmount, max: offsetAmount})
       color: c.toString()
+      thickness: thickness
+      v: @chance.integer {min: 1, max: 6}
     }
   return @data
 
@@ -64,34 +83,73 @@ art.tick = ->
   @ticks++
 
   @data.forEach((d,i) =>
+    # console.log 'd ->', d
     ###########################
     #   Modify each particle  #
     ###########################
     noiseValue = @simplex.noise2D(d.x, d.y)
 
-    if @chance.bool {likelihood: 50}
-      d.x += @chance.floating {min: -2, max: 2}
+    # d.x = _.clamp d.x, 0, @width
+    # d.x1 = _.clamp d.x, 0, @width
+    # d.x2 = _.clamp d.x, 0, @width
+    #
+    # d.y = _.clamp d.y, 0, @height
+    # d.y1 = _.clamp d.y, 0, @height
+    # d.y2 = _.clamp d.y, 0, @height
 
     if @chance.bool {likelihood: 50}
-      d.y += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -d.v, max: d.v}
+      d.x2 += @chance.floating {min: -d.v, max: d.v}
+
+    if @chance.bool {likelihood: 50}
+      d.y += @chance.floating {min: -d.v, max: d.v}
+      d.y2 += @chance.floating {min: -d.v, max: d.v}
+
+    if @chance.bool {likelihood: 2}
+      d.v = _.clamp d.v, 0, 100
+      d.v += @chance.floating {min: -d.v, max: d.v}
+
+
+    # CENTER
+      if d.x1 < (@width / 2)
+        d.x1 += 0.1
+      if d.y1 < (@height / 2)
+        d.y1 += 0.1
+      if d.x1 > (@width / 2)
+        d.x1 -= 0.1
+      if d.y1 > (@height / 2)
+        d.y1 -= 0.1
+
+    # d.x2 = d.x
+    # d.y2 = d.y
 
     # Simplex noise is always random, not seeded
     # This will introduce randomness even with the same seed
     # Use with care, and for subtle effects
+    d.v = _.clamp d.v, 0, 100
     if noiseValue > 0
-      d.x += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -d.v, max: d.v}
+      # d.x1 += @chance.floating {min: -d.v, max: d.v}
+      d.x2 += @chance.floating {min: -d.v, max: d.v}
     else
-      d.y += @chance.floating {min: -2, max: 2}
+      d.y += @chance.floating {min: -d.v, max: d.v}
+      # d.y1 += @chance.floating {min: -d.v, max: d.v}
+      d.y2 += @chance.floating {min: -d.v, max: d.v}
 
     ###########################
     # Then paint the particle #
     ###########################
     @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
+    # @ctx.rect d.x, d.y, 1, 1
     # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
     # @ctx.fillStyle = d.color
-    @ctx.fillStyle = @fillColor
-    @ctx.fill()
+    @ctx.lineWidth = d.thickness
+    @ctx.strokeStyle = d.color
+
+    @ctx.moveTo(d.x1,d.y1)
+    @ctx.lineTo(d.x2,d.y2)
+    @ctx.stroke()
+    # @ctx.fill()
     @ctx.closePath()
   )
 

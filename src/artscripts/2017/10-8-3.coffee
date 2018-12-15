@@ -11,10 +11,12 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
+clColors = require('nice-color-palettes/100')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
 GenArt = require './../GenArt'
+
 
 # Filenames follow the format $ArtScript-$seed.png
 # For example: `_boilerplate-1506887448254.png`
@@ -22,10 +24,12 @@ GenArt = require './../GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
+  count: 120
+  randomizeCount: true
+  numTicks: 12
+  randomizeCount: true
   bgColor: 'white'
-  fillColor: 'black'
+  fillColor: 'rgba(0,0,0,0.2)'
 }
 
 # Clone skeleton GenArt ArtScript
@@ -36,6 +40,7 @@ art = new GenArt(seed, options)
 # This is called at the start of the script and creates
 # The particles which are manipulated and drawn every tick
 art.makeParticles = ->
+  @colors = @chance.pickone clColors
   console.log('Making ' + @count + ' particles')
   @data = d3.range(@count).map =>
     offsetAmount = @chance.integer {min: 25, max: 500}
@@ -53,14 +58,20 @@ art.makeParticles = ->
       x: x
       y: y
       color: c.toString()
+      maxStep: @chance.integer {min: 1, max: 992}
     }
+
+  @voronoi = d3.voronoi()
+    .x (d) -> d.x
+    .y (d) -> d.y
+
   return @data
 
 # Overwrite the GenArt tick function and customize
 # This function is called every time the art is ticked
 art.tick = ->
   if !@ticks
-    @ticks = 0
+    ticks = 0
   @ticks++
 
   @data.forEach((d,i) =>
@@ -70,29 +81,48 @@ art.tick = ->
     noiseValue = @simplex.noise2D(d.x, d.y)
 
     if @chance.bool {likelihood: 50}
-      d.x += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -d.maxStep, max: d.maxStep}
 
     if @chance.bool {likelihood: 50}
-      d.y += @chance.floating {min: -2, max: 2}
+      d.y += @chance.floating {min: -d.maxStep, max: d.maxStep}
 
     # Simplex noise is always random, not seeded
     # This will introduce randomness even with the same seed
     # Use with care, and for subtle effects
     if noiseValue > 0
-      d.x += @chance.floating {min: -2, max: 2}
+      d.x += @chance.floating {min: -d.maxStep, max: d.maxStep}
     else
-      d.y += @chance.floating {min: -2, max: 2}
+      d.y += @chance.floating {min: -d.maxStep, max: d.maxStep}
 
     ###########################
     # Then paint the particle #
     ###########################
-    @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
-    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
-    # @ctx.fillStyle = d.color
-    @ctx.fillStyle = @fillColor
-    @ctx.fill()
-    @ctx.closePath()
+    # @ctx.beginPath()
+    # @ctx.rect d.x, d.y, 1, 1
+    # # @ctx.fillStyle = d.color
+    # @ctx.fillStyle = @fillColor
+    # @ctx.fill()
+    # @ctx.closePath()
+  )
+
+  @diagram = @voronoi(@data)
+  @links = @diagram.links()
+  @polygons = @diagram.polygons()
+
+  @polygons.forEach( (d,i) =>
+    #console.log 'drawing polygon'
+    if d[0]
+      @ctx.moveTo(d[0][0], d[0][1])
+      d.forEach( (m,j) =>
+        if d[j]
+          @ctx.lineTo(d[j][0], d[j][1])
+      )
+      @ctx.lineWidth = 0.5
+      color = @chance.pickone @colors
+      # console.log 'c->', color
+      @ctx.strokeStyle = color #@fillColor
+      @ctx.closePath()
+      @ctx.stroke()
   )
 
 
