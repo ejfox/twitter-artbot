@@ -50,7 +50,7 @@ The development web view is located at `src/webserver.js`
 To quickly see changes when iterating on a script, this creates a simple web server that shows the latest .png created in the `/dist/` folder. You can navigate to it at `localhost:3000`
 
 Works well when paired with [atom-browser](https://atom.io/packages/atom-browser)
-![dev browser set-up](https://i.imgur.com/PZ7uUY0.png)
+![dev browser set-up](http://ej-fox.s3.amazonaws.com/screenshots/Screenshot%202018-12-15%2013.33.23.png)
 
 ## Gallery web view
 The art script gallery is located at `src/webserver_gallery.js`
