@@ -17,7 +17,9 @@
     count: 69,
     numTicks: 69,
     bgColor: 'white',
-    fillColor: 'black'
+    fillColor: 'black',
+    randomizeCount: false,
+    randomizeTicks: false
   };
 
   art = new GenArt(seed, options);

@@ -26,6 +26,8 @@ options = {
   numTicks: 69
   bgColor: 'white'
   fillColor: 'black'
+  randomizeCount: false
+  randomizeTicks: false
 }
 
 # Clone skeleton GenArt ArtScript
