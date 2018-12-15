@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- <meta http-equiv="refresh" content="1"> -->
+    <title>Twitter Art Bot</title>
+  </head>
+  <body
+    style="
+      height: 100vh;
+      background-image: url('/latest');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center center;
+    ">
+    <!-- <img
+    src="/latest"
+    id="preview-image"
+    style="width:100vw; height: auto;"
+    /> -->
+    <script type="text/javascript">
+      setInterval(function() {
+        var myImage = document.getElementById('preview-image');
+        myImage.src = '/latest?rand=' + Math.random();
+      }, 1000);
+    </script>
+  </body>
+</html>

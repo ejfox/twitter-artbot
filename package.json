@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "(coffee --compile --output dist --watch src &)",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "web": "node src/webserver"
   },
   "author": "EJ Fox <ejfox@ejfox.com>",
   "license": "ISC",
@@ -26,7 +27,7 @@
     "d3-node": "^1.0.3",
     "d3-voronoi": "^1.1.2",
     "envs": "^0.1.6",
-    "express": "^4.15.3",
+    "express": "^4.16.4",
     "fs-extra": "^4.0.0",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
