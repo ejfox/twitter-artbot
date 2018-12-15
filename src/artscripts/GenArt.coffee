@@ -17,14 +17,14 @@ class GenArt
     @numTicks = 1 # Max number of times to tick over those particles
     @bgColor = 'black' # Canvas background color
     @opacity = 0.88 # Default opacity of our particles
-    # @text = 'Hello world!' # The text for our tweet, should we want to overwrite it
+    # @text = 'Hello world!' # The text for our tweet, should we want to
 
     # Canvas width and height
     @width = 1080
     @height = 1080
 
     if options
-      console.log('Options received!', options)
+      console.log('Options received! \n', options)
       Object.assign(this, options)
 
   makeCanvas: ->
@@ -57,9 +57,10 @@ class GenArt
     console.log('----------------------------------------')
     console.log('Init seed:', @seed)
     # console.log('Chance float:', @chance.floating())
-    console.log('Chance random:', @chance.random())
+    # console.log('Chance random:', @chance.random())
     # console.log('Simplex 1,1:', @simplex.noise2D(1,1))
-    console.log 'width', @width, 'height', @height
+    console.log 'width', @width
+    console.log 'height', @height
 
     @makeCanvas()
     @makeParticles()
@@ -115,7 +116,8 @@ class GenArt
     @ctx.closePath()
 
   tickTil: (count) ->
-    console.log 'Ticking ' + @data.length + ' particles ' + count + ' times'
+    console.log @data.length + ' particles '
+    console.log count + ' ticks'
     console.time('Ticked for')
     for [0..count]
       @tick()
@@ -149,6 +151,16 @@ run = ->
   else
     seed = Date.now()
   genart = new GenArt(seed)
+
+  # --height 100
+  # would make height 100 pixels
+  if argv.height
+    genart.height = argv.height
+
+  # --width 100
+  # would make width 100 pixels
+  if argv.width
+    genart.width = argv.width
 
   # --count 100
   # would make 100 particles

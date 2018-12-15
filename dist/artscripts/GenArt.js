@@ -34,7 +34,7 @@
       this.width = 1080;
       this.height = 1080;
       if (options) {
-        console.log('Options received!', options);
+        console.log('Options received! \n', options);
         Object.assign(this, options);
       }
     }
@@ -75,8 +75,8 @@
       }
       console.log('----------------------------------------');
       console.log('Init seed:', this.seed);
-      console.log('Chance random:', this.chance.random());
-      console.log('width', this.width, 'height', this.height);
+      console.log('width', this.width);
+      console.log('height', this.height);
       this.makeCanvas();
       this.makeParticles();
       this.tickTil(this.numTicks);
@@ -152,7 +152,8 @@
 
     GenArt.prototype.tickTil = function(count) {
       var j, ref;
-      console.log('Ticking ' + this.data.length + ' particles ' + count + ' times');
+      console.log(this.data.length + ' particles ');
+      console.log(count + ' ticks');
       console.time('Ticked for');
       for (j = 0, ref = count; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--) {
         this.tick();
@@ -190,6 +191,12 @@
       seed = Date.now();
     }
     genart = new GenArt(seed);
+    if (argv.height) {
+      genart.height = argv.height;
+    }
+    if (argv.width) {
+      genart.width = argv.width;
+    }
     if (argv.count) {
       genart.count = argv.count;
     }

@@ -5,23 +5,34 @@
     <title>Twitter Art Bot</title>
   </head>
   <body
-    style="
-      height: 100vh;
-      background-image: url('/latest');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center center;
-    ">
-    <!-- <img
+    style="text-align: center; margin: 0;">
+    <img
     src="/latest"
     id="preview-image"
-    style="width:100vw; height: auto;"
-    /> -->
+    style="height:100vh; width: 100vw; display: block; object-fit: contain;"
+    />
+
     <script type="text/javascript">
       setInterval(function() {
         var myImage = document.getElementById('preview-image');
         myImage.src = '/latest?rand=' + Math.random();
       }, 1000);
     </script>
+
+
+
+    <!-- Needed in HTML for bg image:
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center; -->
+
+    <!-- <script type="text/javascript">
+      // JS to refresh bg image
+      setInterval(function() {
+        var myImageSrc = '/latest?rand=' + Math.random();
+        var body = document.getElementsByTagName("body")[0]
+        body.style.backgroundImage = 'url('+myImageSrc+')'
+      }, 1000);
+    </script> -->
   </body>
 </html>
