@@ -141,12 +141,12 @@ uploadTweet = (status, b64Content) ->
     # First, try to upload the image and wait for Twitter to respond
     mediaIdStr = data.media_id_string
     # console.log 'Uploading media...' + seed + ' Twitter ID: '+mediaIdStr
-    console.log 'Uploading media... Twitter ID: '+mediaIdStr
+    console.log '🐦 Uploading image...' #'Twitter ID: '+mediaIdStr
 
     # If there's no error, our image uploaded
     # Now we need to add some metadata to the image
     if !err
-      console.log 'Twitter id:', mediaIdStr
+      console.log '🐦 Image id:', mediaIdStr
       # The text used for screen readers on Twitter
       # altText = 'Randomly generated art from seed: '+seed
       altText = "Art"
@@ -163,7 +163,8 @@ uploadTweet = (status, b64Content) ->
 
           T.post('statuses/update', params, (err, data, response) ->
             # Tweeted successfully!
-            console.log('Uploaded',data.id)
+            console.log('🐦 👍 Tweet tweeted!')
+            console.log('🐦 Twitter ID: ',data.id)
           )
         else
           console.log 'Error: ', err
@@ -179,8 +180,8 @@ tweetArt = (forceArtscriptChoice, options) ->
 
   if forceArtscriptChoice
     artScriptChoice = forceArtscriptChoice
-  console.log 'tweetArt'
-  console.log 'Running ', artScriptChoice
+  # console.log '🐦 Tweeting some art 💥🔥💥🔥'
+  console.log '🐦 Choosing... ', artScriptChoice
   art = require('./artscripts/'+artScriptChoice)
 
   art.init(options, ->
@@ -212,6 +213,7 @@ tweetArt = (forceArtscriptChoice, options) ->
     if chance.bool {likelihood: 1}
       tweetText += ' #bot2bot @'+chance.pickone artBots
 
+    console.log('🐦 text: ', tweetText)
     # Upload the art to Twitter with the tweet text we've made
     uploadTweet(tweetText, canvas.toDataURL().split(',')[1])
   )

@@ -96,9 +96,9 @@
     }, function(err, data, response) {
       var altText, mediaIdStr, meta_params;
       mediaIdStr = data.media_id_string;
-      console.log('Uploading media... Twitter ID: ' + mediaIdStr);
+      console.log('🐦 Uploading image...');
       if (!err) {
-        console.log('Twitter id:', mediaIdStr);
+        console.log('🐦 Image id:', mediaIdStr);
         altText = "Art";
         meta_params = {
           media_id: mediaIdStr,
@@ -114,7 +114,8 @@
               media_ids: [mediaIdStr]
             };
             return T.post('statuses/update', params, function(err, data, response) {
-              return console.log('Uploaded', data.id);
+              console.log('🐦 👍 Tweet tweeted!');
+              return console.log('🐦 Twitter ID: ', data.id);
             });
           } else {
             return console.log('Error: ', err);
@@ -132,8 +133,7 @@
     if (forceArtscriptChoice) {
       artScriptChoice = forceArtscriptChoice;
     }
-    console.log('tweetArt');
-    console.log('Running ', artScriptChoice);
+    console.log('🐦 Choosing... ', artScriptChoice);
     art = require('./artscripts/' + artScriptChoice);
     return art.init(options, function() {
       var artBots, canvas, tweetText;
@@ -154,6 +154,7 @@
       })) {
         tweetText += ' #bot2bot @' + chance.pickone(artBots);
       }
+      console.log('🐦 text: ', tweetText);
       return uploadTweet(tweetText, canvas.toDataURL().split(',')[1]);
     });
   };

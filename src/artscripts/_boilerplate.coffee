@@ -32,11 +32,9 @@ options = {
 # So we can modify it
 art = new GenArt(seed, options)
 
-# Overwrite the GenArt makeParticles function and customize
-# This is called at the start of the script and creates
-# The particles which are manipulated and drawn every tick
+# `makeParticles()` is called at the start of the script and creates
+# the particles which are manipulated and drawn on every tick
 art.makeParticles = ->
-  console.log('Making ' + @count + ' particles')
   @data = d3.range(@count).map =>
     offsetAmount = @chance.integer {min: 25, max: 500}
     offset = {}
@@ -56,8 +54,7 @@ art.makeParticles = ->
     }
   return @data
 
-# Overwrite the GenArt tick function and customize
-# This function is called every time the art is ticked
+# `tick()` is called every time the art is ticked
 art.tick = ->
   if !@ticks
     @ticks = 0
@@ -87,10 +84,12 @@ art.tick = ->
     # Then paint the particle #
     ###########################
     @ctx.beginPath()
-    @ctx.rect d.x, d.y, 1, 1
-    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI
-    # @ctx.fillStyle = d.color
-    @ctx.fillStyle = @fillColor
+    @ctx.rect d.x, d.y, 1, 1 # Square 1x1 pixel
+    # @ctx.arc d.x, d.y, d.radius, 0, 2*Math.PI # Or a circle
+
+    # @ctx.fillStyle = d.color # Color per-particle
+    @ctx.fillStyle = @fillColor # Or use a global fill color for all
+
     @ctx.fill()
     @ctx.closePath()
   )

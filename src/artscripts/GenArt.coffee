@@ -24,7 +24,7 @@ class GenArt
     @height = 1080
 
     if options
-      console.log('Options received! \n', options)
+      console.log('\n', options)
       Object.assign(this, options)
 
   makeCanvas: ->
@@ -38,10 +38,6 @@ class GenArt
     @ctx.fillRect(0, 0, @width, @height)
 
   init: (options = {}, callback) =>
-    # # Randomize count/ticks based on maxes we just set
-    # @count = @chance.integer({min: 1, max: @count})
-    # @numTicks = @chance.integer({min: 1, max: @numTicks})
-    #
     @chance = new Chance(@seed) # init chance.js - chancejs.com
     @simplex = new SimplexNoise() # This is always random despite the seed
 
@@ -54,13 +50,14 @@ class GenArt
       if @minTicks
         @numTicks = _.clamp @numTicks, @minTicks, @numTicks
 
-    console.log('----------------------------------------')
-    console.log('Init seed:', @seed)
+    # console.log('----------------------------------------')
+    console.log('\n')
+    console.log('🌱 init seed: ', @seed)
     # console.log('Chance float:', @chance.floating())
     # console.log('Chance random:', @chance.random())
     # console.log('Simplex 1,1:', @simplex.noise2D(1,1))
-    console.log 'width', @width
-    console.log 'height', @height
+    console.log '📏 width: ', @width
+    console.log '📏 height: ', @height
 
     @makeCanvas()
     @makeParticles()
@@ -74,7 +71,6 @@ class GenArt
 
 
   makeParticles: =>
-    console.log('Making ' + @count + ' particles')
     @data = d3.range(@count).map =>
       offsetAmount = 250
       offset = {}
@@ -116,12 +112,12 @@ class GenArt
     @ctx.closePath()
 
   tickTil: (count) ->
-    console.log @data.length + ' particles '
-    console.log count + ' ticks'
-    console.time('Ticked for')
+    console.log '💫 ' + @data.length + ' particles '
+    console.log '💯 ' + count + ' ticks'
+    console.time('⏱️  ticked for')
     for [0..count]
       @tick()
-    console.timeEnd('Ticked for')
+    console.timeEnd('⏱️  ticked for')
 
   saveFile: (filename, callback) ->
     # console.log 'callback: ', callback
@@ -138,7 +134,7 @@ class GenArt
 
     stream.on 'finish', ->
       # console.log 'write stream finished'
-      console.log('canvas output --> ' + fileOutput)
+      console.log('💾  OUTPUT ➡️ ' + fileOutput)
       if callback
         callback()
 

@@ -23,7 +23,6 @@
   art = new GenArt(seed, options);
 
   art.makeParticles = function() {
-    console.log('Making ' + this.count + ' particles');
     this.data = d3.range(this.count).map((function(_this) {
       return function() {
         var c, offset, offsetAmount, x, y;

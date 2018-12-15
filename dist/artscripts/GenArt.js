@@ -34,7 +34,7 @@
       this.width = 1080;
       this.height = 1080;
       if (options) {
-        console.log('Options received! \n', options);
+        console.log('\n', options);
         Object.assign(this, options);
       }
     }
@@ -73,10 +73,10 @@
           this.numTicks = _.clamp(this.numTicks, this.minTicks, this.numTicks);
         }
       }
-      console.log('----------------------------------------');
-      console.log('Init seed:', this.seed);
-      console.log('width', this.width);
-      console.log('height', this.height);
+      console.log('\n');
+      console.log('🌱 init seed: ', this.seed);
+      console.log('📏 width: ', this.width);
+      console.log('📏 height: ', this.height);
       this.makeCanvas();
       this.makeParticles();
       this.tickTil(this.numTicks);
@@ -89,7 +89,6 @@
     };
 
     GenArt.prototype.makeParticles = function() {
-      console.log('Making ' + this.count + ' particles');
       this.data = d3.range(this.count).map((function(_this) {
         return function() {
           var c, offset, offsetAmount, x, y;
@@ -152,13 +151,13 @@
 
     GenArt.prototype.tickTil = function(count) {
       var j, ref;
-      console.log(this.data.length + ' particles ');
-      console.log(count + ' ticks');
-      console.time('Ticked for');
+      console.log('💫 ' + this.data.length + ' particles ');
+      console.log('💯 ' + count + ' ticks');
+      console.time('⏱️  ticked for');
       for (j = 0, ref = count; 0 <= ref ? j <= ref : j >= ref; 0 <= ref ? j++ : j--) {
         this.tick();
       }
-      return console.timeEnd('Ticked for');
+      return console.timeEnd('⏱️  ticked for');
     };
 
     GenArt.prototype.saveFile = function(filename, callback) {
@@ -172,7 +171,7 @@
       file = fs.createWriteStream(fileOutput);
       stream = this.canvas.pngStream().pipe(file);
       return stream.on('finish', function() {
-        console.log('canvas output --> ' + fileOutput);
+        console.log('💾  OUTPUT ➡️ ' + fileOutput);
         if (callback) {
           return callback();
         }
