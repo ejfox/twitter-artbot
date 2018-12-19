@@ -22,8 +22,8 @@ GenArt = require './../GenArt'
 # Set some options for our artscript
 options = {
   filename: path.basename(__filename, '.js') + '-' + seed
-  count: 69
-  numTicks: 69
+  count: 12
+  numTicks: 12
   bgColor: 'white'
   fillColor: 'black'
   randomizeCount: false

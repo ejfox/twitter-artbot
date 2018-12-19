@@ -46,6 +46,9 @@
       });
       this.canvas = d3n.createCanvas(this.width, this.height);
       this.ctx = this.canvas.getContext('2d');
+      if (this.blendMode) {
+        this.ctx.globalCompositeOperation = this.blendMode;
+      }
       this.ctx.fillStyle = this.bgColor;
       return this.ctx.fillRect(0, 0, this.width, this.height);
     };

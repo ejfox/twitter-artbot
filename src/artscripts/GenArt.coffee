@@ -33,6 +33,9 @@ class GenArt
     @canvas = d3n.createCanvas @width, @height
     @ctx = @canvas.getContext '2d'
 
+    if @blendMode
+      @ctx.globalCompositeOperation = @blendMode
+
     # Make the background color
     @ctx.fillStyle = @bgColor
     @ctx.fillRect(0, 0, @width, @height)

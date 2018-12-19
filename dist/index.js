@@ -37,7 +37,7 @@
     return artScripts[rand(artScripts.length)];
   };
 
-  artScripts = ['2018/3-4-2', '2018/3-4-3', '2018/3-4-4', '2018/3-4', '2018/3-6-18', '2018/3-12', '2018/2-24-2', '2018/2-24-3', '2018/2-24'];
+  artScripts = ['2018/12-17'];
 
   if (argv.artscript) {
     artScriptChoice = argv.artscript;
