@@ -82,7 +82,8 @@ artScripts = [
   # '2018/2-24-2',
   # '2018/2-24-3',
   # '2018/2-24',
-  '2018/12-17'
+  # '2018/12-17',
+  '2018/12-20'
 
 ]
 # Force one script instead of the random behavior from the CLI
