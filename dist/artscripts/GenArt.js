@@ -34,7 +34,7 @@
       this.width = 1080;
       this.height = 1080;
       if (options) {
-        console.log('\n', options);
+        console.log('\nOptions:', options);
         Object.assign(this, options);
       }
     }
