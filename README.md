@@ -6,6 +6,8 @@ A framework for [generative art](https://en.wikipedia.org/wiki/Generative_art) m
 
 A boilerplate art script file with useful libraries and scaffolding is provided to create new works quickly. (`src/artscripts/_boilerplate.coffee`)
 
+See [lots of examples here](https://imgur.com/a/0nlIRIo).
+
 This repo can also be deployed to Heroku to create a Twitter bot that tweets randomly-selected art scripts every hour.
 
 ## Development
