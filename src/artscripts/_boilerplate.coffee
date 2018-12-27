@@ -3,19 +3,14 @@
 # Date created: 10/01/2017
 # Notes:
 
-# Set up our requirements
-# SimplexNoise = require 'simplex-noise'
-path = require 'path'
-d3 = require 'd3'
-argv = require 'yargs'
-  .alias 's', 'seed'
-  .argv
-seed = Date.now()
-clColors = require('nice-color-palettes/500')
-
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
 GenArt = require '@ejfox/four-seventeen'
+
+# Set up our requirements
+# SimplexNoise = require 'simplex-noise'
+seed = Date.now()
+clColors = require('nice-color-palettes/500')
 
 # Filenames follow the format $ArtScript-$seed.png
 # For example: `_boilerplate-1506887448254.png`
