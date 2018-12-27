@@ -14,7 +14,8 @@ seed = Date.now()
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
-GenArt = require './../GenArt'
+GenArt = require '@ejfox/four-seventeen'
+
 
 # Make our .png filename (which references the name of the ArtScript)
 # For example if your ArtScript was named `_boilerplate`

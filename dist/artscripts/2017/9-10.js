@@ -22,7 +22,7 @@
 
   seed = Date.now();
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   art = new GenArt(seed);
 

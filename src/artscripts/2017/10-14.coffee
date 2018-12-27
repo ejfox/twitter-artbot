@@ -24,7 +24,8 @@ clColors = require('nice-color-palettes/100')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
-GenArt = require './../GenArt'
+GenArt = require '@ejfox/four-seventeen'
+
 
 deg2rad = Math.PI / 180
 

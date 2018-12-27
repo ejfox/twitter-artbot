@@ -16,7 +16,7 @@
 
   deg2rad = Math.PI / 180;
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,

@@ -12,7 +12,7 @@
 
   clColors = require('nice-color-palettes/500');
 
-  GenArt = require('./GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,

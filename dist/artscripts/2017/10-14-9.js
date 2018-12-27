@@ -20,7 +20,7 @@
 
   global.THREE.Terrain = require('../../node_modules/three.terrain.js/build/THREE.Terrain.js');
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,
