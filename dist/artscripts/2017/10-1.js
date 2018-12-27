@@ -10,7 +10,7 @@
 
   seed = Date.now();
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   filename = path.basename(__filename, '.js') + '-' + seed;
 

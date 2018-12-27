@@ -16,7 +16,8 @@ Chance = require('chance')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
-GenArt = require './../GenArt'
+GenArt = require '@ejfox/four-seventeen'
+
 
 # Filenames follow the format $ArtScript-$seed.png
 # For example: `_boilerplate-1506887448254.png`

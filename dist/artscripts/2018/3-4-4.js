@@ -26,7 +26,7 @@
 
   cheerio = require('cheerio');
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   options = {
     filename: path.basename(__filename, '.js') + '-' + seed,

@@ -22,7 +22,7 @@
 
   clColors = require('nice-color-palettes/100');
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   deg2rad = Math.PI / 180;
 

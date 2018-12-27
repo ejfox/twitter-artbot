@@ -3,7 +3,7 @@
 # Date created: 10/01/2017
 # Notes:
 
-# Set up our requirements
+# Set up our requirementsnpm
 # SimplexNoise = require 'simplex-noise'
 path = require 'path'
 d3 = require 'd3'
@@ -15,7 +15,10 @@ clColors = require('nice-color-palettes/500')
 
 # Require GenArt which is the skeleton
 # around which all ArtScripts are built
-GenArt = require './../GenArt'
+# GenArt = require '@ejfox/four-seventeen'
+
+
+GenArt = require '@ejfox/four-seventeen'
 
 # Filenames follow the format $ArtScript-$seed.png
 # For example: `_boilerplate-1506887448254.png`

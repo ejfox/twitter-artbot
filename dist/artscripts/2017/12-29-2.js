@@ -14,7 +14,7 @@
 
   clColors = require('nice-color-palettes/100');
 
-  GenArt = require('./../GenArt');
+  GenArt = require('@ejfox/four-seventeen');
 
   options = {
     width: 1920,

@@ -10,7 +10,8 @@ argv = require 'yargs'
   .alias 's', 'seed'
   .argv
 seed = Date.now()
-GenArt = require './../GenArt'
+GenArt = require '@ejfox/four-seventeen'
+
 
 # Make new instance
 art = new GenArt(seed)
