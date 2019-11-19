@@ -16,7 +16,6 @@
     "coffee-script": "^1.12.6"
   },
   "dependencies": {
-    "@ejfox/four-seventeen": "^0.5.5",
     "canvas": "^1.6.13",
     "canvas-base64": "^1.0.0",
     "canvas-prebuilt": "^1.6.5-prerelease.1",
