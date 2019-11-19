@@ -15,6 +15,9 @@
   "devDependencies": {
     "coffee-script": "^1.12.6"
   },
+  "engines": {
+    "node": "8.x.x"
+  },
   "dependencies": {
     "canvas": "^1.6.13",
     "canvas-base64": "^1.0.0",
