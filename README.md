@@ -27,3 +27,8 @@ Rename `.env-example` to `.env` and add your Twitter authentication details.
 ![10-3](https://i.imgur.com/HGAz9QZ.png)
 ![10-7-2](https://i.imgur.com/Y77isUO.png)
 ![11-6-3](https://i.imgur.com/FOR6L5f.png)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fejfox%2Ftwitter-artbot.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fejfox%2Ftwitter-artbot?ref=badge_shield)
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fejfox%2Ftwitter-artbot.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fejfox%2Ftwitter-artbot?ref=badge_large)
