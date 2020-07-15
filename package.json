@@ -33,7 +33,7 @@
     "express": "^4.16.4",
     "express-cache-headers": "^0.1.4",
     "fs-extra": "^4.0.0",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.19",
     "mkdirp": "^0.5.1",
     "nice-color-palettes": "^2.0.0",
     "node-env-file": "^0.1.8",
